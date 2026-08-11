@@ -176,8 +176,8 @@ const templateSiteConfig: SiteConfig = {
 // Managed by Thally Cloud onboarding.
 export const siteConfig: SiteConfig = {
   ...templateSiteConfig,
-  name: "docs",
-  description: "docs documentation",
+  name: "Thally Docs",
+  description: "Thally Documentation Site",
   repoUrl: "https://github.com/thallylabs/thallydocs",
   links: [
     { label: "Get started", href: "/quickstart" },
