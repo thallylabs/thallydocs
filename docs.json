@@ -1,37 +1,195 @@
 {
   "theme": "default",
-  "appearance": {
-    "contentIcons": "accent"
-  },
   "markdown": {
     "enabled": true
   },
+  "ai": {
+    "chat": true,
+    "label": "ThallyAI",
+    "systemPrompt": "Prefer concise answers with links to relevant guide pages when available."
+  },
+  "admin": {
+    "enabled": true
+  },
+  "analytics": {
+    "enabled": true
+  },
+  "apiPlayground": {
+    "credentials": {
+      "bearerAuth": "YOUR_API_KEY"
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/thallylabs/thally",
+        "type": "github"
+      }
+    ],
+    "primary": {
+      "label": "Get started",
+      "href": "/quickstart"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/thallylabs/thally",
+      "twitter": "https://twitter.com/thallydocs",
+      "discord": "https://discord.gg/thally"
+    },
+    "links": [
+      {
+        "heading": "Documentation",
+        "items": [
+          {
+            "label": "Quick Start",
+            "href": "/quickstart"
+          },
+          {
+            "label": "Guides",
+            "href": "/guides/getting-started"
+          },
+          {
+            "label": "Components",
+            "href": "/components/badge"
+          },
+          {
+            "label": "API Reference",
+            "href": "/api"
+          }
+        ]
+      },
+      {
+        "heading": "Customize",
+        "items": [
+          {
+            "label": "Branding & Theming",
+            "href": "/guides/branding-and-theming"
+          },
+          {
+            "label": "Navbar & Footer",
+            "href": "/guides/navbar-and-footer"
+          },
+          {
+            "label": "Navigation",
+            "href": "/guides/configuring-navigation"
+          }
+        ]
+      },
+      {
+        "heading": "Tooling",
+        "items": [
+          {
+            "label": "AI coding agents",
+            "href": "/guides/ai-coding-agents"
+          },
+          {
+            "label": "CLI overview",
+            "href": "/guides/cli-overview"
+          },
+          {
+            "label": "MCP overview",
+            "href": "/guides/mcp-overview"
+          }
+        ]
+      }
+    ]
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "endpoint": "/api/feedback"
+  },
+  "redirects": [
+    {
+      "source": "/docs",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/getting-started",
+      "destination": "/quickstart",
+      "permanent": true
+    }
+  ],
   "i18n": {
     "defaultLocale": "en",
     "locales": [
       {
         "code": "en",
         "label": "English"
+      },
+      {
+        "code": "es",
+        "label": "Español"
       }
     ]
-  },
-  "navbar": {
-    "primary": {
-      "label": "Get started",
-      "href": "/quickstart"
-    }
   },
   "tabs": [
     {
       "tab": "Get started",
       "groups": [
         {
-          "group": "Get started",
-          "pages": ["introduction", "quickstart"]
+          "group": "Start here",
+          "icon": "book-open",
+          "pages": [
+            "introduction",
+            "quickstart",
+            "guides/getting-started",
+            "guides/preview-locally",
+            "guides/project-structure"
+          ]
         },
         {
-          "group": "Design your docs",
-          "pages": ["components", "customization"]
+          "group": "Create content",
+          "icon": "book-open",
+          "pages": [
+            "guides/writing-content",
+            "guides/content-types",
+            "guides/frontmatter-reference",
+            "guides/images-and-files",
+            "guides/reusable-snippets",
+            "guides/page-modes",
+            "guides/multi-language"
+          ]
+        },
+        {
+          "group": "Developer tools",
+          "icon": "code-simple",
+          "pages": [
+            "guides/ai-coding-agents",
+            "guides/cli-overview",
+            "guides/mcp-overview"
+          ]
+        },
+        {
+          "group": "Organize your docs",
+          "icon": "grid-round",
+          "pages": [
+            "guides/configuring-navigation",
+            "guides/seo-and-visibility",
+            "guides/redirects"
+          ]
+        },
+        {
+          "group": "Customize your site",
+          "icon": "grid-round",
+          "pages": [
+            "guides/branding-and-theming",
+            "guides/navbar-and-footer",
+            "guides/custom-fonts",
+            "guides/site-banner",
+            "guides/og-images",
+            "guides/custom-404",
+            "guides/custom-scripts"
+          ]
+        },
+        {
+          "group": "Validate and publish",
+          "icon": "wrench",
+          "pages": [
+            "guides/ci-checks"
+          ]
         }
       ]
     },
@@ -39,26 +197,161 @@
       "tab": "Guides",
       "groups": [
         {
-          "group": "Work with Thally",
+          "group": "Document your API",
+          "icon": "link-simple",
           "pages": [
-            "guides/create-a-site",
-            "guides/work-with-the-cli",
-            "guides/connect-ai-tools"
+            "guides/api-reference-setup",
+            "guides/api-playground",
+            "guides/api-troubleshooting",
+            "api/overview",
+            "api/reference"
+          ]
+        },
+        {
+          "group": "Deploy",
+          "icon": "wrench",
+          "pages": [
+            "guides/deploying",
+            "guides/deploy-vercel",
+            "guides/deploy-cloudflare",
+            "guides/deploy-docker",
+            "guides/private-docs",
+            "guides/environment-variables"
+          ]
+        },
+        {
+          "group": "Operate and improve",
+          "icon": "grid-round",
+          "pages": [
+            "guides/admin-dashboard",
+            "guides/analytics-and-feedback",
+            "guides/troubleshooting",
+            "guides/migrating"
+          ]
+        },
+        {
+          "group": "Automate updates",
+          "icon": "code-simple",
+          "pages": [
+            "product-change-pipeline",
+            "guides/docs-agent",
+            "guides/thally-track",
+            "guides/provenance",
+            "guides/mcp-server",
+            "guides/remote-mcp",
+            "guides/agent-manifests",
+            "guides/ai-features"
+          ]
+        },
+        {
+          "group": "Reference",
+          "icon": "link-simple",
+          "pages": [
+            "guides/docs-json-reference",
+            "guides/cli-reference",
+            "architecture",
+            "guides/extending"
+          ]
+        },
+        {
+          "group": "Example content",
+          "icon": "book-open",
+          "hidden": true,
+          "pages": [
+            "authentication",
+            "pagination",
+            "webhooks",
+            "sdks",
+            "errors",
+            "customization",
+            "showcase"
           ]
         }
       ]
     },
     {
       "tab": "API Reference",
+      "api": {
+        "source": "openapi.yaml",
+        "tagsOrder": [
+          "Posts",
+          "Comments",
+          "Users"
+        ],
+        "defaultGroup": "General",
+        "overrides": {
+          "GET /pets": {
+            "title": "List pets",
+            "description": "Fetch a paginated list of pets.",
+            "badge": "Stable"
+          },
+          "POST /pets": {
+            "title": "Create a pet",
+            "description": "Add a new pet to the store."
+          },
+          "GET /pets/{petId}": {
+            "title": "Get a pet",
+            "description": "Retrieve a single pet by ID."
+          },
+          "DELETE /pets/{petId}": {
+            "title": "Delete a pet",
+            "description": "Remove a pet from the store."
+          }
+        }
+      }
+    },
+    {
+      "tab": "Components",
       "groups": [
         {
-          "group": "Overview",
-          "pages": ["api/introduction", "api/authentication"]
+          "group": "Content",
+          "pages": [
+            "components/badge",
+            "components/agent-prompt",
+            "components/callouts",
+            "components/code-blocks",
+            "components/panel",
+            "components/update"
+          ]
+        },
+        {
+          "group": "Layout",
+          "pages": [
+            "components/accordion",
+            "components/card",
+            "components/columns",
+            "components/frame",
+            "components/steps",
+            "components/tabs",
+            "components/tile"
+          ]
+        },
+        {
+          "group": "Media & Diagrams",
+          "pages": [
+            "components/mermaid",
+            "components/view",
+            "components/color"
+          ]
+        },
+        {
+          "group": "API Reference",
+          "pages": [
+            "components/param-field",
+            "components/response-field",
+            "components/expandable",
+            "components/request-response-example"
+          ]
+        },
+        {
+          "group": "Navigation",
+          "pages": [
+            "components/file-tree",
+            "components/tooltip",
+            "components/prompt"
+          ]
         }
-      ],
-      "api": {
-        "source": "openapi.yaml"
-      }
+      ]
     },
     {
       "tab": "Changelog",

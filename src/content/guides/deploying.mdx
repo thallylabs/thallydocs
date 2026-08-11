@@ -1,0 +1,87 @@
+---
+title: Deploy your documentation site
+navTitle: Deployment
+description: Prepare a Thally site for production, choose a supported hosting path, and verify the deployed documentation.
+---
+
+Every deployment starts with the same production checks. The host-specific
+pages cover the commands and settings for Vercel, Cloudflare, and Docker.
+
+## Before you deploy
+
+1. Set the production origin:
+
+   ```bash
+   THALLY_SITE_URL=https://docs.example.com
+   ```
+
+2. Validate content and navigation:
+
+   ```bash
+   npx thally check --ci
+   ```
+
+3. Create a production build:
+
+   ```bash
+   npm run build
+   ```
+
+`THALLY_SITE_URL` supplies canonical links, Open Graph metadata, sitemaps, and
+agent-facing URLs. Set it in the hosting provider rather than committing it to
+the repository.
+
+## Choose a deployment target
+
+<CardGroup cols={3}>
+  <Card title="Deploy to Vercel" icon="code-simple" href="/guides/deploy-vercel">
+    Import the repository or deploy it with the Thally CLI.
+  </Card>
+  <Card title="Deploy to Cloudflare" icon="wrench" href="/guides/deploy-cloudflare">
+    Build and publish the OpenNext Worker artifact.
+  </Card>
+  <Card title="Deploy with Docker" icon="grid-round" href="/guides/deploy-docker">
+    Run the site on a container host with persistent storage when needed.
+  </Card>
+</CardGroup>
+
+## Choose the required runtime
+
+Use a server-capable deployment for:
+
+- API **Try It** requests;
+- AI chat and remote MCP routes;
+- the admin dashboard and analytics ingestion;
+- password-protected documentation;
+- Thally Track webhooks and other server APIs.
+
+A fully static export is suitable only when you need rendered documentation
+pages and static assets. The features above depend on server routes and will
+not work in an `output: 'export'` build.
+
+## Add production configuration
+
+Only `THALLY_SITE_URL` is required for a basic public site. Add credentials and
+storage variables only for features you enable. See the complete
+[environment variable reference](/guides/environment-variables).
+
+For serverless hosts, configure remote libSQL storage when analytics, settings,
+task state, or rate-limit counters must survive redeploys. A Docker host or VPS
+can instead persist the local `.data/` directory on a volume.
+
+## Verify the live site
+
+After deployment:
+
+1. Open the homepage and one nested page on desktop and mobile.
+2. Follow sidebar, search, breadcrumb, and previous/next links.
+3. Check `/sitemap.xml`, `/robots.txt`, and `/llms.txt`.
+4. Test any enabled server feature, including Try It, chat, feedback, admin, or
+   access protection.
+5. Confirm canonical URLs use the production domain.
+
+## Next steps
+
+- [Protect private documentation](/guides/private-docs)
+- [Validate documentation in CI](/guides/ci-checks)
+- [Troubleshoot a deployment](/guides/troubleshooting)

@@ -1,45 +1,46 @@
 ---
 title: Introduction
-description: Give readers a clear path from their first question to a result they can verify.
+description: Create, organize, customize, and publish a Thally documentation site.
 mode: home
 ---
 
 <Hero
-  title="Build documentation around the reader"
-  subtitle="Start with a useful first result, organize what follows, and publish every format from one reviewable source."
-  primaryLabel="Get started"
+  title="Build and publish documentation with Thally"
+  subtitle="Publish a managed site with Thally Cloud. Add useful pages, connect an OpenAPI spec, and keep every change reviewable."
+  primaryLabel="Create your site"
   primaryHref="/quickstart"
-  secondaryLabel="Publish your docs"
-  secondaryHref="/guides/create-a-site"
+  secondaryLabel="Write your first page"
+  secondaryHref="/guides/writing-content"
 />
 
-## Build the reader journey
+## Build your documentation
 
-Begin with the task that brings most readers to your documentation, then make
-the next useful step obvious.
+Start with the structure your readers need, then make it feel like your product.
 
 <CardGroup cols="2">
-  <Card title="Write your quickstart" icon="party-horn" href="/quickstart">
-    Turn prerequisites, setup, one realistic task, and verification into a short path.
+  <Card title="Create your site" icon="code-simple" href="/quickstart">
+    Create a repository, publish to a thally.app address, and confirm the live site.
   </Card>
-  <Card title="Organize your navigation" icon="grid-round" href="/customization">
-    Group related tasks and references around how people use your product.
+  <Card title="Write useful pages" icon="book-open" href="/guides/writing-content">
+    Guide readers through one task at a time with MDX and built-in components.
   </Card>
-  <Card title="Document your API" icon="code-simple" href="/api">
-    Replace `openapi.yaml` to publish browsable endpoint docs with a live playground.
+  <Card title="Organize the journey" icon="grid-round" href="/guides/configuring-navigation">
+    Group pages by reader goal so readers can find the next step.
   </Card>
-  <Card title="Learn the Thally workflow" icon="wrench" href="/guides/create-a-site">
-    Create, publish, and update sites from the Cloud dashboard, the CLI, or your AI tools.
+  <Card title="Match your brand" icon="wrench" href="/guides/branding-and-theming">
+    Add your colors, logos, fonts, navigation, and footer.
   </Card>
 </CardGroup>
 
-## Publish from one source
+## Publish with confidence
 
-Thally turns the same reviewed content into HTML, search, agent discovery files,
-Markdown mirrors, and a read-only MCP surface — so people and AI tools read the
-same, current answer. Add only the locales your readers need.
+Document your API when you have one, then check the whole site before it goes live.
 
-<Note type="info" title="Start with the product, not the template">
-  Replace this page with the questions, terminology, and workflows your readers
-  already use. Keep `docs.json` focused on the path between those tasks.
-</Note>
+<CardGroup cols="2">
+  <Card title="Document your API" icon="link-simple" href="/guides/api-reference-setup">
+    Turn an OpenAPI spec into interactive endpoint pages.
+  </Card>
+  <Card title="Check and publish" icon="code-simple" href="/guides/ci-checks">
+    Catch content and configuration errors before you deploy.
+  </Card>
+</CardGroup>
