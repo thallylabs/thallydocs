@@ -1,164 +1,141 @@
 ---
-title: Manage the live site
-navTitle: Admin dashboard
-description: Manage site settings, team access, agent readiness, and connected Cloud features without rebuilding.
+title: Manage the built-in site admin
+navTitle: Site admin
+description: Configure and secure the `/admin` area included with the open-source Thally runtime.
+keywords:
+  - Thally admin
+  - self-hosted documentation
+  - OIDC
+  - team roles
 ---
 
-Thally includes an admin dashboard at `/admin`. Use it to update supported
-runtime settings, review Agent Readiness, manage access, and open connected
-Cloud features. Runtime settings layer on top of the defaults committed in
-`docs.json` and `src/data/site.ts`.
+Every Thally site includes an `/admin` area for runtime diagnostics and
+self-hosted operation. It is different from the authenticated Thally Cloud
+workspace at `app.thally.io`.
 
-## What you can do
+Use [Thally Cloud](/guides/thally-cloud) for managed sites, deployments,
+domains, Product Knowledge, hosted Track, billing, and workspace members. Use
+the built-in `/admin` area when you operate the open-source runtime directly or
+need site-local controls.
 
-| Section | What it controls |
+## What the built-in admin includes
+
+| Page | Purpose |
 | --- | --- |
-| **Home** | At-a-glance overview of the site's status. |
-| **Analytics** | Traffic, top pages, search terms, and content gaps. Requires the Thally Cloud analytics service. |
-| **Agent Readiness** | A self-hosted score for how well your docs serve AI agents. |
-| **Docs tasks** | Documentation pull requests prepared by [Thally Track](/guides/thally-track). Requires the Cloud Track service. |
-| **MCP server** | Enable or disable the public `/api/mcp` endpoint. |
-| **Team** | Members, domains, and roles for admin access. |
-| **Branding** | Structural theme, brand accent, per-mode logos and favicons (see [Branding and theming](/guides/branding-and-theming)). |
-| **Settings** | Feature toggles, site identity, the assistant name and disclaimer, visitor access, and available integrations. |
+| **Home** | Site summary, readiness, and available service status. |
+| **Analytics** | Human and agent traffic, top pages, search terms, feedback, and content gaps when the Cloud analytics bridge is available. |
+| **Agent Readiness** | The current readiness score, checks, and fixable pages. |
+| **Docs tasks** | Documentation pull requests and locally configured tracked repositories when Track is available. |
+| **MCP server** | The deployed read-only MCP endpoint, tools, rate limit, and on/off control. |
+| **Team** | The Git-committed OIDC roster and effective roles. |
+| **Branding** | Runtime brand overrides for the site. |
+| **Settings** | Access, analytics, AI chat, localization, and agent-facing controls. |
 
-Available changes apply to the live site without a content rebuild.
+Panels backed by a paid service render a clear locked or unavailable state
+when the site has no valid Thally Cloud entitlement.
 
-<Note type="info" title="Some panels need Thally Cloud">
-  The dashboard shell, Agent Readiness, access controls, and supported settings
-  are part of the self-hosted template. AI answers, Track, and traffic analytics
-  require their Thally Cloud services. Without those services, the related
-  panels stay locked and the public runtime fails safely.
-</Note>
+## Secure `/admin`
 
-## Turning on the dashboard
+Do not publish an unprotected admin area. Choose one or both of the supported
+sign-in methods.
 
-You grant access by configuring one of the two methods below. Do this **before you deploy**.
+### Break-glass password
 
-<Note type="warning" title="An unconfigured dashboard is open">
-If you deploy with **neither** `THALLY_ADMIN_PASSWORD` nor OIDC set, Thally does not gate `/admin` — anyone who reaches the URL gets full **Owner** access, in production too. There is no localhost-only fallback. Always configure one of the methods below before your site goes public.
-</Note>
-
-### Option 1 — Break-glass password (quickest)
-
-Set a single environment variable and sign in with that password. Anyone who knows it gets **Owner** access — best for a solo maintainer or a quick setup.
+Set a strong secret in your hosting provider:
 
 ```bash
-THALLY_ADMIN_PASSWORD=a-long-random-string
+THALLY_ADMIN_PASSWORD=a-long-random-admin-password
 ```
 
-<Note type="info" title="Keep it strong">
-This is a shared secret that grants full control. Use a long, random value and store it in your host's secret manager, not in git.
-</Note>
+This is the shortest setup and a useful recovery path. Do not commit the value
+to the repository or place it in a public environment variable.
 
-### Option 2 — Team sign-in with OIDC (recommended for teams)
+### OIDC for a team
 
-Delegate identity to your own IdP (Google Workspace, Microsoft Entra, or any OIDC provider). Members sign in with their work account, and their **role** comes from a roster you keep in `docs.json`. Nothing is hosted by Thally, so there is no per-seat cost.
-
-Set these environment variables:
+Configure an OpenID Connect provider such as Google Workspace or Microsoft
+Entra:
 
 ```bash
 THALLY_OIDC_ISSUER=https://accounts.google.com
 THALLY_OIDC_CLIENT_ID=your-client-id
 THALLY_OIDC_CLIENT_SECRET=your-client-secret
-THALLY_AUTH_SECRET=another-long-random-string   # signs sessions & encrypts stored secrets
+THALLY_AUTH_SECRET=a-long-random-session-secret
 ```
 
-In your IdP, register the callback (redirect) URL:
+Thally uses OIDC discovery, PKCE protection, and the `openid email profile`
+scopes. The
+identity provider must allow this exact redirect URI:
 
+```text
+https://docs.example.com/api/admin/auth/callback
 ```
-https://your-docs-domain.com/api/admin/auth/callback
-```
 
-Thally uses OIDC discovery and requests the `openid email profile` scopes, with PKCE. On the [Google Cloud console](https://console.cloud.google.com/apis/credentials) or your provider's app registration, create an OAuth client and paste its ID and secret into the variables above.
-
-<Note type="info" title="You can run both">
-If both a password and OIDC are configured, team members sign in with their identity and the password stays available as a break-glass fallback.
+<Note type="info" title="You can keep both sign-in methods">
+  When OIDC and a password are configured, team members can use their work
+  identity while the password remains available for recovery.
 </Note>
 
-## Roles and the roster
+## Assign site-local roles
 
-With OIDC enabled, who gets in — and at what level — is defined by a `team` block in `docs.json`. It is version-controlled and code-reviewed, so team management needs no database, even on serverless hosts.
+The built-in admin reads its roster from the `team` block in `docs.json`:
 
 ```json
-"team": {
-  "members": [
-    { "email": "you@company.com", "role": "owner" },
-    { "email": "writer@company.com", "role": "editor" }
-  ],
-  "domains": [
-    { "domain": "company.com", "role": "viewer" }
-  ]
+{
+  "team": {
+    "members": [
+      { "email": "owner@example.com", "role": "owner" },
+      { "email": "writer@example.com", "role": "editor" }
+    ],
+    "domains": [
+      { "domain": "example.com", "role": "viewer" }
+    ]
+  }
 }
 ```
 
-- **`members`** — explicit email → role. Explicit members always win over domain defaults.
-- **`domains`** — anyone who signs in with a verified work email on one of these domains gets the default role.
-- Anyone not matched by a member or a domain gets **no access**.
-
-Thally re-checks the roster on every admin page load, so removing or downgrading someone in `docs.json` takes effect on their next request — no waiting for a session to expire.
-
-### What each role can do
+An explicit member entry takes precedence over a domain default. A signed-in
+person who matches neither receives no access. The roster is checked on each
+admin page request, so a committed removal or role change takes effect without
+waiting for the existing session to expire.
 
 | Capability | Viewer | Editor | Owner |
 | --- | :---: | :---: | :---: |
-| View analytics & agent readiness | ✓ | ✓ | ✓ |
-| Manage docs / run the docs agent | | ✓ | ✓ |
-| Set the docs-access password | | ✓ | ✓ |
-| Change branding & site identity | | | ✓ |
-| Manage the team roster | | | ✓ |
+| View analytics and readiness | Yes | Yes | Yes |
+| Manage docs tasks and supported site controls | No | Yes | Yes |
+| Manage reader access | No | Yes | Yes |
+| Change identity, branding, and the team roster | No | No | Yes |
 
-The **Team** page shows the current members and domains, and generates the JSON snippet to paste into `docs.json` when you invite someone. Editing the roster itself is a git change — Owners can't add members from the UI, which keeps access under code review.
+These roles belong to the deployed site's admin area. Thally Cloud workspace
+roles are stored and authorized separately.
 
-## Protecting the docs for visitors
+## Store site-local state durably
 
-Team access above is about the **admin dashboard**. To gate the public docs themselves behind a shared password, an Editor or Owner sets a **docs-access password** under **Settings → Access & authentication**. Visitors are then prompted for it before they can read any page. The password is stored as a salted hash — never in plaintext, never returned by the API.
+Local development writes supported admin and analytics state under `.data/`.
+An ephemeral serverless filesystem does not preserve those files across
+deployments. Configure remote libSQL storage before you depend on site-local
+state:
 
-This is independent of the admin team: a visitor password protects reading the docs; the team roster protects managing them.
+```bash
+THALLY_DATABASE_URL=libsql://your-database.turso.io
+THALLY_DATABASE_TOKEN=your-token
+```
 
-## Live overrides vs. file defaults
+Agent Readiness scores the published content directly and does not depend on
+this database. Managed Cloud analytics is stored by the Cloud service rather
+than by the site's local adapter.
 
-Anything you set in the dashboard is a runtime override that layers over the committed config:
+## Protect readers separately
 
-| Set in the dashboard | Falls back to |
-| --- | --- |
-| Structural theme, brand accent | `docs.json` `theme`, `src/data/site.ts` brand |
-| Logo, favicon | Built-in Thally mark |
-| Site name, description, repo URL | `src/data/site.ts` `siteConfig` |
-| AI chat on/off *(Cloud service required)* | `docs.json` `ai.chat` |
-| Analytics on/off *(Cloud service required)* | `docs.json` `analytics.enabled` |
-| MCP endpoint on/off | On |
-| Docs-access password | Open (no password) |
+Admin authentication controls who can open `/admin`. Reader access controls
+who can open the documentation itself. Set `THALLY_ACCESS_PASSWORD` for a
+self-hosted visitor gate, or configure **Settings → Reader access** for a
+managed site. See [Protect private documentation](/guides/private-docs).
 
-Leave a setting untouched in the dashboard and the file default applies. This lets you keep a sensible, source-controlled baseline for fresh deploys while making day-to-day changes without shipping code.
+## Verify the setup
 
-## Durable admin storage
-
-Locally, analytics and admin state write to SQLite files under `.data/` without
-additional setup. On **serverless** hosts such as Vercel, that filesystem does
-not persist. Point Thally at a remote libSQL database such as Turso before you
-depend on durable metrics or settings.
-
-Set `THALLY_DATABASE_URL` and `THALLY_DATABASE_TOKEN` for durable admin settings
-and related state. Thally Cloud stores entitled analytics separately. See the
-[environment variable reference](/guides/environment-variables#durable-storage-and-analytics).
-
-Agent Readiness does not use this database — it scores your docs content directly.
-
-## Naming the assistant
-
-Under **Settings → Site experience** you can rename the AI assistant and set its disclaimer, live:
-
-- **Assistant name** — shown on the chat button and panel header (e.g. "Ask Acme"). Blank falls back to the `docs.json` label, or "Ask AI".
-- **Assistant disclaimer** — the notice at the foot of the chat panel. Blank uses a generic "answers may be inaccurate, verify important details" message.
-
-Both are stored at runtime and apply without a redeploy. The chat widget still
-requires access to the Thally Cloud AI service before readers can use it.
-
-## Connect GitHub (Thally Track)
-
-When the Track service is available, an Owner can use **Settings → Integrations**
-to connect its GitHub App. The app can watch selected repositories and prepare
-documentation pull requests. Set `THALLY_AUTH_SECRET` before connecting it so
-Thally can encrypt the stored private key. **Disconnect** clears the stored
-credentials.
+1. Open `/admin` in a private browser window.
+2. Confirm the configured password or OIDC sign-in is required.
+3. Sign in as each role you use and verify the permitted pages and controls.
+4. Remove the session cookie, then confirm the admin area is protected again.
+5. Test the public documentation separately; admin access must not grant or
+   imply reader access.

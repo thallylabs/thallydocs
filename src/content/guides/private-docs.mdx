@@ -24,9 +24,9 @@ host's encrypted secret settings.
 
 ## Manage the password from Thally Cloud
 
-On a connected Thally Cloud deployment, an Editor or Owner can set a hashed
-visitor password under **Admin → Settings → Access & authentication**. The
-managed setting takes precedence when it is present.
+On a managed Thally Cloud site, an Editor or Owner can set a hashed visitor
+password under **Settings → Reader access**. The managed setting is published
+with the site's runtime configuration and takes precedence when it is present.
 
 For a self-hosted site, keep `THALLY_ACCESS_PASSWORD` set because middleware
 uses its presence to enable the edge gate.
@@ -53,7 +53,7 @@ or endpoint descriptions merely because page access is gated.
 5. Close the private session and verify the page is protected again.
 
 Also test admin sign-in separately. `THALLY_ACCESS_PASSWORD` does not secure
-`/admin`; configure the methods in [Manage the live site](/guides/admin-dashboard).
+`/admin`; configure the methods in [Manage the built-in site admin](/guides/admin-dashboard).
 
 ## Disable protection
 
@@ -65,4 +65,4 @@ public.
 
 - [Environment variables](/guides/environment-variables)
 - [Deploy your documentation](/guides/deploying)
-- [Admin dashboard and team access](/guides/admin-dashboard)
+- [Built-in site admin and team access](/guides/admin-dashboard)

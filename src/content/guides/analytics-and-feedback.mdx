@@ -38,9 +38,14 @@ you want self-managed storage or forwarding.
 
 ## Connect analytics
 
-Connect the deployment to Thally Cloud, then open **Admin → Analytics**. When
-the service is unavailable, the panel remains locked instead of presenting
-empty data as a successful setup.
+Connect the deployment to Thally Cloud, open the site, then select
+**Analytics**. The Cloud dashboard separates human and agent traffic and
+shows engagement and discovery signals for the selected site. When analytics
+is not included in the workspace plan, the page explains the requirement
+instead of presenting empty data as a successful setup.
+
+For a self-hosted runtime, `/admin/analytics` uses the same service bridge when
+the deployment has a valid Cloud connection.
 
 For serverless deployments, set remote libSQL variables when the connected
 service or other runtime state needs durable storage:
@@ -104,6 +109,7 @@ the problem. Read the page, reproduce the task, and update the permanent docs.
 
 ## Next steps
 
-- [Manage the live site](/guides/admin-dashboard)
+- [Manage sites with Thally Cloud](/guides/thally-cloud)
+- [Manage the built-in site admin](/guides/admin-dashboard)
 - [Environment variables](/guides/environment-variables)
 - [Troubleshoot a deployment](/guides/troubleshooting)

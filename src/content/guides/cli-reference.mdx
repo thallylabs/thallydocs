@@ -28,10 +28,23 @@ npx thally
 | `thally mcp` | Start the local MCP server over standard input/output. |
 | `thally agent "INSTRUCTION"` | Draft a documentation change for review. |
 | `thally track add`, `list`, `test`, or `setup` | Connect product-repository changes to documentation work. |
+| `thally starter update [--apply]` | Review or apply an immutable starter runtime update. |
 
 Run `npx thally` with no command to see the current command list. For detailed
 agent and tracking workflows, see [Draft updates with the docs agent](/guides/docs-agent)
 and [Turn product changes into docs pull requests](/guides/thally-track).
+
+### Update the starter runtime
+
+```bash
+npx thally starter update
+npx thally starter update --apply
+```
+
+The first command prints the release plan without changing files. Review that
+plan and your working tree, then pass `--apply` to update framework-owned files.
+Your authored content and configuration remain separate from the runtime
+snapshot.
 
 ### Preview and build
 
@@ -122,7 +135,10 @@ npx create-thally-docs migrate <github-or-docs-url> [output-dir] [options]
 
 For repository sources, Thally clones and reads the source content directly. For live sites, it discovers machine-readable indexes, sitemaps, and same-origin documentation navigation. Both paths produce the same ready-to-run Thally project.
 
-**Supported source platforms:** Mintlify, Docusaurus, GitBook, Nextra, VitePress, Starlight, and any repo with plain Markdown files.
+**Dedicated adapters:** Mintlify and Docusaurus. Automatic detection can also
+import repositories with plain Markdown or MDX and crawl a public docs site,
+but it does not promise framework-specific configuration parity for other
+platforms.
 
 <Note type="info" title="Use the repository for auto-detection">
   A GitHub repository is the recommended source for auto-platform migrations because it exposes the original content, navigation, assets, OpenAPI files, redirects, and configuration.

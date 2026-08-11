@@ -81,6 +81,10 @@
         "heading": "Tooling",
         "items": [
           {
+            "label": "Thally Cloud",
+            "href": "/guides/thally-cloud"
+          },
+          {
             "label": "AI coding agents",
             "href": "/guides/ai-coding-agents"
           },
@@ -223,6 +227,8 @@
           "group": "Operate and improve",
           "icon": "grid-round",
           "pages": [
+            "guides/thally-cloud",
+            "guides/managed-hosting",
             "guides/admin-dashboard",
             "guides/analytics-and-feedback",
             "guides/troubleshooting",
@@ -234,6 +240,7 @@
           "icon": "code-simple",
           "pages": [
             "product-change-pipeline",
+            "guides/product-knowledge",
             "guides/docs-agent",
             "guides/thally-track",
             "guides/provenance",

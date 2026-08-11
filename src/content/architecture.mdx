@@ -146,7 +146,8 @@ reconnect GitHub. The browser draft is removed only after the site is ready.
 
 For a new repository, Thally:
 
-1. Creates it from the public `thallylabs/docs` template.
+1. Creates it from the public `thallylabs/starter` template, whose
+   framework-owned files are generated from an exact `thally` runtime commit.
 2. Waits until GitHub makes the first commit readable.
 3. Writes fresh site details, navigation, starter pages, and maintainer notes.
 4. Records the exact commit used for the first release.
@@ -438,7 +439,7 @@ flowchart TD
     Diff -- "Site code, packages, or build settings" --> Build["Full isolated build"]
     Diff -- "Cannot prove the difference" --> Build
 
-    Content --> Assemble["Create a fixed release"]
+    Content --> Assemble["Create an immutable release"]
     Build --> Assemble
     Assemble --> Check["Check pages, agent files, index, and a static asset"]
     Check -- Pass --> Route["Point the site's address to the new release"]
@@ -448,7 +449,7 @@ flowchart TD
 ### Fast content release
 
 For a content-only change, Thally reuses the checked site code from the active
-build and replaces the content assets. It still creates a new fixed release,
+build and replaces the content assets. It still creates a new immutable release,
 uploads it under a new identity, and smoke-checks it before promotion. Existing
 pages can be edited, added, deleted, or renamed. Deleting or renaming
 `docs.json`, changing a public asset, or changing executable code safely falls
@@ -493,6 +494,24 @@ Rollback changes the pointer to an earlier checked release. It does not
 rebuild the site, change DNS, or rewrite the repository. Both rollback entry
 points ask for confirmation. The history row names the release, commit, and
 domain; the live summary names the previous commit and production domain.
+
+Rollback also pauses automatic production publishing. Pushes received while
+publishing is paused are recorded as superseded, so an older queued build
+cannot overwrite the selected release. An explicit publish resumes automatic
+production updates.
+
+### Pull-request previews and runtime upgrades
+
+Every managed documentation pull request has an isolated preview route and an
+immutable release for each head commit. Preview settings, access policy,
+caches, and release pointers remain separate from production. Closing or
+merging the pull request retires its route; a preview can never move the
+production pointer.
+
+The site also records the immutable Thally runtime release it uses. When a
+newer compatible release is available, **Settings → Version** shows the change
+for review. Applying it updates framework-owned files and publishes a new
+release. Redeploying the current site does not upgrade the runtime.
 
 ### How a live request reaches the right site
 
@@ -559,7 +578,7 @@ These rules hold across the full flow:
 | Track cannot support a statement with allowed evidence | Opens no pull request |
 | A Track merge webhook is missed | Reconciliation reconnects the merged pull request and deployment |
 | A release fails validation or smoke checks | Keeps the previous release live |
-| A user rolls back | Points the site to an earlier checked release without rebuilding |
+| A user rolls back | Points the site to an earlier checked release without rebuilding and pauses automatic production publishing |
 
 ## 8. One change from start to finish
 
@@ -579,7 +598,7 @@ Imagine that `payments-api` changes the `reason` field on
 8. Track edits the MDX, runs validation, proves its factual statements, and
    opens a documentation pull request.
 9. A person reviews and merges the pull request.
-10. The publisher sees a content-only diff, creates a fast fixed release,
+10. The publisher sees a content-only diff, creates an immutable content release,
     smoke-checks it, and points the site to it.
 11. The same approved source now powers the human page, machine-readable
     formats, search, and agent context.
@@ -591,8 +610,14 @@ impact, reviewable update, and safe publication.
 
 - [The product-change pipeline](/product-change-pipeline) explains the product
   promise and review contract.
+- [Manage sites with Thally Cloud](/guides/thally-cloud) maps the platform's
+  user-facing surfaces.
+- [Review Product Knowledge](/guides/product-knowledge) explains evidence,
+  impact matches, and reviewer decisions.
 - [Set up Thally Track](/guides/thally-track) covers repository setup and
   day-to-day use.
+- [Operate managed hosting](/guides/managed-hosting) covers releases,
+  previews, rollback, domains, and upgrades.
 - [Deploy your documentation](/guides/deploying) covers self-hosted deployment
   choices.
 - [Use the MCP server](/guides/mcp-server) connects coding agents to the docs

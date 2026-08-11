@@ -1,11 +1,32 @@
 ---
 title: Deploy your documentation site
 navTitle: Deployment
-description: Prepare a Thally site for production, choose a supported hosting path, and verify the deployed documentation.
+description: Publish with Thally managed hosting or deploy the open-source runtime to Vercel, Cloudflare, or Docker.
 ---
 
-Every deployment starts with the same production checks. The host-specific
-pages cover the commands and settings for Vercel, Cloudflare, and Docker.
+Use Thally managed hosting when you want production releases, pull-request
+previews, custom domains, rollback, and runtime upgrades managed from one
+workspace. Self-host the open-source runtime when your team needs to own the
+hosting layer as well as the repository.
+
+## Publish with Thally Cloud
+
+The [quickstart](/quickstart) creates or connects a GitHub repository and
+publishes its first immutable release to a `thally.app` address. After that:
+
+- pushes to the production branch create production candidates;
+- documentation pull requests receive isolated previews;
+- content-only changes can reuse a validated runtime;
+- failed candidates leave the previous release online; and
+- a rollback moves the route to an earlier validated release without
+  rewriting Git history.
+
+Open **Deployments** for the live release, previews, searchable history,
+repairs, redeploys, and rollback. See [Managed hosting](/guides/managed-hosting)
+for the complete release contract.
+
+For a self-hosted deployment, complete the checks below and choose the provider
+that matches your operational requirements.
 
 ## Before you deploy
 
@@ -31,7 +52,7 @@ pages cover the commands and settings for Vercel, Cloudflare, and Docker.
 agent-facing URLs. Set it in the hosting provider rather than committing it to
 the repository.
 
-## Choose a deployment target
+## Choose a self-hosted target
 
 <CardGroup cols={3}>
   <Card title="Deploy to Vercel" icon="code-simple" href="/guides/deploy-vercel">
@@ -82,6 +103,7 @@ After deployment:
 
 ## Next steps
 
+- [Operate a managed deployment](/guides/managed-hosting)
 - [Protect private documentation](/guides/private-docs)
 - [Validate documentation in CI](/guides/ci-checks)
 - [Troubleshoot a deployment](/guides/troubleshooting)

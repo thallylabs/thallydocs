@@ -4,22 +4,33 @@ navTitle: Brand and theme
 description: Apply your product identity, colors, logos, and theme settings to the documentation site.
 ---
 
-## Two places to set your brand
+## Choose where to set your brand
 
-Thally reads branding from two layers:
+Thally reads branding from three supported surfaces:
 
-1. **The admin dashboard** (`/admin/branding`) — an Owner picks the structural theme, brand accent, logo, and favicon and hits **Save**. Changes apply to the live docs site immediately, with **no rebuild or redeploy**. These settings are stored at runtime and layered *on top of* the file defaults below.
-2. **Source files** (`src/data/site.ts`, `docs.json`) — the git-committed defaults. They define what a freshly scaffolded site looks like and what renders before any dashboard override exists. Anything not overridden in the dashboard falls back to these.
+1. **Thally Cloud → Settings → Branding** — set the visual defaults for a
+   managed site. Saved changes publish through the managed release workflow.
+2. **The built-in `/admin/branding` page** — apply supported runtime overrides
+   on a self-hosted site. These settings layer over the file defaults.
+3. **Source files** (`src/data/site.ts`, `docs.json`) — keep product identity
+   and portable defaults under Git review. A new or unconnected deployment
+   starts from these values.
 
 <Note type="info" title="Which should I use?">
-Use the **dashboard** for day-to-day changes — theme, brand accent, logo, favicon — with no deploy. Edit the **source files** to set the baseline for a new project, to keep branding in version control, or when you don't run the admin dashboard.
+Use **Thally Cloud** for a managed site, the built-in admin for a self-hosted
+runtime override, and **source files** when the setting must remain portable
+and version-controlled. Do not edit framework-owned components to change the
+brand.
 </Note>
 
 The dashboard overrides the structural theme, the **brand accent** (and its focus ring), the logo, and the favicon. The rest of the palette (backgrounds, borders, sidebar tokens) is defined in the source files described below.
 
 ## Site configuration
 
-All site-level settings live in `src/data/site.ts`. Edit this file to set your product name, description, and links. (Name, description, and repo URL can also be overridden live from the dashboard.)
+Versioned site identity and links live in `src/data/site.ts`. Edit this file to
+set the product name, description, repository URL, and navigation links. A
+managed site's saved Cloud settings can override supported identity fields in
+the published runtime.
 
 ```ts
 export const siteConfig: SiteConfig = {
@@ -51,7 +62,10 @@ const brandPreset: BrandPresetKey = 'primary'  // or 'secondary'
 
 ## Brand accent (the color picker)
 
-The fastest way to recolor the site is the **dashboard**: under **Branding → Brand accent**, an Owner picks the accent with a color wheel, a set of presets, or by typing a hex/RGB value — for both light and dark mode. A live preview updates as you drag, and **Save** applies it to the running site with no rebuild. The accent drives links, active nav/sidebar states, buttons, and the focus ring; if you set only the light accent, Thally derives a sensible dark-mode shade automatically.
+The fastest managed path is **Settings → Branding** in Thally Cloud. Choose the
+accent for light and dark mode, review the preview, and save. Thally publishes
+the updated portable configuration. On a self-hosted site,
+`/admin/branding` provides the equivalent runtime override.
 
 This overrides the accent and focus ring. The rest of the palette—backgrounds,
 borders, and sidebar tokens—comes from the source-file presets below. Use the
@@ -87,43 +101,16 @@ Dark mode is handled automatically by `next-themes`. Users toggle it with the th
 
 ## Logo & favicon (light and dark)
 
-The quickest way to set a logo is the **dashboard**: upload a PNG, JPEG, or WebP (≤150KB) under **Branding → Logo & favicon** and it appears in the header and social cards immediately — no code change.
+For a managed site, upload the logo and favicon under **Settings → Branding**.
+For a self-hosted runtime override, use `/admin/branding`. The accepted upload
+limit and formats are shown beside the control; validate both light and dark
+previews before saving.
 
 You can upload **separate assets for light and dark mode** — both a logo and a favicon per mode. The site serves the variant that matches the viewer's theme; if you upload only the light-mode asset, dark mode falls back to it, so a single upload still works. This is how a wordmark that reads on a white header can be swapped for a light-on-dark version at night.
 
-Under the hood, the logo component at `src/components/layout/logo.tsx` probes `/api/brand/logo` and swaps in the uploaded logo when one exists. When there's no upload, it falls back to a built-in SVG mark plus your `siteConfig.name`:
-
-```tsx
-export function Logo({ className, showText = true }: LogoProps) {
-  const [customOk, setCustomOk] = useState(false)
-  // ...
-  return (
-    <div className={cn('inline-flex items-center gap-2', className)}>
-      {/* Admin-uploaded logo; hidden until it loads successfully */}
-      <img
-        src="/api/brand/logo"
-        alt={siteConfig.name}
-        onLoad={() => setCustomOk(true)}
-        onError={() => setCustomOk(false)}
-        style={{ height: 28, display: customOk ? 'block' : 'none' }}
-      />
-      {!customOk ? (
-        <>
-          {/* Default SVG mark + site name */}
-          <svg /* ... */ />
-          {showText ? (
-            <span className="text-lg font-bold tracking-tight text-foreground">
-              {siteConfig.name}
-            </span>
-          ) : null}
-        </>
-      ) : null}
-    </div>
-  )
-}
-```
-
-To change the **default** mark (what renders before any upload), edit the fallback SVG in `logo.tsx`.
+When no uploaded asset is configured, the runtime uses its built-in mark and
+the name from `siteConfig`. Keep framework-owned logo components unchanged;
+use the branding controls or user-owned configuration instead.
 
 ## Fonts
 
@@ -136,7 +123,8 @@ The body and heading fonts are set from a `fonts` block in `docs.json` — any G
 }
 ```
 
-The defaults are **Inter** (body) and **JetBrains Mono** (code). The monospace font is still configured in `src/app/layout.tsx` via `next/font/google`. See [Custom fonts](/guides/custom-fonts) for the full reference.
+The defaults are **Inter** for body text and **JetBrains Mono** for code. See
+[Custom fonts](/guides/custom-fonts) for the supported configuration.
 
 ## Third-party analytics scripts
 
@@ -194,10 +182,6 @@ export const siteConfig: SiteConfig = {
   // ...
 }
 ```
-
-## Changelog RSS feed
-
-Thally serves an RSS feed at `/changelog/rss.xml`. Users can subscribe to it in any RSS reader to get notified of updates. The feed entries are defined in `src/app/changelog/rss.xml/route.ts`.
 
 ## Page feedback
 

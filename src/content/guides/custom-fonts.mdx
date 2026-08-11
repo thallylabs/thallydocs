@@ -4,7 +4,9 @@ navTitle: Fonts
 description: Choose Google Fonts for body text and headings without editing the application runtime.
 ---
 
-Thally ships with **Inter** for body text and **JetBrains Mono** for code by default. You can replace either with any Google Font by adding a `fonts` block to `docs.json` — no code changes required.
+Thally ships with **Inter** for body text and **JetBrains Mono** for code. You
+can set the body and heading families with a `fonts` block in `docs.json`
+without editing the application runtime.
 
 ## Configuration
 
@@ -61,19 +63,10 @@ The default Inter font (loaded via `next/font`) stays as a fallback — so if th
 
 ## Code font
 
-The monospace font used for inline code and code blocks is configured separately in `src/app/layout.tsx` via `next/font/google`. To change it, swap the `JetBrains_Mono` import:
-
-```ts
-import { FiraCode } from 'next/font/google'
-
-const fontMono = FiraCode({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  display: 'swap',
-})
-```
-
-Support for configuring the mono font from `docs.json` (without code changes) is planned.
+The user-facing font configuration currently covers body and heading text.
+Code uses the runtime's JetBrains Mono default. Do not edit
+`src/app/layout.tsx`; it is framework-owned and replaced by supported runtime
+updates.
 
 <Note type="info" title="This site uses custom fonts">
 This documentation uses **Plus Jakarta Sans** for body text and **Outfit** for headings, configured in `docs.json` — exactly as described above.

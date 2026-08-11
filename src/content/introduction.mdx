@@ -1,25 +1,27 @@
 ---
 title: Introduction
-description: Create, organize, customize, and publish a Thally documentation site.
+description: Publish documentation from Git, keep it useful to people and AI agents, and review updates as your product changes.
 mode: home
 ---
 
 <Hero
-  title="Build and publish documentation with Thally"
-  subtitle="Publish a managed site with Thally Cloud. Add useful pages, connect an OpenAPI spec, and keep every change reviewable."
+  title="Keep product knowledge in sync"
+  subtitle="Publish documentation from a repository you own. Thally connects product evidence to reviewable updates and serves one trusted source to people and AI agents."
   primaryLabel="Create your site"
   primaryHref="/quickstart"
   secondaryLabel="Write your first page"
   secondaryHref="/guides/writing-content"
 />
 
-## Build your documentation
+## Start with documentation you own
 
-Start with the structure your readers need, then make it feel like your product.
+Your pages, navigation, OpenAPI files, and versioned settings stay in Git.
+Choose managed hosting for the shortest path to production, or run the
+open-source site on your own infrastructure.
 
 <CardGroup cols="2">
   <Card title="Create your site" icon="code-simple" href="/quickstart">
-    Create a repository, publish to a thally.app address, and confirm the live site.
+    Create or connect a repository, publish to a `thally.app` address, and confirm the live site.
   </Card>
   <Card title="Write useful pages" icon="book-open" href="/guides/writing-content">
     Guide readers through one task at a time with MDX and built-in components.
@@ -32,11 +34,22 @@ Start with the structure your readers need, then make it feel like your product.
   </Card>
 </CardGroup>
 
-## Publish with confidence
+## Keep the published knowledge useful
 
-Document your API when you have one, then check the whole site before it goes live.
+Thally uses the same structured content for HTML, Markdown, JSON, JSON-LD,
+search, embeddings, and agent endpoints. Cloud services add managed
+publishing, Product Knowledge, Track, analytics, and grounded AI answers.
 
 <CardGroup cols="2">
+  <Card title="Manage the platform" icon="grid-round" href="/guides/thally-cloud">
+    Operate sites, deployments, domains, members, and reader-facing services from one workspace.
+  </Card>
+  <Card title="Review Product Knowledge" icon="link-simple" href="/guides/product-knowledge">
+    Trace product changes to exact evidence and confirm which pages need work.
+  </Card>
+  <Card title="Automate reviewable updates" icon="message" href="/guides/thally-track">
+    Let Track prepare a documentation pull request when a merged product change affects your docs.
+  </Card>
   <Card title="Document your API" icon="link-simple" href="/guides/api-reference-setup">
     Turn an OpenAPI spec into interactive endpoint pages.
   </Card>
