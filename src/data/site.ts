@@ -180,3 +180,17 @@ export const siteConfig: SiteConfig = {
   brandPreset,
   brandPresets,
 }
+
+// Managed by Thally Cloud onboarding.
+export const siteConfig: SiteConfig = {
+  ...templateSiteConfig,
+  name: "Thally Docs",
+  description: "Thally Documentation Site",
+  repoUrl: "https://github.com/thallylabs/thallydocs",
+  links: [
+    { label: "Get started", href: "/quickstart" },
+    { label: "Support", href: "https://github.com/thallylabs/thallydocs/issues/new" },
+    { label: "GitHub", href: "https://github.com/thallylabs/thallydocs" },
+    { label: "Changelog", href: "/changelog" },
+  ],
+};
