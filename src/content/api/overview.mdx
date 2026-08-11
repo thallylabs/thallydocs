@@ -1,0 +1,70 @@
+---
+title: Explore the API reference demo
+navTitle: API demo
+description: See how Thally turns the included JSONPlaceholder OpenAPI spec into interactive endpoint pages.
+---
+
+Thally reads `openapi.yaml` and creates one page for each operation. The generated
+pages include parameters, request and response schemas, a cURL example, and the
+**Try It** panel.
+
+<Note type="info" title="This is sample content">
+  This tab documents JSONPlaceholder so you can test Thally's API-reference
+  experience. It does not describe a Thally service API. Replace the sample
+  specification before you publish your own documentation.
+</Note>
+
+## Try the included specification
+
+The sample points to `https://jsonplaceholder.typicode.com` and does not define
+authentication. Open a generated endpoint such as **List posts**, select
+**Try It**, and send the request to see the complete flow.
+
+`GET` requests return sample data. JSONPlaceholder accepts write requests but
+does not persist the changes.
+
+## View the source specification
+
+Thally serves the configured specification in both formats:
+
+- YAML: [`/openapi.yaml`](/openapi.yaml)
+- JSON: [`/openapi.json`](/openapi.json)
+
+From a local development server:
+
+```bash
+curl http://localhost:3040/openapi.yaml
+curl http://localhost:3040/openapi.json
+```
+
+## Replace the demo with your API
+
+<Steps>
+
+<Step title="Add your specification">
+Replace the root `openapi.yaml` file, or add an OpenAPI JSON file.
+</Step>
+
+<Step title="Update docs.json">
+Point the API Reference tab at your file and list any tags you want to appear first.
+
+```json
+{
+  "tab": "API Reference",
+  "api": {
+    "source": "openapi.yaml",
+    "tagsOrder": ["Authentication", "Users"]
+  }
+}
+```
+</Step>
+
+<Step title="Check the generated pages">
+Run `npx thally dev`, open at least one endpoint, and compare its parameters and
+schemas with your specification.
+</Step>
+
+</Steps>
+
+Next, follow [Generate an API reference](/guides/api-reference-setup) for
+operation overrides, grouping, authentication placeholders, and validation.

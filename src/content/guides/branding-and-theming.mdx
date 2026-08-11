@@ -1,0 +1,234 @@
+---
+title: Customize your brand and theme
+navTitle: Brand and theme
+description: Apply your product identity, colors, logos, and theme settings to the documentation site.
+---
+
+## Choose where to set your brand
+
+Thally reads branding from three supported surfaces:
+
+1. **Thally Cloud → Settings → Branding** — set the visual defaults for a
+   managed site. Saved changes publish through the managed release workflow.
+2. **The built-in `/admin/branding` page** — apply supported runtime overrides
+   on a self-hosted site. These settings layer over the file defaults.
+3. **Source files** (`src/data/site.ts`, `docs.json`) — keep product identity
+   and portable defaults under Git review. A new or unconnected deployment
+   starts from these values.
+
+<Note type="info" title="Which should I use?">
+Use **Thally Cloud** for a managed site, the built-in admin for a self-hosted
+runtime override, and **source files** when the setting must remain portable
+and version-controlled. Do not edit framework-owned components to change the
+brand.
+</Note>
+
+The dashboard overrides the structural theme, the **brand accent** (and its focus ring), the logo, and the favicon. The rest of the palette (backgrounds, borders, sidebar tokens) is defined in the source files described below.
+
+## Site configuration
+
+Versioned site identity and links live in `src/data/site.ts`. Edit this file to
+set the product name, description, repository URL, and navigation links. A
+managed site's saved Cloud settings can override supported identity fields in
+the published runtime.
+
+```ts
+export const siteConfig: SiteConfig = {
+  name: 'Your Product',
+  description: 'Documentation for Your Product.',
+  repoUrl: 'https://github.com/your-org/your-repo',
+  links: [
+    { label: 'Get started', href: '/quickstart' },
+    { label: 'Support', href: 'https://github.com/your-org/your-repo/issues' },
+    { label: 'GitHub', href: 'https://github.com/your-org/your-repo' },
+    { label: 'Changelog', href: '/changelog' },
+  ],
+  // ...brand config
+}
+```
+
+## Brand presets
+
+Thally ships with two color presets:
+
+- **`primary`** — green accent (emerald tones)
+- **`secondary`** — purple accent (violet tones)
+
+Switch between them by changing the `brandPreset` variable:
+
+```ts
+const brandPreset: BrandPresetKey = 'primary'  // or 'secondary'
+```
+
+## Brand accent (the color picker)
+
+The fastest managed path is **Settings → Branding** in Thally Cloud. Choose the
+accent for light and dark mode, review the preview, and save. Thally publishes
+the updated portable configuration. On a self-hosted site,
+`/admin/branding` provides the equivalent runtime override.
+
+This overrides the accent and focus ring. The rest of the palette—backgrounds,
+borders, and sidebar tokens—comes from the source-file presets below. Use the
+dashboard for a live adjustment and the files as the versioned baseline.
+
+## Custom colors
+
+To define your own palette, edit the `brandPresets` object in `site.ts`. Each preset has `light` and `dark` variants with these tokens:
+
+| Token | Purpose |
+| --- | --- |
+| `background` | Page background |
+| `card` | One-step elevated card and popover surface (optional) |
+| `foreground` | Primary text color |
+| `muted` | Subtle background and hover states |
+| `mutedForeground` | Secondary text color (optional) |
+| `border` | Border color |
+| `accent` | Primary brand color (links, active states) |
+| `accentForeground` | Text on accent backgrounds |
+| `accent2` | Secondary accent for charts and restrained emphasis (optional) |
+| `accent2Foreground` | Text on secondary-accent backgrounds (optional) |
+| `input` | Form control surface (optional) |
+| `sidebar` | Sidebar surface (optional) |
+| `ring` | Focus ring color |
+| `sidebarActiveBg` | Active sidebar item background |
+| `sidebarActiveText` | Active sidebar item text |
+
+Most colors are hex values (e.g. `#10B981`) which are auto-converted to HSL. Optional tokens fall back to their nearest core surface, so existing palettes remain valid. The sidebar state tokens (`sidebarActiveBg`, `sidebarActiveText`) may also use raw HSL strings with opacity (e.g. `'152 60% 88% / 0.55'`) for translucent effects.
+
+## Dark mode
+
+Dark mode is handled automatically by `next-themes`. Users toggle it with the theme switch in the top bar. Your brand palette defines both light and dark variants, so both themes stay on-brand.
+
+## Logo & favicon (light and dark)
+
+For a managed site, upload the logo and favicon under **Settings → Branding**.
+For a self-hosted runtime override, use `/admin/branding`. The accepted upload
+limit and formats are shown beside the control; validate both light and dark
+previews before saving.
+
+You can upload **separate assets for light and dark mode** — both a logo and a favicon per mode. The site serves the variant that matches the viewer's theme; if you upload only the light-mode asset, dark mode falls back to it, so a single upload still works. This is how a wordmark that reads on a white header can be swapped for a light-on-dark version at night.
+
+When no uploaded asset is configured, the runtime uses its built-in mark and
+the name from `siteConfig`. Keep framework-owned logo components unchanged;
+use the branding controls or user-owned configuration instead.
+
+## Fonts
+
+The body and heading fonts are set from a `fonts` block in `docs.json` — any Google Font, no code changes:
+
+```json
+"fonts": {
+  "body": { "family": "Plus Jakarta Sans", "weight": ["400", "500", "600", "700"] },
+  "heading": { "family": "Outfit", "weight": ["600", "700"] }
+}
+```
+
+The defaults are **Inter** for body text and **JetBrains Mono** for code. See
+[Custom fonts](/guides/custom-fonts) for the supported configuration.
+
+## Third-party analytics scripts
+
+Initialize Google Analytics, Plausible, or PostHog by setting one or more
+providers in `siteConfig.analytics`. Thally's root layout renders the provider
+loader when this object is present, so you do not need to edit the layout.
+
+```ts
+export const siteConfig: SiteConfig = {
+  // ...
+  analytics: {
+    googleAnalyticsId: 'G-XXXXXXXXXX',
+    // or
+    plausibleDomain: 'docs.yourproduct.com',
+    // or
+    posthogKey: 'phc_...',
+    posthogHost: 'https://us.i.posthog.com',
+  },
+}
+```
+
+Leave `analytics` undefined when you do not want these third-party scripts.
+This setting loads the provider SDKs; it does not replace provider-specific
+single-page navigation, custom-event, privacy, or consent configuration. For
+Thally's separate server-side traffic and search analytics, see
+[Analytics and feedback](/guides/analytics-and-feedback).
+
+## Version switcher
+
+If your docs have multiple versions, add a `versions` array to `siteConfig`. A dropdown appears in the top bar automatically.
+
+```ts
+export const siteConfig: SiteConfig = {
+  // ...
+  versions: [
+    { label: 'v2.0', href: '/', current: true },
+    { label: 'v1.0', href: 'https://v1.docs.yourproduct.com' },
+  ],
+}
+```
+
+- **`label`** — text shown in the dropdown
+- **`href`** — URL for that version (`/` for the current site, or a full URL for older versions)
+- **`current`** — marks the active version (exactly one should be `true`)
+
+The switcher is hidden when fewer than two versions are defined.
+
+## Edit on GitHub
+
+When `repoUrl` in `siteConfig` points to a real GitHub repository, every doc page shows an "Edit this page on GitHub" link at the bottom. This links directly to the MDX source file on the `main` branch.
+
+```ts
+export const siteConfig: SiteConfig = {
+  repoUrl: 'https://github.com/your-org/your-docs',
+  // ...
+}
+```
+
+## Page feedback
+
+The "Was this page helpful?" widget is shown at the bottom of every doc page by default. To configure where feedback votes are sent, add a `feedback` block to `docs.json`:
+
+```json
+"feedback": {
+  "thumbsRating": true,
+  "endpoint": "/api/feedback"
+}
+```
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `endpoint` | `string` | `/api/feedback` | URL that receives a POST with `{ page, vote, url }` |
+| `thumbsRating` | `boolean` | `true` | Show or hide the widget |
+
+The built-in `/api/feedback` route logs votes to stdout. Replace it with your own storage logic in `src/app/api/feedback/route.ts` — write to a database, forward to Slack, send to PostHog, etc.
+
+## Structural themes
+
+Structural themes control the shape and density of the UI — border radius, sidebar active item style, and navigation tab appearance. They are independent of brand colors, so any color preset works with any structural theme.
+
+Set the baseline theme in `docs.json` (or switch it live from the dashboard under **Branding → Structural theme**, no rebuild):
+
+```json
+{
+  "theme": "maple"
+}
+```
+
+| Theme | Character | Border radius | Sidebar active | Nav tabs |
+| --- | --- | --- | --- | --- |
+| `default` | Balanced | Medium (1 rem) | Left indicator + tinted background | Pill with underline accent |
+| `maple` | Warm, rounded | Large (1.25–2 rem) | Tinted background pill only | Full-width pill, no underline |
+| `sharp` | Technical, precise | Tight (0.25 rem) | Left indicator only, no background | Flat tabs, underline accent |
+| `minimal` | Content-first | None (0) | Text color change only | Text tabs, underline accent |
+
+<Note type="info" title="Tip">
+Structural themes and brand colors are orthogonal. You can use the `maple` theme with either the `primary` (green) or `secondary` (purple) brand preset.
+</Note>
+
+## Layout tokens
+
+Fine-tune spacing and widths in `src/config/layout.ts`:
+
+- Sidebar width
+- Content max-width
+- Padding and gaps
+- Typography scale for meta text

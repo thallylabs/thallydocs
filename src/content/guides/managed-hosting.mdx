@@ -1,0 +1,122 @@
+---
+title: Publish with Thally managed hosting
+navTitle: Managed hosting
+description: Understand production releases, pull-request previews, content-only publishes, rollbacks, domains, and runtime upgrades.
+keywords:
+  - Thally managed hosting
+  - documentation deployment
+  - pull request preview
+  - rollback
+  - custom domain
+---
+
+Managed hosting turns each approved Git revision into an immutable release: a
+set of files that cannot change after validation.
+Thally validates and smoke-tests a candidate before it moves the site's live
+route, so a failed publish leaves the previous release online.
+
+## What triggers a publish
+
+- A push to the configured production branch creates a production candidate.
+- Opening or updating a documentation pull request creates or refreshes an
+  isolated preview.
+- Merging a Track documentation pull request follows the same production path.
+- Changing a supported setting or applying a runtime upgrade publishes a new
+  release.
+- **Redeploy site** rebuilds the current version; it does not upgrade the
+  runtime.
+
+The **Deployments** page shows the live production release, the latest preview,
+open preview count, commit details, status, and searchable history.
+
+## How a production release becomes live
+
+<Steps>
+  <Step title="Thally records the exact revision">
+    The release is tied to one site, environment, Git commit, runtime release,
+    and saved release location before execution begins.
+  </Step>
+  <Step title="The build runs in isolation">
+    A disposable builder receives the repository files and short-lived access
+    needed for that job. It does not receive reusable GitHub, Cloudflare,
+    model, site, or platform credentials.
+  </Step>
+  <Step title="The candidate is checked">
+    Thally installs locked dependencies, runs the platform-owned content
+    checks, builds the Cloudflare release, performs a deployment dry run, and
+    smoke-tests the homepage and required agent endpoints.
+  </Step>
+  <Step title="The route moves atomically">
+    Thally promotes the candidate only when its report matches the expected
+    site, release, commit, file list, and smoke results. If any check fails, the
+    existing live release stays in place.
+  </Step>
+</Steps>
+
+## Content-only publishes
+
+Supported managed sites keep documentation content separate from the Worker
+runtime. When a new commit changes only `docs.json`, `src/content/**`, or
+`snippets/**`, Thally can reuse the validated runtime and publish the new
+content without running customer code.
+
+The fast path is conservative. A force push, incomplete comparison, oversized
+change, unsupported file, runtime change, or uncertain result falls back to a
+full build. Falling back changes speed, not the validation contract.
+
+## Pull-request previews
+
+Each open documentation pull request receives a stable preview address and one
+immutable release per head commit. Preview routes, caches, configuration,
+password policy, and release pointers are separate from production.
+
+A preview is ready only after its validated release is selected by the preview
+route. Closing or merging the pull request retires the route and schedules its
+release files for cleanup. A preview cannot change the production route.
+
+## Roll back safely
+
+Owners and editors can select a previous validated release from deployment
+history. A rollback moves the site route to that saved release; it does not
+rebuild the site or rewrite Git history.
+
+After a rollback, Thally pauses automatic production publishing. Pushes
+received while publishing is paused are recorded as superseded, so a later build cannot
+silently overwrite the rollback. Use an explicit publish to resume automated
+production updates after you have resolved the problem.
+
+## Add a custom domain
+
+Open **Settings → Domains**, add the hostname, and copy the DNS records Thally
+shows into your DNS provider. Thally provisions the certificate and sends the
+custom hostname through the same tenant router and active release as the
+managed `thally.app` address.
+
+Keep the managed address available while the custom domain is pending. Wait
+until the Domains page reports the custom hostname as verified, then open it
+in a private browser session.
+
+## Upgrade the site runtime
+
+Thally publishes immutable starter releases. When a newer compatible release
+is available, **Settings → Version** shows the current and target release.
+Review the upgrade, then apply it to update framework-owned files and publish
+the result. Your pages and other authored files stay under Git review.
+
+For a self-hosted project, preview the same immutable update locally:
+
+```bash
+npx thally starter update
+npx thally starter update --apply
+```
+
+The first command is a dry run. The second applies the reviewed plan.
+
+## Verify a publish
+
+1. Confirm the deployment is **Healthy** or the preview is **Ready**.
+2. Check that the displayed commit matches the revision you expected.
+3. Open the live or preview address and test a representative page.
+4. Check `/llms.txt`, `/api/docs-index`, and `/AGENTS.md`.
+5. If the release failed, open its details before redeploying or changing
+   source files.

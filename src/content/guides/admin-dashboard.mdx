@@ -1,0 +1,141 @@
+---
+title: Manage the built-in site admin
+navTitle: Site admin
+description: Configure and secure the `/admin` area included with the open-source Thally runtime.
+keywords:
+  - Thally admin
+  - self-hosted documentation
+  - OIDC
+  - team roles
+---
+
+Every Thally site includes an `/admin` area for runtime diagnostics and
+self-hosted operation. It is different from the authenticated Thally Cloud
+workspace at `app.thally.io`.
+
+Use [Thally Cloud](/guides/thally-cloud) for managed sites, deployments,
+domains, Product Knowledge, hosted Track, billing, and workspace members. Use
+the built-in `/admin` area when you operate the open-source runtime directly or
+need site-local controls.
+
+## What the built-in admin includes
+
+| Page | Purpose |
+| --- | --- |
+| **Home** | Site summary, readiness, and available service status. |
+| **Analytics** | Human and agent traffic, top pages, search terms, feedback, and content gaps when the Cloud analytics bridge is available. |
+| **Agent Readiness** | The current readiness score, checks, and fixable pages. |
+| **Docs tasks** | Documentation pull requests and locally configured tracked repositories when Track is available. |
+| **MCP server** | The deployed read-only MCP endpoint, tools, rate limit, and on/off control. |
+| **Team** | The Git-committed OIDC roster and effective roles. |
+| **Branding** | Runtime brand overrides for the site. |
+| **Settings** | Access, analytics, AI chat, localization, and agent-facing controls. |
+
+Panels backed by a paid service render a clear locked or unavailable state
+when the site has no valid Thally Cloud entitlement.
+
+## Secure `/admin`
+
+Do not publish an unprotected admin area. Choose one or both of the supported
+sign-in methods.
+
+### Break-glass password
+
+Set a strong secret in your hosting provider:
+
+```bash
+THALLY_ADMIN_PASSWORD=a-long-random-admin-password
+```
+
+This is the shortest setup and a useful recovery path. Do not commit the value
+to the repository or place it in a public environment variable.
+
+### OIDC for a team
+
+Configure an OpenID Connect provider such as Google Workspace or Microsoft
+Entra:
+
+```bash
+THALLY_OIDC_ISSUER=https://accounts.google.com
+THALLY_OIDC_CLIENT_ID=your-client-id
+THALLY_OIDC_CLIENT_SECRET=your-client-secret
+THALLY_AUTH_SECRET=a-long-random-session-secret
+```
+
+Thally uses OIDC discovery, PKCE protection, and the `openid email profile`
+scopes. The
+identity provider must allow this exact redirect URI:
+
+```text
+https://docs.example.com/api/admin/auth/callback
+```
+
+<Note type="info" title="You can keep both sign-in methods">
+  When OIDC and a password are configured, team members can use their work
+  identity while the password remains available for recovery.
+</Note>
+
+## Assign site-local roles
+
+The built-in admin reads its roster from the `team` block in `docs.json`:
+
+```json
+{
+  "team": {
+    "members": [
+      { "email": "owner@example.com", "role": "owner" },
+      { "email": "writer@example.com", "role": "editor" }
+    ],
+    "domains": [
+      { "domain": "example.com", "role": "viewer" }
+    ]
+  }
+}
+```
+
+An explicit member entry takes precedence over a domain default. A signed-in
+person who matches neither receives no access. The roster is checked on each
+admin page request, so a committed removal or role change takes effect without
+waiting for the existing session to expire.
+
+| Capability | Viewer | Editor | Owner |
+| --- | :---: | :---: | :---: |
+| View analytics and readiness | Yes | Yes | Yes |
+| Manage docs tasks and supported site controls | No | Yes | Yes |
+| Manage reader access | No | Yes | Yes |
+| Change identity, branding, and the team roster | No | No | Yes |
+
+These roles belong to the deployed site's admin area. Thally Cloud workspace
+roles are stored and authorized separately.
+
+## Store site-local state durably
+
+Local development writes supported admin and analytics state under `.data/`.
+An ephemeral serverless filesystem does not preserve those files across
+deployments. Configure remote libSQL storage before you depend on site-local
+state:
+
+```bash
+THALLY_DATABASE_URL=libsql://your-database.turso.io
+THALLY_DATABASE_TOKEN=your-token
+```
+
+Agent Readiness scores the published content directly and does not depend on
+this database. Managed Cloud analytics is stored by the Cloud service rather
+than by the site's local adapter.
+
+## Protect readers separately
+
+Admin authentication controls who can open `/admin`. Reader access controls
+who can open the documentation itself. Set `THALLY_ACCESS_PASSWORD` for a
+self-hosted visitor gate, or configure **Settings → Reader access** for a
+managed site. See [Protect private documentation](/guides/private-docs).
+
+## Verify the setup
+
+1. Open `/admin` in a private browser window.
+2. Confirm the configured password or OIDC sign-in is required.
+3. Sign in as each role you use and verify the permitted pages and controls.
+4. Remove the session cookie, then confirm the admin area is protected again.
+5. Test the public documentation separately; admin access must not grant or
+   imply reader access.

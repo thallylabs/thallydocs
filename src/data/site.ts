@@ -90,7 +90,10 @@ export interface SiteConfig {
 }
 
 const brandPresets: Record<BrandPresetKey, BrandConfig> = {
-  // A warm neutral foundation with restrained green and violet accents.
+  // Thally's canonical Ink + Iris brand (see Thally-Design-System).
+  // Warm off-white surfaces in light mode become near-black ink surfaces in
+  // dark mode. Lime remains the primary action color; iris is a restrained
+  // secondary accent for visual distinction and chart series.
   primary: {
     light: {
       background: '#FCFCF7',
@@ -159,30 +162,20 @@ const brandPresets: Record<BrandPresetKey, BrandConfig> = {
 
 const brandPreset: BrandPresetKey = 'primary'
 
-const templateSiteConfig: SiteConfig = {
-  name: 'Documentation',
-  description:
-    'Clear, task-focused guidance for building with the product.',
-  repoUrl: '',
+export const siteConfig: SiteConfig = {
+  name: 'Thally Docs',
+  description: 'Thally Documentation Site',
+  repoUrl: 'https://github.com/thallylabs/thallydocs',
   links: [
     { label: 'Get started', href: '/quickstart' },
+    { label: 'Support', href: 'https://github.com/thallylabs/thallydocs/issues/new' },
+    { label: 'GitHub', href: 'https://github.com/thallylabs/thallydocs' },
     { label: 'Changelog', href: '/changelog' },
   ],
+  analytics: {
+    googleAnalyticsId: 'G-XJDP6PFQL3',
+  },
   brand: brandPresets[brandPreset],
   brandPreset,
   brandPresets,
 }
-
-// Managed by Thally Cloud onboarding.
-export const siteConfig: SiteConfig = {
-  ...templateSiteConfig,
-  name: "Thally Docs",
-  description: "Thally Documentation Site",
-  repoUrl: "https://github.com/thallylabs/thallydocs",
-  links: [
-    { label: "Get started", href: "/quickstart" },
-    { label: "Support", href: "https://github.com/thallylabs/thallydocs/issues/new" },
-    { label: "GitHub", href: "https://github.com/thallylabs/thallydocs" },
-    { label: "Changelog", href: "/changelog" },
-  ],
-};

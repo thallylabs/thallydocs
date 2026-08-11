@@ -1,0 +1,78 @@
+---
+title: Scripts Personalizados
+description: Carga un script externo en cada página y elige cuándo puede ejecutarse.
+---
+
+Agrega un array `customScripts` a `docs.json` cuando un widget o servicio te
+proporcione una URL de JavaScript externa. Thally lee ese array en el layout
+raíz y renderiza cada entrada con el componente `<Script>` de Next.js. Esta es
+una configuración explícita de Thally basada en Next.js; Next.js no descubre
+`docs.json` ni carga esas URL por sí solo.
+
+## Configuración
+
+```json
+{
+  "customScripts": [
+    {
+      "src": "https://cdn.example.com/widget.js",
+      "strategy": "afterInteractive"
+    },
+    {
+      "src": "https://cdn.example.com/optional-widget.js",
+      "strategy": "lazyOnload"
+    }
+  ]
+}
+```
+
+Thally carga cada URL configurada en todas las rutas. La configuración actual
+acepta un `src` externo; no admite JavaScript inline ni reglas por página.
+
+## Campos
+
+| Campo | Tipo | Valor por defecto | Descripción |
+| --- | --- | --- | --- |
+| `src` | `string` | — | URL externa del script. Usa HTTPS en producción. |
+| `strategy` | `string` | `"afterInteractive"` | Una de las estrategias de carga compatibles. |
+
+## Estrategias de carga
+
+| Estrategia | Cuándo se ejecuta | Usar para |
+| --- | --- | --- |
+| `beforeInteractive` | Antes de la hidratación de la página | Scripts críticos que deben ejecutarse primero |
+| `afterInteractive` | Después de la hidratación | Análisis, widgets de chat, la mayoría de herramientas de terceros |
+| `lazyOnload` | Durante el tiempo de inactividad del navegador | Scripts no críticos o decorativos |
+
+Prefiere `afterInteractive` para la mayoría de las herramientas. Usa
+`beforeInteractive` solo cuando el proveedor deba ejecutarse antes de la
+hidratación y mide su efecto antes de publicarlo. Usa `lazyOnload` para trabajo
+que pueda esperar hasta que el navegador esté inactivo.
+
+## Atajos para proveedores de analítica
+
+Para Google Analytics, Plausible o PostHog, puedes usar el campo tipado
+`siteConfig.analytics` de `src/data/site.ts`. El `AnalyticsProvider` de Thally
+carga e inicializa los scripts del proveedor seleccionado:
+
+```ts
+analytics: {
+  googleAnalyticsId: 'G-XXXXXXXXXX',
+  plausibleDomain: 'docs.example.com',
+  posthogKey: 'phc_...',
+}
+```
+
+Usa `customScripts` para cualquier proveedor que no sea compatible de forma nativa.
+
+Este atajo inicializa los proveedores. No es una API de eventos compartida de
+Thally y el runtime de código abierto no agrega eventos personalizados para tu
+producto. Comprueba el comportamiento de aplicación de página única y la
+configuración de consentimiento del proveedor antes de confiar en sus informes.
+
+<Warning title="El código de terceros se ejecuta en cada página">
+Carga solo scripts de confianza. Un script de terceros puede leer el contenido,
+hacer solicitudes de red, afectar el rendimiento y establecer cookies o
+identificadores similares. Si necesitas consentimiento, bloquea el script hasta
+registrarlo; no basta con mostrar un banner después de cargar el script.
+</Warning>

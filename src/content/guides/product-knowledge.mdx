@@ -1,0 +1,95 @@
+---
+title: Review Product Knowledge
+navTitle: Product Knowledge
+description: See how Thally turns exact product revisions into evidence-backed changes and documentation matches you can review.
+keywords:
+  - product knowledge graph
+  - documentation impact
+  - product changes
+  - evidence-backed documentation
+---
+
+Product Knowledge shows what changed in connected product repositories and
+which documentation pages may need attention. Every retained match links back
+to inspectable evidence; search similarity alone is not treated as proof.
+
+The underlying graph is a versioned set of product facts and the relationships
+between them. Each fact points to the file and commit that supports it.
+
+Product Knowledge is a Thally Cloud capability. Open a site, then select
+**Knowledge**.
+
+## What Thally reads
+
+Each ingestion job is pinned to a repository, branch or pull request, and exact
+commit. The reader currently extracts supported facts from:
+
+- OpenAPI JSON or YAML files, including files named with `openapi` or
+  `swagger`;
+- MDX documentation; and
+- TypeScript source files.
+
+The reader does not install dependencies, run project scripts, execute
+plugins, or run customer code. It skips dependency folders, build output,
+fixtures, environment files, keys, and common secret paths. Oversized work is
+rejected instead of being partially trusted.
+
+## How a product change reaches the review queue
+
+<Steps>
+  <Step title="Thally records evidence">
+    Each fact points to the exact file and commit that supports it. Unchanged
+    files can reuse earlier evidence; changed files create a new revision.
+  </Step>
+  <Step title="Thally compares complete knowledge versions">
+    A new version becomes current only when its complete source snapshot is
+    ready. Pull-request views remain separate from the production graph.
+  </Step>
+  <Step title="Impact analysis finds possible pages">
+    Direct links, short fact relationships, exact terms, text search, and
+    meaning-based search produce candidates. A retained candidate still needs a
+    supported relationship and file evidence.
+  </Step>
+  <Step title="You confirm the result">
+    Owners and editors can mark a page **Affected**, **Not affected**, **False
+    match**, or **Review later**. Viewers can inspect the evidence but cannot
+    submit a decision.
+  </Step>
+</Steps>
+
+## Read the Knowledge screen
+
+| Section | What it tells you |
+| --- | --- |
+| **Documentation updates** | Pages waiting for review and the status of proposed or published updates. |
+| **Product changes** | Recent structured changes detected in connected sources. |
+| **Explore what Thally knows** | Customer-facing concepts and their evidence across product sources. |
+| Impact detail | What changed, before and after values, the strongest relationship path, confidence signals, and supporting file evidence. |
+
+Confidence helps order the review queue. It does not replace evidence or your
+decision. If two sources disagree, Thally keeps both statements and creates a
+review item instead of silently choosing one.
+
+## Connect Product Knowledge to Track
+
+Track uses the same immutable revision, meaningful product changes, evidence, and
+affected-page result. It sends only a bounded set of supported pages and facts
+to the documentation agent. If no page has an evidence-backed impact, the run
+ends without creating a pull request.
+
+When Track does create a pull request, you review it in GitHub. The agent never
+merges its own work. After a person merges the documentation pull request, the
+normal managed deployment flow publishes the reviewed source.
+
+## Review a change
+
+1. Open **Knowledge** and select a page that needs review.
+2. Read **What changed** and compare the before and after values.
+3. Follow the relationship path and open the supporting file references.
+4. Mark the match with the most accurate decision. Use **Review later** only
+   when you still need product context.
+5. Open **Track** to follow any documentation pull request created for the
+   product change.
+
+Your decisions improve later matching, but they do not allow an AI model to
+mark unsupported evidence as verified.

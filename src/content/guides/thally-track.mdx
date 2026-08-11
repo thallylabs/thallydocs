@@ -1,0 +1,166 @@
+---
+title: Turn product changes into docs pull requests
+navTitle: Thally Track
+description: Connect product repositories, identify affected documentation from evidence, and prepare updates for human review.
+keywords:
+  - thally track
+  - product changes
+  - documentation pull requests
+  - documentation automation
+  - product knowledge
+---
+
+Thally Track follows merged product pull requests, identifies documentation
+with an evidence-backed impact, and prepares a documentation pull request for
+your team. The agent never merges its own work.
+
+Use **Cloud Track** for the managed workflow in `app.thally.io`. Use the
+`thally track` CLI when you intentionally operate the self-managed GitHub
+workflow from a documentation repository.
+
+## How Cloud Track works
+
+```text
+merged product PR
+        │
+        ▼
+exact revision → Product Knowledge → affected pages + evidence
+                                          │
+                                          ▼
+                              documentation pull request
+                                          │
+                                   human review + merge
+                                          │
+                                          ▼
+                               managed documentation release
+```
+
+<Steps>
+  <Step title="A verified GitHub event records the change">
+    Track acts on a pull request merged into a configured branch, or on an
+    explicitly labelled preview pull request. Direct pushes do not start a
+    Track documentation run.
+  </Step>
+  <Step title="Product Knowledge reads the exact revision">
+    The ingestion job extracts supported facts and meaningful product changes
+    from the immutable commit. It keeps file evidence for every retained fact.
+  </Step>
+  <Step title="Impact analysis selects documentation">
+    A candidate page must have a supported relationship path and evidence.
+    Search or vector similarity can suggest a page but cannot prove impact.
+  </Step>
+  <Step title="The agent prepares the update">
+    A disposable Track worker receives a bounded evidence bundle and only the
+    affected pages. It edits the documentation checkout, runs `thally check`,
+    and opens a normal GitHub pull request.
+  </Step>
+  <Step title="Your team decides what publishes">
+    Reviewers can correct, merge, or close the pull request. A merge creates a
+    managed documentation release through the same deployment checks as any
+    other production change.
+  </Step>
+</Steps>
+
+If no page has a supported impact, the run finishes as **No docs changes
+needed** without creating a pull request.
+
+## Set up Cloud Track
+
+You need a Cloud plan or active trial and a GitHub App installation that can
+read the selected product repository and create pull requests in the
+documentation repository.
+
+1. Open the site in [Thally Cloud](https://app.thally.io/).
+2. Select **Track**.
+3. If GitHub is not connected, open **Settings → Git** and install or update
+   the Thally GitHub App for the required organization and repositories.
+4. Under **Product repositories**, add the repository, production branch, and
+   any path policy you want Track to watch.
+5. Use the simulation control to test the mapping before you wait for the next
+   merge.
+6. Confirm **Recent updates** shows the run and its current status.
+
+You can also choose up to five product repositories during site creation. The
+documentation repository is excluded from that selection to prevent an update
+loop.
+
+## Follow a run
+
+The Track page reports the workflow in user-facing states:
+
+| Status | Meaning |
+| --- | --- |
+| Checking changes | Thally is determining whether the product change affects documentation. |
+| Waiting | The run is queued for the next durable step. |
+| Updating docs | The isolated agent is preparing and checking the edit. |
+| Draft ready | A documentation pull request is waiting for review. |
+| Ready to publish | The documentation pull request merged and is waiting for its release. |
+| Publishing | The managed site is publishing the reviewed commit. |
+| Published | The reviewed documentation is live. |
+| No docs changes needed | No evidence-backed page required an update. |
+| Needs attention or Timed out | Open the run for the saved failure and safe next action. |
+
+Read the saved status before you retry a run. Track records GitHub deliveries
+and each claimed step so the same event does not create duplicate work. A
+retry helps only after you resolve the reported requirement.
+
+## Preview documentation before a product merge
+
+Add the **`docs-preview`** label to an open product pull
+request when you want the proposed docs reviewed beside the product change.
+Track keeps the preview graph separate from production and can refresh the
+draft for a new head commit. The resulting documentation pull request is still
+review-only and cannot publish by itself.
+
+## Use the self-managed CLI workflow
+
+The public CLI keeps a repository-local `tracking` block in `docs.json`. This
+path uses your GitHub workflow and credentials; it does not create a Cloud
+Track configuration.
+
+Register and test a repository from the documentation project root:
+
+```bash
+npx thally track add acme/api-server \
+  --branch main \
+  --paths "src/**,openapi.yaml" \
+  --tab "API Reference"
+
+npx thally track list
+npx thally track test acme/api-server --pr 128
+npx thally track setup acme/api-server
+```
+
+`track add` stores the repository owner, name, base branch, optional path
+globs, and optional navigation destination. `track test` uses the specified
+pull request, or the latest pull request merged into the tracked base branch.
+Without `ANTHROPIC_API_KEY`, it prints the bounded instruction and diff
+context. With the key, it can run the docs agent as a dry run.
+
+`track setup` prints the GitHub configuration for the repository-local
+workflow. Follow that output because the required secret depends on the access
+mode you choose.
+
+## Run the same self-managed analysis through MCP
+
+The local MCP server exposes `sync_from_repo`:
+
+- `dryRun: true` previews the task for a tracked repository and optional pull
+  request number;
+- `dryRun: false` with `docsRepo` dispatches the task to the documentation
+  repository.
+
+This tool reads the local project's `tracking` configuration. It is not the API
+for the Cloud Track page.
+
+## Keep the trust boundary clear
+
+- GitHub remains the source of product and documentation history.
+- Product Knowledge retains exact evidence for the change.
+- Track receives a bounded task, not unrestricted workspace knowledge.
+- Customer repository code is not executed during knowledge extraction.
+- The agent validates the proposed edit but never approves or merges it.
+- A managed release is promoted only after its own build and smoke checks.
+
+Continue to [Review Product Knowledge](/guides/product-knowledge) to understand
+the evidence and impact decisions behind each run.

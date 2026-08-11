@@ -1,45 +1,59 @@
 ---
 title: Introduction
-description: Give readers a clear path from their first question to a result they can verify.
+description: Publish documentation from Git, keep it useful to people and AI agents, and review updates as your product changes.
 mode: home
 ---
 
 <Hero
-  title="Build documentation around the reader"
-  subtitle="Start with a useful first result, organize what follows, and publish every format from one reviewable source."
-  primaryLabel="Get started"
+  title="Keep product knowledge in sync"
+  subtitle="Publish documentation from a repository you own. Thally connects product evidence to reviewable updates and serves one trusted source to people and AI agents."
+  primaryLabel="Create your site"
   primaryHref="/quickstart"
-  secondaryLabel="Publish your docs"
-  secondaryHref="/guides/create-a-site"
+  secondaryLabel="Write your first page"
+  secondaryHref="/guides/writing-content"
 />
 
-## Build the reader journey
+## Start with documentation you own
 
-Begin with the task that brings most readers to your documentation, then make
-the next useful step obvious.
+Your pages, navigation, OpenAPI files, and versioned settings stay in Git.
+Choose managed hosting for the shortest path to production, or run the
+open-source site on your own infrastructure.
 
 <CardGroup cols="2">
-  <Card title="Write your quickstart" icon="party-horn" href="/quickstart">
-    Turn prerequisites, setup, one realistic task, and verification into a short path.
+  <Card title="Create your site" icon="code-simple" href="/quickstart">
+    Create or connect a repository, publish to a `thally.app` address, and confirm the live site.
   </Card>
-  <Card title="Organize your navigation" icon="grid-round" href="/customization">
-    Group related tasks and references around how people use your product.
+  <Card title="Write useful pages" icon="book-open" href="/guides/writing-content">
+    Guide readers through one task at a time with MDX and built-in components.
   </Card>
-  <Card title="Document your API" icon="code-simple" href="/api">
-    Replace `openapi.yaml` to publish browsable endpoint docs with a live playground.
+  <Card title="Organize the journey" icon="grid-round" href="/guides/configuring-navigation">
+    Group pages by reader goal so readers can find the next step.
   </Card>
-  <Card title="Learn the Thally workflow" icon="wrench" href="/guides/create-a-site">
-    Create, publish, and update sites from the Cloud dashboard, the CLI, or your AI tools.
+  <Card title="Match your brand" icon="wrench" href="/guides/branding-and-theming">
+    Add your colors, logos, fonts, navigation, and footer.
   </Card>
 </CardGroup>
 
-## Publish from one source
+## Keep the published knowledge useful
 
-Thally turns the same reviewed content into HTML, search, agent discovery files,
-Markdown mirrors, and a read-only MCP surface — so people and AI tools read the
-same, current answer. Add only the locales your readers need.
+Thally uses the same structured content for HTML, Markdown, JSON, JSON-LD,
+search, embeddings, and agent endpoints. Cloud services add managed
+publishing, Product Knowledge, Track, analytics, and grounded AI answers.
 
-<Note type="info" title="Start with the product, not the template">
-  Replace this page with the questions, terminology, and workflows your readers
-  already use. Keep `docs.json` focused on the path between those tasks.
-</Note>
+<CardGroup cols="2">
+  <Card title="Manage the platform" icon="grid-round" href="/guides/thally-cloud">
+    Operate sites, deployments, domains, members, and reader-facing services from one workspace.
+  </Card>
+  <Card title="Review Product Knowledge" icon="link-simple" href="/guides/product-knowledge">
+    Trace product changes to exact evidence and confirm which pages need work.
+  </Card>
+  <Card title="Automate reviewable updates" icon="message" href="/guides/thally-track">
+    Let Track prepare a documentation pull request when a merged product change affects your docs.
+  </Card>
+  <Card title="Document your API" icon="link-simple" href="/guides/api-reference-setup">
+    Turn an OpenAPI spec into interactive endpoint pages.
+  </Card>
+  <Card title="Check and publish" icon="code-simple" href="/guides/ci-checks">
+    Catch content and configuration errors before you deploy.
+  </Card>
+</CardGroup>

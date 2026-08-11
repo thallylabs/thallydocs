@@ -1,0 +1,122 @@
+---
+title: Manage sites with Thally Cloud
+navTitle: Thally Cloud
+description: Create, publish, monitor, and improve documentation sites from the Thally Cloud workspace.
+keywords:
+  - Thally Cloud
+  - managed documentation
+  - documentation platform
+  - site dashboard
+---
+
+Thally Cloud is the hosted workspace for your documentation sites. Use it
+to connect GitHub, publish managed sites, review product knowledge, run Track,
+and manage reader-facing settings without giving up ownership of your source.
+Your MDX, configuration, pull requests, and commit history remain in your
+GitHub repository.
+
+## Choose the right Thally surface
+
+| Surface | Use it for | Source of truth |
+| --- | --- | --- |
+| Thally Cloud at `app.thally.io` | Workspaces, sites, managed deployments, domains, Track, Knowledge, analytics, reader questions, billing, and members | Your workspace records and connected Git repositories |
+| Your documentation repository | Pages, navigation, snippets, OpenAPI files, and versioned site defaults | Git |
+| A site's built-in `/admin` area | Self-hosted runtime settings and diagnostics | The deployed site and its configured storage |
+| Thally CLI and MCP | Local authoring, migration, validation, automation, and self-hosting | Files in your local checkout |
+
+<Note type="info" title="Cloud settings do not replace Git">
+  Thally Cloud can publish supported settings with a managed release. It does
+  not turn its database into a second copy of your documentation pages.
+</Note>
+
+## Create or connect a site
+
+From the workspace Home page, select **Create a site**. The creation flow asks
+for the information needed to publish a managed site:
+
+<Steps>
+  <Step title="Choose the site identity">
+    Enter a site name, an optional description, and an available
+    `thally.app` address.
+  </Step>
+  <Step title="Choose the documentation source">
+    Create a customer-owned repository from the maintained starter, or connect
+    an existing repository that already has a compatible Thally project.
+  </Step>
+  <Step title="Choose product repositories">
+    Connect up to five repositories during setup if you want Track to start
+    with the site. You can skip this step and configure Track later.
+  </Step>
+  <Step title="Review and publish">
+    Confirm the repository, production branch, site address, and optional
+    Track sources. Thally saves the site before it starts background setup, so
+    a safe retry resumes the same site instead of creating a duplicate.
+  </Step>
+</Steps>
+
+The documentation repository cannot also be its own product source. This
+prevents a documentation pull request from triggering another Track run.
+
+## Choose managed or external hosting
+
+| Hosting mode | Thally Cloud manages | Your team manages |
+| --- | --- | --- |
+| Managed | Builds, previews, releases, routing, certificates, and rollback | Documentation source and review in GitHub |
+| External | Cloud services and the site's signed connection | Builds, hosting, deployment history, and public routing |
+
+An external site receives a `thally_site_*` credential once. Store it as
+`THALLY_CLOUD_SITE_TOKEN` on the server; never expose it through a
+`NEXT_PUBLIC_` variable. **Settings → Connection** lets an authorized member
+rotate or revoke the credential. Thally Cloud stores only its hash and cannot
+show the value again after you close the dialog.
+
+## Work from the site dashboard
+
+After you choose a site, the dashboard groups work by outcome:
+
+| Area | What you can do |
+| --- | --- |
+| **Home** | See the live site, setup progress, and the next useful action. |
+| **Analytics** | Compare human and agent traffic, engagement, and discovery paths when analytics is included in your plan. |
+| **Reader questions** | Review what readers ask through AI answers and use those questions to find documentation gaps. |
+| **Readiness** | See the published Agent Readiness report and open supported fixes. |
+| **Knowledge** | Review product changes, evidence, affected-page matches, and the concepts Thally has learned. |
+| **Track** | Connect product repositories and follow each documentation update from change detection to publication. |
+| **Deployments** | Inspect production and preview publishes, filter history, redeploy, repair supported failures, and roll back. |
+| **Settings** | Manage identity, languages, Git source, runtime version, branding, domains, reader access, feedback, analytics, external-site credentials, and site deletion. |
+
+Some areas are plan-gated. The page tells you when a capability is not
+included instead of presenting controls that cannot run.
+
+## Understand roles
+
+Thally Cloud resolves every request against the active workspace and site.
+Knowing a site ID does not grant access.
+
+| Role | Typical responsibility |
+| --- | --- |
+| Viewer | Follow site, deployment, analytics, readiness, and knowledge activity. |
+| Editor | Create and operate sites, review knowledge matches, and manage day-to-day settings. |
+| Owner | Manage the workspace, billing, members, and destructive site actions in addition to editor work. |
+
+Deleting a site removes it from Thally Cloud but leaves its GitHub repository
+and documentation files unchanged.
+
+Workspace members and unexpired invitations count toward billing. The Cloud
+plan includes three members; additional members are billed separately.
+
+## Know what the plans unlock
+
+The open-source runtime, CLI, MCP server, and self-hosting path remain
+available without a Cloud subscription. A Cloud plan or active trial unlocks
+the hosted service layer, including managed hosting, settings synchronization,
+custom domains, password protection, AI answers, Track, Product Knowledge,
+Agent Readiness workflows, analytics, and teams. Enterprise adds SAML SSO,
+SCIM provisioning, and access to audit logs.
+
+## Continue with an operation
+
+- [Publish and operate managed releases](/guides/managed-hosting)
+- [Review Product Knowledge](/guides/product-knowledge)
+- [Turn product changes into documentation pull requests](/guides/thally-track)
+- [Manage a self-hosted site's built-in dashboard](/guides/admin-dashboard)
