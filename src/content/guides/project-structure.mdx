@@ -10,7 +10,6 @@ them. Most documentation work happens in four places.
 ```text
 my-docs/
 ├── docs.json
-├── openapi.yaml
 ├── public/
 ├── snippets/
 └── src/
@@ -28,7 +27,7 @@ my-docs/
 | `src/data/site.ts` | Product identity, description, links, versions, and brand defaults. |
 | `public/` | Images, logos, favicons, downloadable files, and other public assets. |
 | `snippets/` | Reusable MDX fragments shared by multiple pages. |
-| `openapi.yaml` | The starter API specification. You can point `docs.json` at another local or remote spec. |
+| `openapi.yaml` | An optional API specification you can add and reference from `docs.json`. |
 | `src/mdx/custom-components.tsx` | Your explicit extension point for custom MDX components. |
 
 ## How paths become URLs
