@@ -1,5 +1,5 @@
 import { SidebarCollectionsHydrator } from '@/components/layout/sidebar-hydrator'
-import { loadSidebarCollections } from '@/data/docs'
+import { getSidebarCollections } from '@/data/docs'
 import type { NavigationSection } from '@/data/docs'
 import { buildApiNavigation } from '@/data/api-reference'
 
@@ -23,7 +23,7 @@ export default async function ApiLayoutProvider({ children, params }: ApiLayoutP
     })),
   }))
 
-  const collections = await loadSidebarCollections()
+  const collections = getSidebarCollections()
   const updatedCollections = collections.map((collection) => {
     if (!collection.api || collection.api.navigation === false) return collection
     const mdxSections = collection.sections ?? []

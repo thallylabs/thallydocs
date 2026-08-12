@@ -14,8 +14,6 @@ vi.mock('../client', () => ({
 }))
 vi.mock('@thallylabs/core', () => ({
   getRelevantChunks: mocks.getRelevantChunks,
-  registerAsyncContentDocumentSource: vi.fn(),
-  registerAsyncDocEntriesSource: vi.fn(),
   registerContentDocumentSource: vi.fn(),
   registerDocEntriesSource: vi.fn(),
 }))

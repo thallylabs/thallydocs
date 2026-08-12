@@ -1,13 +1,6 @@
-/**
- * Resolve OpenAPI documents from inline values, URLs, or authored content.
- *
- * File sources use the active ContentSource so managed releases read specs
- * from immutable static assets instead of requiring them in Worker modules.
- */
-
 import path from 'node:path'
 import { parse as parseYaml } from 'yaml'
-import { getContentSource } from '@/lib/content-source'
+import { readRuntimeSource } from '@/lib/runtime-sources'
 import type { ApiReferenceConfig, ApiSpecConfig, OpenAPIDocument, ResolvedSpec } from '@/lib/openapi/types'
 
 const specCache = new Map<string, Promise<OpenAPIDocument>>()
@@ -18,16 +11,12 @@ function cacheKey(config: ApiSpecConfig) {
 
 async function readFromFile(filePath: string) {
   // URL-style paths like /openapi.json are author-owned public files. The
-  // content-source layer reads those exact bytes from disk/embedded modules
-  // for self-hosting and immutable deployment assets for managed hosting.
+  // runtime-source layer reads those exact bytes from disk during development
+  // and from the generated Worker bundle in production.
   const projectPath = filePath.startsWith('/')
     ? path.join('public', filePath.slice(1))
     : filePath
-  const sourceFile = await getContentSource().read(projectPath)
-  if (!sourceFile) {
-    throw new Error(`OpenAPI source file not found: ${projectPath}`)
-  }
-  const buffer = sourceFile.content
+  const buffer = readRuntimeSource(projectPath)
   const ext = path.extname(projectPath).toLowerCase()
   if (ext === '.yaml' || ext === '.yml') {
     return parseYaml(buffer) as OpenAPIDocument

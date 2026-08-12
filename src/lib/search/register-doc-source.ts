@@ -13,15 +13,11 @@
  * richer entries satisfy the resolver contract directly.
  */
 import {
-  registerAsyncContentDocumentSource,
-  registerAsyncDocEntriesSource,
   registerContentDocumentSource,
   registerDocEntriesSource,
 } from '@thallylabs/core'
-import { getDocEntries, loadDocEntries } from '@/data/docs'
-import { getContentDocument, loadContentDocument } from '@/lib/content/document'
+import { getDocEntries } from '@/data/docs'
+import { getContentDocument } from '@/lib/content/document'
 
 registerDocEntriesSource(() => getDocEntries())
 registerContentDocumentSource((pageId, locale) => getContentDocument(pageId, locale))
-registerAsyncDocEntriesSource(() => loadDocEntries())
-registerAsyncContentDocumentSource((pageId, locale) => loadContentDocument(pageId, locale))
