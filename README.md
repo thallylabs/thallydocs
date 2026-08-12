@@ -25,7 +25,7 @@ used automatically when 3040 is occupied.
 - Edit pages in `src/content/`.
 - Organize navigation and features in `docs.json`.
 - Set the product name, links, and versioned brand defaults in `src/data/site.ts`.
-- Replace `openapi.yaml` with your API specification.
+- Add an OpenAPI specification and enable an API tab when your docs need an API reference.
 - Add logos or favicons in `public/` and reference them from your site settings.
 
 `starter-release.json` records the immutable starter and runtime version used

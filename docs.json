@@ -17,11 +17,6 @@
   "analytics": {
     "enabled": true
   },
-  "apiPlayground": {
-    "credentials": {
-      "bearerAuth": "YOUR_API_KEY"
-    }
-  },
   "navbar": {
     "links": [
       {
@@ -56,10 +51,6 @@
           {
             "label": "Components",
             "href": "/components/badge"
-          },
-          {
-            "label": "API Reference",
-            "href": "/api"
           }
         ]
       },
@@ -210,8 +201,7 @@
             "guides/api-reference-setup",
             "guides/api-playground",
             "guides/api-troubleshooting",
-            "api/overview",
-            "api/reference"
+            "api/overview"
           ]
         },
         {
@@ -278,37 +268,6 @@
           ]
         }
       ]
-    },
-    {
-      "tab": "API Reference",
-      "api": {
-        "source": "openapi.yaml",
-        "tagsOrder": [
-          "Posts",
-          "Comments",
-          "Users"
-        ],
-        "defaultGroup": "General",
-        "overrides": {
-          "GET /pets": {
-            "title": "List pets",
-            "description": "Fetch a paginated list of pets.",
-            "badge": "Stable"
-          },
-          "POST /pets": {
-            "title": "Create a pet",
-            "description": "Add a new pet to the store."
-          },
-          "GET /pets/{petId}": {
-            "title": "Get a pet",
-            "description": "Retrieve a single pet by ID."
-          },
-          "DELETE /pets/{petId}": {
-            "title": "Delete a pet",
-            "description": "Remove a pet from the store."
-          }
-        }
-      }
     },
     {
       "tab": "Components",
