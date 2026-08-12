@@ -1,8 +1,8 @@
 import type { ComponentType } from 'react'
-import { getContentIndex } from '@/lib/content-index'
+import { getContentIndex, loadContentIndex, type ContentIndex } from '@/lib/content-index'
 import { parseFrontmatter } from '@/lib/frontmatter'
-import docsNavigationConfig from '../../docs.json' assert { type: 'json' }
 import { listRuntimeSources, readRuntimeSource, runtimeSourceExists } from '@/lib/runtime-sources'
+import { getDocsJsonConfig, getDocsJsonConfigRevision } from '@/lib/docs-json-config'
 
 // ---------------------------------------------------------------------------
 // Public interfaces (consumed by components, pages, and stores)
@@ -86,14 +86,17 @@ export interface DocsJsonApiConfig {
   tagsOrder?: Array<string>
   defaultGroup?: string
   webhookGroup?: string
-  overrides?: Record<string, {
-    title?: string
-    description?: string
-    badge?: string
-    group?: string
-    slug?: Array<string>
-    hidden?: boolean
-  }>
+  overrides?: Record<
+    string,
+    {
+      title?: string
+      description?: string
+      badge?: string
+      group?: string
+      slug?: Array<string>
+      hidden?: boolean
+    }
+  >
 }
 
 interface DocsJsonTab {
@@ -268,7 +271,7 @@ export interface TrackingConfig {
 // ---------------------------------------------------------------------------
 
 const CONTENT_ROOT = 'src/content'
-const docsConfig = docsNavigationConfig as unknown as DocsJsonConfig
+let observedDocsConfigRevision = -1
 
 interface FrontmatterData {
   title?: string
@@ -289,27 +292,34 @@ interface FrontmatterData {
 
 const frontmatterCache = new Map<string, FrontmatterData>()
 
+function docsConfig(): DocsJsonConfig {
+  const config = getDocsJsonConfig<DocsJsonConfig>()
+  const revision = getDocsJsonConfigRevision()
+  if (revision !== observedDocsConfigRevision) {
+    observedDocsConfigRevision = revision
+    _allEntries = null
+    loadedEntriesPromise = null
+    sidebarCollectionsCache.clear()
+  }
+  return config
+}
+
+function frontmatterCandidates(pageId: string, locale?: string): Array<string> {
+  const candidates: Array<string> = []
+  if (locale) {
+    candidates.push(`${CONTENT_ROOT}/${locale}/${pageId}.mdx`, `${CONTENT_ROOT}/${locale}/${pageId}/index.mdx`)
+  }
+  candidates.push(`${CONTENT_ROOT}/${pageId}.mdx`, `${CONTENT_ROOT}/${pageId}/index.mdx`)
+  return candidates
+}
+
 function readFrontmatter(pageId: string, locale?: string): FrontmatterData {
   const cacheKey = locale ? `${locale}:${pageId}` : pageId
   if (frontmatterCache.has(cacheKey)) {
     return frontmatterCache.get(cacheKey)!
   }
 
-  const candidates: Array<string> = []
-
-  // Try locale-specific file first
-  if (locale) {
-    candidates.push(
-      `${CONTENT_ROOT}/${locale}/${pageId}.mdx`,
-      `${CONTENT_ROOT}/${locale}/${pageId}/index.mdx`,
-    )
-  }
-
-  // Fall back to primary
-  candidates.push(
-    `${CONTENT_ROOT}/${pageId}.mdx`,
-    `${CONTENT_ROOT}/${pageId}/index.mdx`,
-  )
+  const candidates = frontmatterCandidates(pageId, locale)
 
   // A runtime content index answers frontmatter directly and is authoritative
   // when present: the index describes the content this release actually
@@ -351,16 +361,11 @@ function readFrontmatter(pageId: string, locale?: string): FrontmatterData {
 const Placeholder: ComponentType<Record<string, unknown>> = () => null
 
 export function deriveTitleFromSlug(pageId: string) {
-  const clean = pageId
-    .split('/')
-    .filter(Boolean)
-    .pop()
+  const clean = pageId.split('/').filter(Boolean).pop()
   if (!clean) {
     return 'Overview'
   }
-  return clean
-    .replace(/[-_]/g, ' ')
-    .replace(/\b\w/g, (char) => char.toUpperCase())
+  return clean.replace(/[-_]/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
 }
 
 function slugifyId(value: string) {
@@ -390,7 +395,24 @@ function collectPageIds(groups: Array<DocsJsonNavigationGroup>): Array<string> {
 }
 
 const KEYWORD_STOPWORDS = new Set([
-  'the', 'a', 'an', 'and', 'or', 'to', 'of', 'for', 'with', 'in', 'on', 'how', 'your', 'you', 'is', 'are', 'using', 'guide',
+  'the',
+  'a',
+  'an',
+  'and',
+  'or',
+  'to',
+  'of',
+  'for',
+  'with',
+  'in',
+  'on',
+  'how',
+  'your',
+  'you',
+  'is',
+  'are',
+  'using',
+  'guide',
 ])
 
 /**
@@ -405,14 +427,17 @@ function deriveKeywords(title: string, slug: Array<string>): Array<string> {
   const phrase = title.trim().toLowerCase()
   if (phrase) words.add(phrase) // the full title as a phrase
   for (const source of [...slug, ...title.split(/[\s/&,-]+/)]) {
-    const word = source.trim().toLowerCase().replace(/[^a-z0-9]/g, '')
+    const word = source
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '')
     if (word.length >= 2 && !KEYWORD_STOPWORDS.has(word)) words.add(word)
   }
   return Array.from(words).slice(0, 12)
 }
 
-function buildDocEntryFromPageId(pageId: string): DocEntry {
-  const fm = readFrontmatter(pageId)
+function buildDocEntryFromPageId(pageId: string, indexedFrontmatter?: FrontmatterData): DocEntry {
+  const fm = indexedFrontmatter ?? readFrontmatter(pageId)
   const slug = pageId === 'introduction' ? [] : pageId.split('/').filter(Boolean)
   const href = slug.length ? `/${slug.join('/')}` : '/'
   const title = fm.title ?? deriveTitleFromSlug(pageId)
@@ -446,13 +471,12 @@ function getAllContentPageIds(): Array<string> {
     .filter((filePath) => filePath.endsWith('.mdx'))
     .map((filePath) => filePath.slice(`${CONTENT_ROOT}/`.length, -'.mdx'.length))
     .filter((relativePath) => !localeCodes.has(relativePath.split('/')[0] ?? ''))
-    .map((relativePath) =>
-      relativePath.endsWith('/index') ? relativePath.slice(0, -'/index'.length) : relativePath,
-    )
+    .map((relativePath) => (relativePath.endsWith('/index') ? relativePath.slice(0, -'/index'.length) : relativePath))
     .filter(Boolean)
 }
 
 function getAllDocEntries(): Array<DocEntry> {
+  const config = docsConfig()
   if (_allEntries) return _allEntries
 
   const seen = new Set<string>()
@@ -465,7 +489,7 @@ function getAllDocEntries(): Array<DocEntry> {
 
   // 1. Nav-group pages first (preserves nav order), plus standalone href tabs
   //    (e.g. Changelog) which reference a real page outside any group.
-  for (const tab of docsConfig.tabs) {
+  for (const tab of config.tabs) {
     if (tab.groups) {
       for (const id of collectPageIds(tab.groups)) add(id)
     } else if (tab.href && tab.href.startsWith('/')) {
@@ -484,7 +508,7 @@ function getAllDocEntries(): Array<DocEntry> {
 /** Page IDs reachable from navigation: nav-group pages + standalone href tabs. */
 export function getNavigablePageIds(): Set<string> {
   const ids = new Set<string>()
-  for (const tab of docsConfig.tabs) {
+  for (const tab of docsConfig().tabs) {
     if (tab.groups) {
       for (const id of collectPageIds(tab.groups)) ids.add(id)
     } else if (tab.href && tab.href.startsWith('/')) {
@@ -502,12 +526,82 @@ export function getDocEntries(): Array<DocEntry> {
   return getAllDocEntries()
 }
 
+let loadedEntriesPromise: Promise<Array<DocEntry>> | null = null
+let hydratedContentIndex: ContentIndex | null = null
+
+function hydrateContentIndex(index: ContentIndex): void {
+  if (hydratedContentIndex === index) return
+  hydratedContentIndex = index
+  // These caches may have been populated during module initialisation before
+  // a request could fetch the large asset-backed index. Rebuild them once,
+  // using the authoritative release frontmatter now cached by content-index.
+  frontmatterCache.clear()
+  _allEntries = null
+  sidebarCollectionsCache.clear()
+}
+
+function defaultLocalePageIds(index: ContentIndex): Array<string> {
+  const localeCodes = new Set((getI18nConfig()?.locales ?? []).map((locale) => locale.code))
+  return Object.keys(index.pages)
+    .filter((filePath) => filePath.startsWith(`${CONTENT_ROOT}/`) && filePath.endsWith('.mdx'))
+    .map((filePath) => filePath.slice(`${CONTENT_ROOT}/`.length, -'.mdx'.length))
+    .filter((relativePath) => !localeCodes.has(relativePath.split('/')[0] ?? ''))
+    .map((relativePath) => (relativePath.endsWith('/index') ? relativePath.slice(0, -'/index'.length) : relativePath))
+    .filter(Boolean)
+}
+
+function indexedFrontmatter(index: ContentIndex, pageId: string): FrontmatterData {
+  for (const filePath of frontmatterCandidates(pageId)) {
+    const entry = index.pages[filePath]
+    if (entry) return entry.data as FrontmatterData
+  }
+  return {}
+}
+
+/**
+ * Request-time doc enumeration backed by the immutable content index asset.
+ * The synchronous API remains unchanged for local/build consumers; managed
+ * routes use this async twin when the index is too large for a text binding.
+ */
+export function loadDocEntries(): Promise<Array<DocEntry>> {
+  docsConfig()
+  if (loadedEntriesPromise) return loadedEntriesPromise
+  loadedEntriesPromise = (async () => {
+    const index = await loadContentIndex()
+    if (!index) return getDocEntries()
+    hydrateContentIndex(index)
+    const seen = new Set<string>()
+    const ids: Array<string> = []
+    const add = (id: string) => {
+      if (!id || seen.has(id)) return
+      seen.add(id)
+      ids.push(id)
+    }
+    for (const tab of docsConfig().tabs) {
+      if (tab.groups) {
+        for (const id of collectPageIds(tab.groups)) add(id)
+      } else if (tab.href?.startsWith('/')) {
+        add(tab.href.slice(1) || 'introduction')
+      }
+    }
+    for (const id of defaultLocalePageIds(index)) add(id)
+    return ids.map((id) => buildDocEntryFromPageId(id, indexedFrontmatter(index, id)))
+  })()
+  return loadedEntriesPromise
+}
+
 export function getDocEntryBySlug(slugPath: string): DocEntry | null
 export function getDocEntryBySlug(languageCode: string, slugPath: string): DocEntry | null
 export function getDocEntryBySlug(first: string, second?: string): DocEntry | null {
   const slugPath = second !== undefined ? second : first
   const entries = getAllDocEntries()
   return entries.find((doc) => doc.slug.join('/') === slugPath) ?? null
+}
+
+/** Async managed-release twin of {@link getDocEntryBySlug}. */
+export async function loadDocEntryBySlug(first: string, second?: string): Promise<DocEntry | null> {
+  const slugPath = second !== undefined ? second : first
+  return (await loadDocEntries()).find((doc) => doc.slug.join('/') === slugPath) ?? null
 }
 
 export function getSearchableDocs(): Array<SearchableDoc> {
@@ -528,11 +622,7 @@ function resolveNavItem(pageId: string, locale?: string): NavigationItem {
   const fm = readFrontmatter(pageId, locale)
   const slug = pageId === 'introduction' ? [] : pageId.split('/').filter(Boolean)
   const baseHref = slug.length ? `/${slug.join('/')}` : '/'
-  const href = locale
-    ? baseHref === '/'
-      ? `/${locale}`
-      : `/${locale}${baseHref}`
-    : baseHref
+  const href = locale ? (baseHref === '/' ? `/${locale}` : `/${locale}${baseHref}`) : baseHref
   return {
     id: slugifyId(pageId) || 'introduction',
     title: fm.navTitle ?? fm.title ?? deriveTitleFromSlug(pageId),
@@ -579,12 +669,13 @@ function buildNavigationSections(
 const sidebarCollectionsCache = new Map<string, Array<SidebarCollection>>()
 
 export function getSidebarCollections(locale?: string): Array<SidebarCollection> {
+  const config = docsConfig()
   const cacheKey = locale ?? '__default__'
   if (sidebarCollectionsCache.has(cacheKey)) {
     return sidebarCollectionsCache.get(cacheKey)!
   }
 
-  const collections = docsConfig.tabs
+  const collections = config.tabs
     .filter((tab) => !tab.hidden)
     .map((tab) => {
       const id = slugifyId(tab.tab) || tab.tab.toLowerCase()
@@ -604,6 +695,16 @@ export function getSidebarCollections(locale?: string): Array<SidebarCollection>
   return collections
 }
 
+/**
+ * Request-time navigation backed by the release index asset when the index is
+ * too large for a Worker text binding.
+ */
+export async function loadSidebarCollections(locale?: string): Promise<Array<SidebarCollection>> {
+  const index = await loadContentIndex()
+  if (index) hydrateContentIndex(index)
+  return getSidebarCollections(locale)
+}
+
 // ---------------------------------------------------------------------------
 // Prev / Next navigation
 // ---------------------------------------------------------------------------
@@ -613,7 +714,10 @@ export interface PrevNextLink {
   href: string
 }
 
-export function getPrevNextLinks(currentHref: string): { prev: PrevNextLink | null; next: PrevNextLink | null } {
+export function getPrevNextLinks(currentHref: string): {
+  prev: PrevNextLink | null
+  next: PrevNextLink | null
+} {
   const collections = getSidebarCollections()
   const flatPages: Array<{ title: string; href: string }> = []
 
@@ -735,88 +839,91 @@ export function getNavContext(pageId: string): NavContext {
   return { tab: tabName, group: groupName, prev, next, breadcrumb }
 }
 
+/** Async managed-release twin of {@link getNavContext}. */
+export async function loadNavContext(pageId: string): Promise<NavContext> {
+  const index = await loadContentIndex()
+  if (index) hydrateContentIndex(index)
+  return getNavContext(pageId)
+}
+
 export function getAiConfig(): {
   chat?: boolean
   label?: string
   icon?: string
   systemPrompt?: string
 } {
-  return docsConfig.ai ?? {}
+  return docsConfig().ai ?? {}
 }
 
 export function getApiPlaygroundCredentials(): Record<string, string> {
-  return docsConfig.apiPlayground?.credentials ?? {}
+  return docsConfig().apiPlayground?.credentials ?? {}
 }
 
 export function isAnalyticsEnabled(): boolean {
-  return docsConfig.analytics?.enabled !== false
+  return docsConfig().analytics?.enabled !== false
 }
 
 export function isAdminDashboardEnabled(): boolean {
-  return docsConfig.admin?.enabled !== false
+  return docsConfig().admin?.enabled !== false
 }
 
-export function getI18nConfig(): { defaultLocale: string; locales: Array<{ code: string; label: string }> } | null {
-  return docsConfig.i18n ?? null
+export function getI18nConfig(): {
+  defaultLocale: string
+  locales: Array<{ code: string; label: string }>
+} | null {
+  return docsConfig().i18n ?? null
 }
 
 /** The git-committed admin team roster (C1). Always returns arrays. */
 export function getTeamConfig(): TeamConfig {
   return {
-    members: docsConfig.team?.members ?? [],
-    domains: docsConfig.team?.domains ?? [],
+    members: docsConfig().team?.members ?? [],
+    domains: docsConfig().team?.domains ?? [],
   }
 }
 
 /** The git-committed Thally Track roster. Always returns an array. */
 export function getTrackingConfig(): TrackingConfig {
-  return { repos: docsConfig.tracking?.repos ?? [] }
+  return { repos: docsConfig().tracking?.repos ?? [] }
 }
 
 export function getBannerConfig(): DocsJsonBanner | null {
-  return docsConfig.banner ?? null
+  return docsConfig().banner ?? null
 }
 
 export function getNavbarConfig(): DocsJsonNavbar | null {
-  return docsConfig.navbar ?? null
+  return docsConfig().navbar ?? null
 }
 
 export function getFooterConfig(): DocsJsonFooter | null {
-  return docsConfig.footer ?? null
+  return docsConfig().footer ?? null
 }
 
 export function getFeedbackConfig(): DocsJsonFeedback {
-  return docsConfig.feedback ?? { thumbsRating: true }
+  return docsConfig().feedback ?? { thumbsRating: true }
 }
 
 export function getFontsConfig(): DocsJsonFonts {
-  return docsConfig.fonts ?? {}
+  return docsConfig().fonts ?? {}
 }
 
 export function getRedirectsConfig(): Array<DocsJsonRedirect> {
-  return docsConfig.redirects ?? []
+  return docsConfig().redirects ?? []
 }
 
 export function getCustomScriptsConfig(): Array<DocsJsonScript> {
-  return docsConfig.customScripts ?? []
+  return docsConfig().customScripts ?? []
 }
 
 export function getSeoConfig(): DocsJsonSeo {
-  return docsConfig.seo ?? {}
+  return docsConfig().seo ?? {}
 }
 
 export function getStructuralTheme(): StructuralTheme {
-  return docsConfig.theme ?? 'default'
+  return docsConfig().theme ?? 'default'
 }
 
 /** Resolve the global card/tile icon treatment, defaulting to quiet neutrals. */
 export function getContentIconTone(): ContentIconTone {
-  return docsConfig.appearance?.contentIcons === 'accent' ? 'accent' : 'neutral'
+  return docsConfig().appearance?.contentIcons === 'accent' ? 'accent' : 'neutral'
 }
-
-// ---------------------------------------------------------------------------
-// Pre-computed exports for client-side store defaults
-// ---------------------------------------------------------------------------
-
-export const sidebarCollections = getSidebarCollections()
-export const searchableDocs = getSearchableDocs()
