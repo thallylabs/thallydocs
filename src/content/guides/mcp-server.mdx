@@ -74,7 +74,9 @@ Once connected, you can talk to your docs like a collaborator: *"Add a page abou
 
 #### `create_project`
 
-Scaffolds a new Thally project from the GitHub template.
+Scaffolds a project from the current immutable starter release. The release
+pins one exact public runtime revision and is shared by the CLI, MCP, migration,
+and Thally Cloud creation flows.
 
 ```
 Create a new Thally project at ~/dev/my-docs with the name "Acme Docs"
@@ -321,13 +323,17 @@ See [Multi-Language Support](/guides/multi-language) for full setup instructions
 
 ---
 
-### Product changes
+### Product changes (self-managed workflow)
 
 #### `sync_from_repo`
 
-Analyzes a merged pull request in a tracked product repository. It previews the
-documentation task by default, or dispatches the task to the docs repository so
-the review-gated docs agent can draft a pull request.
+Analyzes a merged pull request using the local project's `docs.json` tracking
+configuration. It previews the documentation task by default, or dispatches it
+to the docs repository so the review-gated docs agent can draft a pull request.
+
+For Cloud Track, connect Product sources and Knowledge surfaces in Thally
+Cloud. The managed pipeline uses durable GitHub intake, Product Knowledge
+impact, and scoped repository access; it does not depend on this MCP tool.
 
 ```
 Preview the docs task for pull request 482 in acme/widget

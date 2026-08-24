@@ -113,6 +113,10 @@ Declare your product repos in `docs.json` so the setup is self-documenting:
 Every trigger — a `@thally` comment, a merged PR, a `docs-preview`-labelled PR, the drift sweep, or the CLI — produces the same task and lands as a **reviewed pull request**. The agent never merges; a human always does.
 </Note>
 
-**Want merged PRs in your product repos to trigger docs PRs automatically?** That's [Thally Track](/guides/thally-track) — register repos in `docs.json`, connect GitHub (or wire a webhook/sender workflow), and the agent documents what shipped. Label a PR `docs-preview` to get the docs drafted before it merges.
+**Want merged product PRs to trigger docs work automatically?** Use
+[Thally Track](/guides/thally-track). Connect Product sources in Thally Cloud;
+you do not need repository-local tracking config or a sender workflow. Add the
+`docs-preview` label when you want the primary docs update drafted before the
+product pull request merges.
 
 **Monorepo?** You need none of the sender plumbing — the workflow sees PRs and diffs natively. Run `thally agent init` and point it at the same repo.

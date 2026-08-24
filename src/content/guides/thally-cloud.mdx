@@ -43,14 +43,20 @@ for the information needed to publish a managed site:
     Create a customer-owned repository from the maintained starter, or connect
     an existing repository that already has a compatible Thally project.
   </Step>
-  <Step title="Choose product repositories">
-    Connect up to five repositories during setup if you want Track to start
-    with the site. You can skip this step and configure Track later.
+  <Step title="Choose Product sources">
+    Add the repositories whose product changes Track should watch. You can
+    skip this step and connect them later from **Track**.
+  </Step>
+  <Step title="Choose Knowledge surfaces">
+    If this step is available, add any Markdown or MDX repositories where
+    Track may prepare scoped draft pull requests. You can also manage these
+    destinations later from **Site settings → Knowledge surfaces**.
   </Step>
   <Step title="Review and publish">
     Confirm the repository, production branch, site address, and optional
-    Track sources. Thally saves the site before it starts background setup, so
-    a safe retry resumes the same site instead of creating a duplicate.
+    Product sources, and Knowledge surfaces. Thally saves the site before it
+    starts background setup, so a safe retry resumes the same site instead of
+    creating a duplicate.
   </Step>
 </Steps>
 
@@ -81,9 +87,9 @@ After you choose a site, the dashboard groups work by outcome:
 | **Reader questions** | Review what readers ask through AI answers and use those questions to find documentation gaps. |
 | **Readiness** | See the published Agent Readiness report and open supported fixes. |
 | **Knowledge** | Review product changes, evidence, affected-page matches, and the concepts Thally has learned. |
-| **Track** | Connect product repositories and follow each documentation update from change detection to publication. |
+| **Track** | Connect Product sources and follow each primary-documentation update from change detection to publication. |
 | **Deployments** | Inspect production and preview publishes, filter history, redeploy, repair supported failures, and roll back. |
-| **Settings** | Manage identity, languages, Git source, runtime version, branding, domains, reader access, feedback, analytics, external-site credentials, and site deletion. |
+| **Settings** | Manage identity, languages, Git source, runtime version, branding, domains, reader access, feedback, analytics, Knowledge surfaces, external-site credentials, and site deletion. |
 
 Some areas are plan-gated. The page tells you when a capability is not
 included instead of presenting controls that cannot run.

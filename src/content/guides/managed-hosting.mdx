@@ -99,9 +99,18 @@ in a private browser session.
 ## Upgrade the site runtime
 
 Thally publishes immutable starter releases. When a newer compatible release
-is available, **Settings → Version** shows the current and target release.
-Review the upgrade, then apply it to update framework-owned files and publish
-the result. Your pages and other authored files stay under Git review.
+is available, **Settings → Updates** shows **Update site**. Thally compares the
+starter your site began with, the new starter, and your repository.
+
+- Files that still match the old starter update automatically.
+- Your pages, navigation, branding, and other authored files stay unchanged.
+- If a framework file also has local edits, Thally leaves it alone and tells
+  you which file needs review.
+
+When the update succeeds, Thally commits the safe framework changes and queues
+a publish. If the update needs review, run the commands below in a local
+checkout. The first previews the plan; the second applies the changes after
+you have reviewed them.
 
 For a self-hosted project, preview the same immutable update locally:
 
@@ -110,7 +119,7 @@ npx thally starter update
 npx thally starter update --apply
 ```
 
-The first command is a dry run. The second applies the reviewed plan.
+This same local flow works for managed and self-hosted projects.
 
 ## Verify a publish
 
