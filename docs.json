@@ -32,7 +32,8 @@
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/thallylabs/thally"
+      "github": "https://github.com/thallylabs/thally",
+      "x": "https://x.com/thallyio"
     },
     "links": [
       {
