@@ -1,100 +1,81 @@
 ---
-title: Environment variable reference
-navTitle: Environment variables
-description: Configure Thally production URLs, cloud connections, access, storage, AI, admin authentication, and automation secrets.
+title: Configure a self-hosted site
+navTitle: Self-hosted settings
+description: Set only the environment variables needed for a self-hosted Thally site or local authoring workflow.
 ---
 
-Set secrets in `.env.local` for local development and in the hosting provider
-for deployed environments. Never commit real values. Legacy `DOX_*` names are
-still accepted where a corresponding `THALLY_*` variable replaced them.
+<Note type="info" title="Using Thally Cloud? You can skip this page">
+Managed sites receive their configuration from Thally Cloud. Use the site's
+**Settings** pages instead of adding environment variables.
+</Note>
 
-## Site and deployment
-
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `THALLY_SITE_URL` | Production | Public origin used by canonical URLs, social metadata, sitemaps, and agent endpoints. |
-| `THALLY_CONTENT_SOURCE` | No | `filesystem` for normal self-hosting; managed hosting can set `assets`. |
-| `THALLY_DISABLE_BUILD_CACHE` | No | Set to `1` only to diagnose a bad persistent build cache. |
-
-## Thally Cloud connection
-
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `THALLY_CLOUD_SITE_TOKEN` | Connected self-hosted sites | Server-only credential issued by Thally Cloud. Never use a `NEXT_PUBLIC_` prefix. |
-| `THALLY_CLOUD_URL` | No | Overrides the control-plane origin for staging or development. |
-| `THALLY_CLOUD_SITE_CONFIG` | Managed only | Release snapshot injected by managed hosting. Do not set it manually. |
-
-## Admin and visitor access
-
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `THALLY_ADMIN_PASSWORD` | Recommended | Shared Owner password for `/admin`. |
-| `THALLY_ADMIN_SECRET` | No | Separate signing secret; defaults to the admin password. |
-| `THALLY_ACCESS_PASSWORD` | Private docs | Enables the shared visitor-password gate. |
-| `THALLY_AUTH_SECRET` | OIDC or stored secrets | Signs sessions and encrypts stored GitHub App credentials. |
-| `THALLY_OIDC_ISSUER` | Team sign-in | OpenID Connect issuer URL. |
-| `THALLY_OIDC_CLIENT_ID` | Team sign-in | OIDC client identifier. |
-| `THALLY_OIDC_CLIENT_SECRET` | Team sign-in | OIDC client secret. |
-
-## Durable storage and analytics
-
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `THALLY_DATABASE_URL` | Serverless persistence | Remote libSQL URL for settings, task state, and rate limits. |
-| `THALLY_DATABASE_TOKEN` | With remote database | Authentication token for `THALLY_DATABASE_URL`. |
-| `THALLY_ANALYTICS_DB_URL` | Serverless analytics | Remote libSQL URL for analytics events. |
-| `THALLY_ANALYTICS_DB_TOKEN` | With analytics database | Authentication token for the analytics database. |
-| `THALLY_STORAGE` | No | Set to `memory` to opt out of persistent general storage. |
-| `THALLY_ANALYTICS_SECRET` | No | Separate internal analytics-ingest secret. |
-
-## Local AI authoring
-
-These variables apply to local CLI, docs-agent, migration, or translation
-commands. They do not enable chat in a deployed documentation runtime. Thally
-Cloud keeps managed model credentials in its control plane.
-
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `ANTHROPIC_API_KEY` | Local AI commands | Model key for docs-agent, migration, and translation commands. Keep it in the local environment or the specific authoring workflow. |
-| `THALLY_AGENT_MODEL` | No | Model override for documentation-agent runs. |
-
-## Runtime agent limits
-
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `THALLY_MCP_RATE_PER_MIN` | No | Request-rate override for the deployed read-only MCP endpoint. |
-
-## Self-managed docs-agent automation
-
-For Cloud Track, connect Product sources and Knowledge surfaces in Thally
-Cloud. The managed pipeline uses the platform GitHub App and durable webhook,
-so you do not set the variables below on a managed site.
-
-Use these variables only for local compatibility commands or the self-managed
-GitHub Actions docs-agent workflow. Never deploy a GitHub App private key,
-Track webhook secret, or reusable product-repository token in the docs runtime.
-
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `THALLY_REPO_URL` | Local compatibility | Docs repository used when a local authoring tool needs an explicit destination. |
-| `THALLY_GITHUB_TOKEN` | Local compatibility | Fine-grained token for a local command that reads a product pull request or dispatches a docs task. |
-| `THALLY_AGENT_TOKEN` | Agent workflow | Token that can write to the docs repository and read configured product repositories. |
-| `THALLY_DISPATCH_TOKEN` | Product repository workflow | Secret used to dispatch an update to the docs repository. |
-
-Some managed automation variables are injected by Thally services or GitHub
-Actions for one run. Do not set undocumented internal grant, task, or pull-
-request metadata variables yourself.
-
-## Verify configuration
-
-After adding or changing variables, restart the development server or redeploy.
-Then test the specific feature and check server logs without printing secret
+Use this reference only when you host the open-source runtime yourself or run
+AI authoring tools locally. Store secrets in `.env.local` during development
+and in your hosting provider's secret manager in production. Never commit real
 values.
+
+## Required for production
+
+| Variable | When you need it | Purpose |
+| --- | --- | --- |
+| `THALLY_SITE_URL` | Every self-hosted production site | Sets the public origin for canonical URLs, social metadata, sitemaps, and agent endpoints. |
+
+## Connect a self-hosted site to Thally Cloud
+
+| Variable | When you need it | Purpose |
+| --- | --- | --- |
+| `THALLY_CLOUD_SITE_TOKEN` | When you connect a self-hosted site to Cloud services | Server-only credential issued once from **Settings → Connection**. Never expose it through a `NEXT_PUBLIC_` variable. |
+
+Rotate or revoke this token from Thally Cloud. Managed sites do not use it.
+
+## Protect the admin area and private docs
+
+| Variable | When you need it | Purpose |
+| --- | --- | --- |
+| `THALLY_ADMIN_PASSWORD` | Shared-password access to `/admin` | Grants Owner access. Use a long random value. |
+| `THALLY_ADMIN_SECRET` | A separate admin signing secret | Optional; defaults to the admin password. |
+| `THALLY_ACCESS_PASSWORD` | Shared visitor access | Requires readers to enter a password before opening the docs. |
+| `THALLY_AUTH_SECRET` | OIDC team sign-in | Signs admin sessions. |
+| `THALLY_OIDC_ISSUER` | OIDC team sign-in | OpenID Connect issuer URL. |
+| `THALLY_OIDC_CLIENT_ID` | OIDC team sign-in | OIDC client identifier. |
+| `THALLY_OIDC_CLIENT_SECRET` | OIDC team sign-in | OIDC client secret. |
+
+See [Manage the built-in site admin](/guides/admin-dashboard) for the setup and
+callback URL.
+
+## Keep self-hosted state after a redeploy
+
+Serverless filesystems are temporary. Add remote storage before you depend on
+saved settings or analytics.
+
+| Variable | When you need it | Purpose |
+| --- | --- | --- |
+| `THALLY_DATABASE_URL` | Durable site settings | Remote libSQL database URL. |
+| `THALLY_DATABASE_TOKEN` | With `THALLY_DATABASE_URL` | Authentication token for the database. |
+| `THALLY_ANALYTICS_DB_URL` | Durable self-hosted analytics | Remote libSQL analytics database URL. |
+| `THALLY_ANALYTICS_DB_TOKEN` | With `THALLY_ANALYTICS_DB_URL` | Authentication token for the analytics database. |
+
+## Run AI authoring tools locally
+
+These variables apply to local docs-agent, migration, or translation commands.
+They do not enable AI answers on a deployed site.
+
+| Variable | When you need it | Purpose |
+| --- | --- | --- |
+| `ANTHROPIC_API_KEY` | Local AI commands | Model provider key. Keep it in your local environment or authoring workflow. |
+| `THALLY_AGENT_MODEL` | Optional model override | Selects the model used by the local docs agent. |
+
+Self-managed GitHub automation has its own repository secrets. Follow the
+[docs-agent setup](/guides/docs-agent#automation) instead of copying platform
+credentials into the docs runtime.
+
+## Verify the change
+
+Restart the development server or redeploy after changing configuration. Test
+the feature you enabled, then check server logs without printing secret values.
 
 ## Next steps
 
 - [Deploy your documentation](/guides/deploying)
 - [Protect private documentation](/guides/private-docs)
-- [Manage sites with Thally Cloud](/guides/thally-cloud)
 - [Manage the built-in site admin](/guides/admin-dashboard)
-- [Configure Thally Track](/guides/thally-track)
