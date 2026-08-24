@@ -1,7 +1,7 @@
 ---
 title: Publish with Thally managed hosting
 navTitle: Managed hosting
-description: Understand production releases, pull-request previews, content-only publishes, rollbacks, domains, and runtime upgrades.
+description: Publish documentation, review pull-request previews, restore a previous version, and connect a custom domain.
 keywords:
   - Thally managed hosting
   - documentation deployment
@@ -10,9 +10,9 @@ keywords:
   - custom domain
 ---
 
-Managed hosting turns each approved Git revision into a release that cannot
-change after validation. A failed publish leaves the previous healthy release
-online.
+Managed hosting publishes reviewed Git changes without requiring you to run the
+hosting infrastructure. Thally validates a change before it becomes live, so a
+failed publish leaves the current site online.
 
 ## What triggers a publish
 
@@ -20,97 +20,78 @@ online.
 - Opening or updating a documentation pull request creates or refreshes an
   isolated preview.
 - Merging a Track documentation pull request follows the same production path.
-- Changing a supported setting or applying a runtime upgrade publishes a new
-  release.
-- **Redeploy site** rebuilds the current version; it does not upgrade the
-  runtime.
+- Changing a supported setting or applying a Thally update publishes the
+  result.
+- **Redeploy site** republishes the current version without changing it.
 
 The **Deployments** page shows the live production release, the latest preview,
 open preview count, commit details, status, and searchable history.
 
-## How a production release becomes live
+## How a production change becomes live
 
 <Steps>
-  <Step title="Thally records the Git revision">
-    The Deployments page keeps the commit and source branch attached to the
-    release, so you can tell exactly what is being published.
+  <Step title="Thally selects the Git revision">
+    The Deployments page shows the commit being published, so you can confirm
+    that it matches the change you approved.
   </Step>
-  <Step title="Thally validates the candidate">
-    The project is checked, built, and smoke-tested before it can become live.
+  <Step title="Thally builds and validates the site">
+    Content, navigation, links, and the production site are checked before the
+    change can publish.
   </Step>
-  <Step title="The release becomes live">
-    A successful candidate replaces the current release in one step. If any
-    check fails, the existing live site stays in place and the failure appears
-    in deployment details.
+  <Step title="The checked version becomes live">
+    If every check passes, Thally publishes the new version. If a check fails,
+    the existing live version stays in place and the deployment shows the
+    failure.
   </Step>
 </Steps>
 
-## Content-only publishes
+## Faster content updates
 
-When a new commit changes only `docs.json`, `src/content/**`, or `snippets/**`,
-Thally can reuse the validated site framework and publish the new content more
-quickly.
-
-The fast path is conservative. A force push, incomplete comparison, oversized
-change, unsupported file, runtime change, or uncertain result falls back to a
-full build. Falling back changes speed, not the validation contract.
+Changes limited to pages, navigation, or snippets can publish faster than a
+full application change. Thally still validates the result before it becomes
+live. When a change needs a full build, Thally chooses that path automatically.
 
 ## Pull-request previews
 
-Each open documentation pull request receives a stable preview address and a
-release for each revision. Its access settings and publishing state are
-separate from production.
-
-A preview is ready only after its validated release is selected by the preview
-route. Closing or merging the pull request retires the route and schedules its
-release files for cleanup. A preview cannot change the production route.
+Each open documentation pull request receives a preview address for its latest
+commit. Preview changes stay separate from production and cannot make
+themselves live. Closing or merging the pull request retires its preview.
 
 ## Roll back safely
 
-Owners and editors can select a previous validated release from deployment
-history. A rollback moves the site route to that saved release; it does not
-rebuild the site or rewrite Git history.
+Owners and editors can select a previous successful version from deployment
+history. A rollback restores that version without rewriting Git history.
 
-After a rollback, Thally pauses automatic production publishing. Pushes
-received while publishing is paused are recorded as superseded, so a later build cannot
-silently overwrite the rollback. Use an explicit publish to resume automated
-production updates after you have resolved the problem.
+After a rollback, Thally pauses automatic production publishing so a later
+change cannot immediately overwrite your choice. Use an explicit publish to
+resume automatic updates after you resolve the problem.
 
 ## Add a custom domain
 
 Open **Settings → Domains**, add the hostname, and copy the DNS records Thally
-shows into your DNS provider. Thally provisions the certificate and serves the
-same live release at both the custom hostname and the managed `thally.app`
-address.
+shows into your DNS provider. Thally provisions the certificate and connects
+the hostname to your site.
 
 Keep the managed address available while the custom domain is pending. Wait
 until the Domains page reports the custom hostname as verified, then open it
 in a private browser session.
 
-## Upgrade the site runtime
+## Update Thally
 
-Thally publishes immutable starter releases. When a newer compatible release
-is available, **Settings → Updates** shows **Update site**. Thally compares the
-starter your site began with, the new starter, and your repository.
+When a compatible update is available, **Settings → Updates** shows **Update
+site**. Review and apply the change from there. Thally leaves your pages,
+navigation, branding, and other authored files unchanged. If a framework file
+also has local edits, Thally identifies it for local review instead of
+overwriting it.
 
-- Files that still match the old starter update automatically.
-- Your pages, navigation, branding, and other authored files stay unchanged.
-- If a framework file also has local edits, Thally leaves it alone and tells
-  you which file needs review.
-
-When the update succeeds, Thally commits the safe framework changes and queues
-a publish. If the update needs review, run the commands below in a local
-checkout. The first previews the plan; the second applies the changes after
-you have reviewed them.
-
-For a self-hosted project, preview the same immutable update locally:
+For a self-hosted project, preview the same update locally:
 
 ```bash
 npx thally starter update
 npx thally starter update --apply
 ```
 
-This same local flow works for managed and self-hosted projects.
+The first command previews the change. The second applies it.
 
 ## Verify a publish
 
