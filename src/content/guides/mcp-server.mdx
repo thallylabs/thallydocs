@@ -1,7 +1,7 @@
 ---
-title: Connect an MCP client
-navTitle: MCP client
-description: Give Claude, Cursor, or another MCP-compatible tool structured access to search, read, and manage your docs.
+title: MCP tools reference
+navTitle: MCP tools
+description: Look up the local authoring and deployed-site tools available through Thally's MCP servers.
 ---
 
 `@thallylabs/mcp` is a [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI tools — Claude Code, Claude Desktop, Cursor, Windsurf — create, read, update, and migrate Thally documentation projects through natural language.
@@ -104,7 +104,7 @@ Add a page called "Authentication" to the Guides tab under a "Security" group
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `projectDir` | Yes | Path to the Thally project |
-| `pageId` | Yes | e.g. `guides/authentication` — no `.mdx` extension |
+| `pageId` | Yes | e.g. `guides/private-docs` — no `.mdx` extension |
 | `title` | Yes | Page title (frontmatter) |
 | `description` | No | Page description (frontmatter) |
 | `content` | No | MDX body (placeholder used if omitted) |
@@ -217,13 +217,13 @@ Search the docs for anything about rate limiting
 Reads the full content of a single page by ID.
 
 ```
-Read the "guides/authentication" page
+Read the "guides/private-docs" page
 ```
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `projectDir` | Yes | Path to the Thally project |
-| `pageId` | Yes | e.g. `guides/authentication` |
+| `pageId` | Yes | e.g. `guides/private-docs` |
 
 ---
 

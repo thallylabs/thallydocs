@@ -1,377 +1,199 @@
 ---
-title: Thally architecture
-description: How Thally keeps customer-owned documentation, product knowledge, reviewed updates, managed releases, and rollback connected without creating a second source of truth.
+title: How Thally works
+navTitle: How Thally works
+description: Understand what your repository owns, how Thally publishes it, and what happens when product or framework changes need documentation updates.
 keywords:
   - Thally architecture
-  - site creation
-  - product knowledge graph
-  - knowledge surfaces
-  - Track
-  - managed deployments
+  - managed hosting
+  - product knowledge
+  - documentation updates
+  - rollback
 ---
 
-Thally has one ownership rule:
+Thally keeps your documentation in Git and adds the services needed to create,
+publish, search, monitor, and update it. Your repository remains the source of
+truth for pages and versioned configuration.
 
-> Your repositories own your product and documentation. Thally reads exact
-> revisions, prepares reviewable changes, and publishes immutable releases;
-> it does not turn its database into a second copy of your docs.
-
-This guide describes the architecture users interact with: how a site is
-created, how product changes become evidence-backed documentation pull
-requests, and how an approved revision becomes a safe managed release.
+This guide explains the parts of the system that affect how you work with
+Thally. It intentionally leaves out Thally's internal deployment topology and
+service implementation.
 
 ## The system at a glance
 
 <Mermaid>{`
 flowchart LR
-    Team["Your team"] --> DocsRepo["Customer-owned docs repository"]
-    Team --> ProductRepos["Product repositories"]
-
-    ProductRepos --> Intake["Verified GitHub intake"]
-    Intake --> Knowledge["Product Knowledge Graph"]
-    Knowledge --> Impact["Affected-docs analysis"]
-    Impact --> Track["Track"]
-    Track --> Review["Review-gated pull requests"]
-    Review --> DocsRepo
-
-    DocsRepo --> Publish["Managed release pipeline"]
-    Publish --> Validate["Validation and smoke checks"]
-    Validate --> Route["Atomic live-release pointer"]
-    Route --> Readers["People and agents"]
+    Team["Your team"] --> Docs["Documentation repository"]
+    Product["Product repositories"] --> Knowledge["Product Knowledge"]
+    Knowledge --> Track["Track"]
+    Track --> Review["Documentation pull request"]
+    Review --> Docs
+    Docs --> Publish["Validation and publishing"]
+    Publish --> Site["Live documentation site"]
+    Site --> Readers["People and AI agents"]
 `}</Mermaid>
 
-The system has four layers:
+You interact with four parts:
 
-| Layer | Responsibility |
+| Part | What it does |
 | --- | --- |
-| Customer repositories | Product source, documentation MDX, configuration, branches, pull requests, and history |
-| Open-source runtime and toolchain | Rendering, content projections, validation, CLI, MCP, migration, and the customer-ready starter |
-| Thally Cloud control plane | Workspaces, billing, GitHub connections, site settings, product knowledge, Track, deployments, and release state |
-| Managed execution and delivery | Isolated builds and agents, immutable assets, routing, previews, and the live site |
+| **Your repository** | Stores pages, navigation, snippets, OpenAPI files, and versioned site defaults. |
+| **Thally runtime and tools** | Render the site, validate changes, expose agent-friendly formats, and support local authoring. |
+| **Thally Cloud** | Manages sites, hosting, releases, domains, analytics, Product Knowledge, Track, and workspace access. |
+| **GitHub** | Provides source history, pull-request review, and the events that start publishing or Track runs. |
 
-## One product, three repositories
+## What you own
 
-Thally separates authored runtime code, the customer-ready scaffold, and paid
-services so each has one clear owner.
-
-| Repository | What it owns |
-| --- | --- |
-| `thallylabs/thally` | The public runtime, content engine, CLI, MCP server, migration tools, and shared packages |
-| `thallylabs/starter` | The complete customer-ready project generated from one exact public runtime revision, plus starter-owned content and defaults |
-| `thallylabs/thally-cloud` | The private control plane, paid services, managed workers, billing, and hosting orchestration |
-
-`starter` is not another hand-maintained runtime. Release automation copies
-runtime-owned files from an exact `thally` commit, records the source commit
-and tree, and proves byte-for-byte parity. Cloud, the CLI, MCP, and migration
-therefore create the same project from one immutable scaffold release.
-
-### What you own in a site repository
-
-Most day-to-day work stays in these authored surfaces:
+Your normal authoring work stays in a small set of files:
 
 | Path | What you control |
 | --- | --- |
-| `src/content/**` | Documentation pages and frontmatter |
-| `docs.json` | Navigation and portable feature configuration |
+| `src/content/**` | Documentation pages and page metadata |
+| `docs.json` | Navigation and portable feature settings |
 | `src/data/site.ts` | Product identity, links, and versioned brand defaults |
 | `src/mdx/custom-components.tsx` | Project-specific MDX components |
 | `snippets/**` | Reusable content |
-| OpenAPI files | API definitions used by the reference renderer |
+| OpenAPI files | API definitions used to generate reference pages |
 
-Framework files are versioned in the repository so a site remains portable,
-but they come from the verified starter. Thally upgrades them with a three-way
-comparison: unchanged framework files update automatically, your authored
-content and settings stay untouched, and locally edited framework files stop
-for review instead of being overwritten.
+Framework files are also versioned in the repository so the project remains
+portable. You normally do not edit them. When Thally offers an update, it
+updates framework files that still match the earlier version and leaves your
+content and settings alone. If you changed a framework file yourself, Thally
+names it and asks you to review that part locally instead of overwriting it.
 
-## One content graph, many readers
+## One source feeds every format
 
-The runtime parses authored content once into a structured graph. Every public
-projection comes from that same representation:
+Thally reads each page into one structured content model. The website, search,
+Markdown, JSON, JSON-LD, agent discovery files, MCP tools, and readiness checks
+all use that same source.
 
-- pre-rendered HTML for people;
-- page JSON and JSON-LD;
-- Markdown mirrors;
-- `/llms.txt`, `/llms-full.txt`, `/ai.txt`, and `/AGENTS.md`;
-- `/api/docs-index` and `/api/search`;
-- the read-only `/api/mcp` server;
-- embeddings and Agent Readiness checks.
-
-Self-hosted projects normally read content from the filesystem. Managed
-releases use an asset-backed snapshot, so Thally can publish content-only
-changes without rebuilding or executing customer code. Both modes use the
-same content contract and produce the same public formats.
+This means a reviewed page change does not need to be copied into a separate
+AI knowledge base. People and agents receive different formats of the same
+published documentation.
 
 ## Managed and self-hosted sites
 
-Thally Cloud's control plane runs separately from the public documentation
-runtime. It manages accounts, workspaces, subscriptions, GitHub access, site
-configuration, jobs, and releases. Managed sites are delivered through
-Cloudflare Workers for Platforms, immutable R2 assets, and a hostname router.
+Choose the operating model that fits your team:
 
-A self-hosted site can link to Thally Cloud with a one-time opaque site token.
-Only a hash is stored; the runtime exchanges the token for a short-lived
-entitlement and configuration grant. Managed releases never receive that
-reusable token. They use a release-scoped credential that stops authorizing
-paid runtime features when the release is no longer active.
+| | Managed with Thally Cloud | Self-hosted |
+| --- | --- | --- |
+| Source ownership | Your GitHub repository | Your GitHub repository |
+| Builds and releases | Managed by Thally | Managed by your team |
+| Preview deployments | Included | Configure with your host |
+| Domains and certificates | Managed in Site settings | Configure with your host |
+| Rollback | Select an earlier validated release | Use your host and Git history |
+| Runtime updates | Guided **Update site** flow | Run the starter update locally |
 
-GitHub remains authoritative for docs and versioned configuration. For a
-managed site, portable settings changed in Thally Cloud are authoritative in
-the hosted release snapshot. Writing those settings back to the repository is
-an explicit synchronization action, not an automatic second source of truth.
+A self-hosted site can still connect to Thally Cloud for supported services.
+The connection does not transfer ownership of your documentation source.
 
-## 1. Creating and upgrading a site
+## Creating and updating a site
 
-Every creation path—Cloud, CLI, MCP, or migration—starts from the same stable
-scaffold record. That record pins the starter commit and tree, public runtime
-commit and tree, manifest checksum, content-source version, and site-identity
-contract version.
+Every supported creation path starts from the same tested Thally starter.
+You can create a repository from Thally Cloud, use the CLI or MCP tools, or
+migrate an existing documentation project.
+
+For a managed site, setup follows this flow:
 
 <Steps>
-  <Step title="Choose the site and documentation source">
-    Create a customer-owned repository from the current starter, or connect a
-    compatible existing Thally project and branch.
+  <Step title="Choose the documentation source">
+    Create a repository or connect an existing compatible Thally project and
+    production branch.
   </Step>
-  <Step title="Choose Product sources">
-    Optionally select repositories whose product changes the Product Knowledge
-    Graph and Track should observe. The docs repository cannot select itself.
-  </Step>
-  <Step title="Choose Knowledge surfaces">
-    Optionally select other Markdown or MDX repositories where Track may open
-    scoped draft pull requests. These destinations are separate from Product
-    sources and from the primary docs repository.
+  <Step title="Connect optional product sources">
+    Choose the repositories whose changes Product Knowledge and Track should
+    follow. You can skip this and connect them later.
   </Step>
   <Step title="Review and publish">
-    Thally saves the site and provisioning job before slow provider work,
-    verifies GitHub access, and enqueues the first immutable release.
+    Confirm the site address and repository. Thally saves the site before
+    starting setup, so retrying an interrupted setup does not create a
+    duplicate.
+  </Step>
+  <Step title="Keep the framework current">
+    When an update is available, use **Settings → Updates**. Safe framework
+    changes are committed and queued for publishing. Files needing your review
+    are left untouched and listed by name.
   </Step>
 </Steps>
 
-If setup is interrupted, Thally resumes the saved site instead of creating a
-duplicate.
+## From product change to documentation review
 
-For a known compatible starter, the first release may reuse a verified
-baseline and replace only site identity, configuration, and content. If any
-compatibility check is missing or uncertain, Thally falls back to the normal
-isolated build. The shortcut changes latency, not the validation contract.
-
-When a newer starter is available, **Update site** applies safe framework
-changes and queues a publish. Your content and settings stay unchanged. If a
-framework file also has local edits, Thally leaves it alone, names the file,
-and directs you to review the update locally.
-
-## 2. Durable GitHub intake
-
-One environment-specific Thally GitHub App handles repository access, managed
-deployments, previews, Track, checks, and review pull requests. Installation
-access is revalidated with short-lived tokens.
-
-For every supported GitHub event, Thally first verifies the signature over a
-bounded raw body and stores the exact delivery. It then claims the delivery
-idempotently and fans it out to the relevant managed deployment, preview,
-knowledge, and Track handlers.
-
-This durable inbox matters when a provider or worker is briefly unavailable:
-Thally can replay the already verified delivery without inventing an unsigned
-event or starting duplicate work.
-
-## 3. Product Knowledge Graph
-
-Product repositories are read at exact revisions. A short-lived knowledge job
-downloads a bounded archive, runs deterministic OpenAPI, MDX, and TypeScript
-extractors, and never installs dependencies or executes customer code.
-
-The graph keeps:
-
-- sources and bindings for each connected repository;
-- immutable snapshots and source events;
-- evidence spans tied to exact files and revisions;
-- stable product identities and versions;
-- assertions, semantic changes, and graph revisions; and
-- a current graph head selected only after a complete revision is ready.
-
-Unchanged extraction bundles can be reused. Missing or invalid evidence causes
-a full deterministic extraction, not a partial graph. Contradictions remain
-visible for review rather than being resolved by whichever statement arrived
-last.
-
-Impact analysis compares semantic changes with the current graph and records
-the candidate documentation pages, evidence, ranking features, and policy
-version. The result is a bounded explanation that Track and people can inspect.
-
-## 4. Track and Knowledge surfaces
-
-Track turns a product change into a reviewable documentation update. It has two
-explicit trigger modes:
-
-- a merged product pull request for production documentation work; or
-- an explicitly labelled preview pull request for documentation review before
-  the product change merges.
-
-Preview runs target the primary documentation workflow only. Connected
-Knowledge surfaces fan out from merged product changes, never an unmerged
-preview.
+Product Knowledge and Track are optional Thally Cloud services. They help your
+team find documentation work without giving an AI agent permission to publish
+on its own.
 
 <Mermaid>{`
 sequenceDiagram
     participant Product as Product repository
-    participant Cloud as Thally Cloud
-    participant Graph as Product Knowledge Graph
-    participant Agent as Isolated Track runner
+    participant Knowledge as Product Knowledge
+    participant Track as Track
     participant Docs as Documentation repository
-    participant Human as Reviewer
+    participant Person as Reviewer
 
-    Product->>Cloud: Verified merged or labelled-preview PR
-    Cloud->>Graph: Ingest exact source revision
-    Graph->>Cloud: Evidence-backed impact bundle
+    Product->>Knowledge: A connected product change merges
+    Knowledge->>Knowledge: Compare evidence with the previous version
+    Knowledge->>Track: Identify documentation that may need work
     alt No documented impact
-        Cloud-->>Product: Complete without model work
-    else Documentation needs work
-        Cloud->>Agent: Bounded job and short-lived capabilities
-        Agent->>Docs: Open review-gated pull request
-        Human->>Docs: Review, edit, merge, or reject
-        Docs->>Cloud: Verified merge event
-        Cloud->>Cloud: Publish exact docs revision
+        Track-->>Product: Finish without creating a pull request
+    else Documentation may need work
+        Track->>Docs: Open a draft pull request
+        Person->>Docs: Review, edit, merge, or reject
     end
 `}</Mermaid>
 
-The Track worker claims an encrypted, bounded job and runs the docs agent in a
-disposable Sandbox. Provider model credentials and GitHub App credentials stay
-in trusted control-plane services. The agent receives only the repository
-context and destination access needed for that run.
+Product sources provide the code or specifications Thally observes. The
+primary documentation repository receives the main documentation pull request.
+Optional Knowledge surfaces are other Markdown or MDX repositories where
+Track may open a tightly scoped draft pull request.
 
-Track never auto-merges its pull request.
+Track never merges its own pull requests. A person decides what becomes part
+of the documentation source.
 
-### Connected Knowledge surfaces
+## From Git commit to live release
 
-The primary documentation repository remains special: it uses ranked product
-impact and can trigger a managed deployment after a person merges the update.
+For managed hosting, a push to the production branch creates a release
+candidate. A documentation pull request receives an isolated preview.
 
-Owners and editors can also connect scoped Markdown or MDX destinations such
-as an SDK guide or release-notes repository. One merged product change can
-create independently metered child runs for up to five connected surfaces.
-Each destination records an exact repository, branch, root, allowed paths,
-validation policy, and administrator instructions.
+Before a candidate becomes live, Thally checks the exact revision, validates
+the project, builds what changed, and runs smoke checks. Only a successful
+candidate replaces the current release. If a build or check fails, readers
+continue to see the last healthy release.
 
-Connected runs use a constrained search-and-edit controller. They cannot run
-repository dependencies, scripts, generators, or workflows. They may open a
-draft `thally/agent-*` pull request inside the configured scope, but Thally
-never deploys that connected repository.
+Content-only changes can publish faster by reusing the already validated
+runtime. Changes to application code, assets, dependencies, or uncertain files
+use a full build. Both paths finish with the same validation and promotion
+rules.
 
-## 5. Managed delivery
+## Rollback and recovery
 
-Postgres is authoritative for deployment triggers, build jobs, releases, and
-their state. A managed release is immutable and records its site, target,
-commit, scaffold identity, runtime identity, content identity, and provider
-coordinates before it can become reachable.
+Each managed release is immutable. Rolling back selects an earlier validated
+release; it does not rebuild the site or rewrite Git history.
 
-### Full builds
+After a rollback, automatic production publishing pauses so a delayed build
+cannot immediately replace the release you restored. Resolve the source issue,
+then explicitly publish again to resume automatic updates.
 
-For an executable or uncertain change, a trusted Worker claims the exact job
-and runs the repository in a disposable, credential-free Cloudflare Sandbox.
-The build:
+Temporary provider or process failures do not replace the live release.
+Thally retains enough job and source information to retry supported work
+without creating duplicate releases.
 
-1. fetches the exact GitHub revision with a short-lived read-only token;
-2. applies the verified runtime overlay and compatible caches;
-3. runs the locked install, `thally check`, Cloudflare build, and dry-run;
-4. uploads versioned runtime and content artifacts through trusted code;
-5. smoke-checks `/`, `/llms.txt`, `/api/docs-index`, and `/AGENTS.md`; and
-6. reports the exact manifest before the control plane can promote it.
+## Security you can rely on
 
-### Content-only releases
+- Repository access uses the installed Thally GitHub App and is scoped to the
+  repositories you authorize.
+- Builds and Track jobs run in isolated environments with only the access they
+  need for that job.
+- Product extraction reads supported source files without installing or
+  executing the connected product repository.
+- Workspace and site permissions are checked on every Cloud operation.
+- Track opens pull requests for review and never auto-merges them.
+- Failed builds, previews, or Track runs cannot replace the live production
+  release.
 
-A strict descendant commit can take the faster content path only when every
-change is a bounded edit to `docs.json`, `src/content/**`, or `snippets/**`.
-Thally reuses the lineage root's checked runtime, applies content changes, and
-runs the same smoke and promotion contract without executing customer code.
+## Choose your next guide
 
-Force pushes, incomplete comparisons, public assets, executable files,
-unsupported paths, old lineage, or any uncertainty fall back to a full build.
-The fast path is an optimization, never a weaker correctness path.
-
-### Pull-request previews
-
-Managed documentation pull requests receive a stable site-specific preview
-address and an immutable release for each head revision. Preview routing,
-access policy, cache, checks, and deployment state are isolated from production.
-
-A preview cannot announce itself ready until its validated release is selected,
-and it can never move the production pointer. Closing an unmerged pull request
-retires its route. A successfully routed merged preview remains available for a
-short review window before cleanup.
-
-### Promotion and routing
-
-Uploading an artifact does not make it live. The final report must match the
-claimed site, release, commit, manifest, script, artifact prefix, and smoke
-results. Only then does the control plane move the site's active-release
-pointer under its lease and monotonic route-sequence checks.
-
-The hostname router requires an exact active tenant route before dispatching
-the corresponding Workers for Platforms script. Unknown, inactive, malformed,
-pending, or reserved hosts fail closed. Custom domains use the same release
-pointer and routing path after ownership and certificate checks.
-
-## 6. Rollback and recovery
-
-Rollback selects an earlier validated immutable release and moves the same
-route pointer. It does not rebuild, rewrite Git history, or mutate the retained
-artifact.
-
-After a rollback, automatic production publishing pauses. Pushes received
-while paused are durably marked superseded so a later queued deployment cannot
-silently undo the rollback. An explicit operator publish resumes automation.
-
-Provider and process failures leave the last known-good release live. Expired
-job claims are reclaimed, verified GitHub deliveries replay from the durable
-inbox, interrupted provider work reconciles, and exhausted queue messages stay
-available for diagnosis.
-
-## 7. Security boundaries
-
-The architecture is designed so one compromised or malformed input cannot
-silently cross tenant or provider boundaries:
-
-- every control-plane read and mutation is scoped to the active workspace;
-- webhook signatures are verified before JSON parsing;
-- creation keys, delivery IDs, job claims, and release triggers are idempotent;
-- reusable site tokens are hashed and short-lived capabilities are scoped;
-- customer code runs only in disposable Sandboxes without provider credentials;
-- trusted workers validate repository, revision, artifact, route, and report
-  coordinates against the original claim;
-- AI and analytics derive their workspace and site from a verified credential,
-  never request JSON; and
-- failed builds, previews, Track runs, or knowledge jobs cannot replace the
-  current production release.
-
-## 8. How Thally itself reaches production
-
-Thally uses the same reviewed-candidate principle for its own platform:
-
-1. a feature or fix pull request targets `main`;
-2. impact-aware CI and an immutable deploy preview verify the candidate;
-3. the exact reviewed commit merges once to `main`;
-4. Netlify and only the affected Cloudflare Workers deploy production; and
-5. release capture writes an immutable cross-provider manifest for rollback.
-
-There is no long-lived staging branch or second promotion build for ordinary
-platform releases. The reviewed pull-request preview is the staging boundary.
-
-Public runtime releases follow a separate provenance chain: author the runtime
-in `thally`, generate and verify the `starter` snapshot, promote their exact
-paired identities, and move Cloud's stable scaffold channel only after its
-verification gates pass. Existing sites update through the safe three-way site
-upgrade flow rather than silently changing underneath their owners.
-
-## Related guides
-
-- [The product-change pipeline](/product-change-pipeline) explains the review
-  and evidence contract.
-- [Thally Cloud quickstart](/quickstart) creates a managed site.
-- [Set up Thally Track](/guides/thally-track) connects Product sources and
-  Knowledge surfaces.
-- [Deploy your documentation](/guides/deploying) covers self-hosted targets.
-- [Use the MCP server](/guides/mcp-server) gives coding agents structured
-  authoring and read access.
-- [`thally check`](/guides/cli-reference) validates authored content and
-  configuration before release.
+- [Create and manage a Cloud site](/guides/thally-cloud)
+- [Publish with managed hosting](/guides/managed-hosting)
+- [Set up Thally Track](/guides/thally-track)
+- [Review Product Knowledge](/guides/product-knowledge)
+- [Deploy the open-source runtime yourself](/guides/deploying)
+- [Update a site's framework](/guides/managed-hosting#upgrade-the-site-runtime)

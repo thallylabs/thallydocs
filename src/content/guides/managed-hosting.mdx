@@ -10,10 +10,9 @@ keywords:
   - custom domain
 ---
 
-Managed hosting turns each approved Git revision into an immutable release: a
-set of files that cannot change after validation.
-Thally validates and smoke-tests a candidate before it moves the site's live
-route, so a failed publish leaves the previous release online.
+Managed hosting turns each approved Git revision into a release that cannot
+change after validation. A failed publish leaves the previous healthy release
+online.
 
 ## What triggers a publish
 
@@ -32,33 +31,25 @@ open preview count, commit details, status, and searchable history.
 ## How a production release becomes live
 
 <Steps>
-  <Step title="Thally records the exact revision">
-    The release is tied to one site, environment, Git commit, runtime release,
-    and saved release location before execution begins.
+  <Step title="Thally records the Git revision">
+    The Deployments page keeps the commit and source branch attached to the
+    release, so you can tell exactly what is being published.
   </Step>
-  <Step title="The build runs in isolation">
-    A disposable builder receives the repository files and short-lived access
-    needed for that job. It does not receive reusable GitHub, Cloudflare,
-    model, site, or platform credentials.
+  <Step title="Thally validates the candidate">
+    The project is checked, built, and smoke-tested before it can become live.
   </Step>
-  <Step title="The candidate is checked">
-    Thally installs locked dependencies, runs the platform-owned content
-    checks, builds the Cloudflare release, performs a deployment dry run, and
-    smoke-tests the homepage and required agent endpoints.
-  </Step>
-  <Step title="The route moves atomically">
-    Thally promotes the candidate only when its report matches the expected
-    site, release, commit, file list, and smoke results. If any check fails, the
-    existing live release stays in place.
+  <Step title="The release becomes live">
+    A successful candidate replaces the current release in one step. If any
+    check fails, the existing live site stays in place and the failure appears
+    in deployment details.
   </Step>
 </Steps>
 
 ## Content-only publishes
 
-Supported managed sites keep documentation content separate from the Worker
-runtime. When a new commit changes only `docs.json`, `src/content/**`, or
-`snippets/**`, Thally can reuse the validated runtime and publish the new
-content without running customer code.
+When a new commit changes only `docs.json`, `src/content/**`, or `snippets/**`,
+Thally can reuse the validated site framework and publish the new content more
+quickly.
 
 The fast path is conservative. A force push, incomplete comparison, oversized
 change, unsupported file, runtime change, or uncertain result falls back to a
@@ -66,9 +57,9 @@ full build. Falling back changes speed, not the validation contract.
 
 ## Pull-request previews
 
-Each open documentation pull request receives a stable preview address and one
-immutable release per head commit. Preview routes, caches, configuration,
-password policy, and release pointers are separate from production.
+Each open documentation pull request receives a stable preview address and a
+release for each revision. Its access settings and publishing state are
+separate from production.
 
 A preview is ready only after its validated release is selected by the preview
 route. Closing or merging the pull request retires the route and schedules its
@@ -88,9 +79,9 @@ production updates after you have resolved the problem.
 ## Add a custom domain
 
 Open **Settings → Domains**, add the hostname, and copy the DNS records Thally
-shows into your DNS provider. Thally provisions the certificate and sends the
-custom hostname through the same tenant router and active release as the
-managed `thally.app` address.
+shows into your DNS provider. Thally provisions the certificate and serves the
+same live release at both the custom hostname and the managed `thally.app`
+address.
 
 Keep the managed address available while the custom domain is pending. Wait
 until the Domains page reports the custom hostname as verified, then open it

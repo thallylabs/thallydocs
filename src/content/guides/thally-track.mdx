@@ -17,8 +17,8 @@ pull request for your team to review.
 
 Track is a Thally Cloud service. It connects verified GitHub changes to the
 Product Knowledge Graph, uses evidence-backed impact analysis to select the
-documentation that may need work, and runs the docs agent inside an isolated
-environment. It never auto-merges its pull requests.
+documentation that may need work, and prepares a draft for your team. It never
+auto-merges its pull requests.
 
 ## Product sources and Knowledge surfaces
 
@@ -46,8 +46,7 @@ settings.
   </Step>
   <Step title="Authorize the repository">
     Install or update the Thally GitHub App for the account that owns the
-    product repository. Thally revalidates access with a short-lived
-    installation token whenever it needs the repository.
+    product repository.
   </Step>
   <Step title="Choose what Track watches">
     Select the repository and base branch. Add path filters when only part of a
@@ -100,9 +99,7 @@ Track supports two explicit modes:
 ### Merged product changes
 
 When a pull request merges into a connected Product source's configured base
-branch, the shared Thally GitHub webhook verifies and durably records the
-delivery. Track reserves the run idempotently and ties every later step to the
-exact merged revision.
+branch, Track evaluates the exact merged revision.
 
 ### Preview product changes
 
@@ -119,7 +116,7 @@ sequenceDiagram
     participant GH as Product repository
     participant Cloud as Thally Cloud
     participant Graph as Product Knowledge Graph
-    participant Worker as Track Worker
+    participant Track as Track
     participant Docs as Documentation repository
     participant Person as Reviewer
 
@@ -130,51 +127,43 @@ sequenceDiagram
     alt No tracked impact
         Cloud-->>GH: Complete without model work or a pull request
     else Documentation may need work
-        Cloud->>Worker: Send a bounded, encrypted job claim
-        Worker->>Worker: Edit and validate in a disposable Sandbox
-        Worker->>Docs: Open a review-gated pull request
+        Cloud->>Track: Send the affected pages and evidence
+        Track->>Track: Prepare and validate the documentation update
+        Track->>Docs: Open a review-gated pull request
         Person->>Docs: Review, edit, merge, or reject
         Docs->>Cloud: Verified merge event
         Cloud->>Cloud: Publish the exact docs commit when managed
     end
 `}</Mermaid>
 
-The impact bundle contains the product revision, semantic changes, ranked
-target pages, evidence, and policy version. A vector or text match may suggest
-a page, but evidence and a supported product-to-documentation path are what
-make it eligible for the run.
-
-The Track Worker receives an opaque queue capability rather than a reusable
-credential. The job is encrypted at rest. Provider model keys and the GitHub
-App private key remain in trusted control-plane services; the disposable
-Sandbox gets only the bounded context and destination-scoped access it needs.
+Track compares the product revision with the earlier version and gathers the
+evidence behind each suggested documentation page. A text or meaning-based
+match can suggest a page, but inspectable product evidence is what makes the
+suggestion useful to a reviewer.
 
 ## Review and publication
 
 Track's output is a normal GitHub pull request. Reviewers can change, accept,
 or reject it. The activity record keeps the source revision and evidence that
-led to the proposal, while private job instructions and credentials never
-enter the repository.
+led to the proposal.
 
-For the primary docs repository, merging the pull request creates a verified
-GitHub event for the exact docs commit. A managed site then uses the normal
-content-only or full-build pipeline, smoke-checks the immutable candidate, and
-moves the live release pointer only after validation succeeds.
+For the primary docs repository, merging the pull request publishes through
+the same path as any other reviewed documentation change. The update becomes
+live only after the resulting release passes validation.
 
 Connected Knowledge surfaces stop at the merged draft pull request. Thally
 does not publish or otherwise operate the connected repository.
 
-## Safety and failure behavior
+## What to expect
 
-- GitHub signatures are verified before a delivery is accepted.
-- Delivery IDs and Track run reservations make retries idempotent.
-- Archives, selected files, prompt context, output, and run attempts are
-  bounded.
-- Product extraction never installs dependencies or executes customer code.
-- The runner may edit only allowed documentation paths.
-- A no-impact result completes without model use or a pull request.
-- A failed Track run cannot change the live documentation release.
-- The agent never auto-merges.
+- A product change with no documented impact completes without creating a pull
+  request.
+- Every suggestion links back to product evidence you can inspect.
+- Track edits only the documentation destination and paths you allowed.
+- Connected product repositories are read without running their dependencies
+  or scripts.
+- A failed run cannot change the live documentation site.
+- You always review and merge the resulting pull request yourself.
 
 ## Self-hosted authoring tools
 

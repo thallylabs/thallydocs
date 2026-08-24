@@ -47,16 +47,9 @@ instead of presenting empty data as a successful setup.
 For a self-hosted runtime, `/admin/analytics` uses the same service bridge when
 the deployment has a valid Cloud connection.
 
-For serverless deployments, set remote libSQL variables when the connected
-service or other runtime state needs durable storage:
-
-```bash
-THALLY_ANALYTICS_DB_URL=libsql://your-database.turso.io
-THALLY_ANALYTICS_DB_TOKEN=your-token
-```
-
-Local development and persistent-disk hosts can use the `.data/analytics/`
-database created by the runtime.
+You do not need to configure an analytics database for a managed Cloud site.
+If you operate the open-source runtime and need site-local analytics to survive
+redeploys, see [Self-hosted settings](/guides/environment-variables#keep-self-hosted-state-after-a-redeploy).
 
 ## Cookies and consent
 
@@ -111,5 +104,5 @@ the problem. Read the page, reproduce the task, and update the permanent docs.
 
 - [Manage sites with Thally Cloud](/guides/thally-cloud)
 - [Manage the built-in site admin](/guides/admin-dashboard)
-- [Environment variables](/guides/environment-variables)
+- [Self-hosted settings](/guides/environment-variables)
 - [Troubleshoot a deployment](/guides/troubleshooting)

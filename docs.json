@@ -209,11 +209,19 @@
           "icon": "wrench",
           "pages": [
             "guides/deploying",
+            "guides/managed-hosting"
+          ]
+        },
+        {
+          "group": "Self-host",
+          "icon": "wrench",
+          "pages": [
             "guides/deploy-vercel",
             "guides/deploy-cloudflare",
             "guides/deploy-docker",
             "guides/private-docs",
-            "guides/environment-variables"
+            "guides/environment-variables",
+            "guides/admin-dashboard"
           ]
         },
         {
@@ -221,26 +229,29 @@
           "icon": "grid-round",
           "pages": [
             "guides/thally-cloud",
-            "guides/managed-hosting",
-            "guides/admin-dashboard",
             "guides/analytics-and-feedback",
             "guides/troubleshooting",
             "guides/migrating"
           ]
         },
         {
-          "group": "Automate updates",
+          "group": "Keep docs current",
           "icon": "code-simple",
           "pages": [
             "product-change-pipeline",
             "guides/product-knowledge",
-            "guides/docs-agent",
             "guides/thally-track",
-            "guides/provenance",
-            "guides/mcp-server",
+            "guides/docs-agent",
+            "guides/provenance"
+          ]
+        },
+        {
+          "group": "AI and agent access",
+          "icon": "code-simple",
+          "pages": [
+            "guides/ai-features",
             "guides/remote-mcp",
-            "guides/agent-manifests",
-            "guides/ai-features"
+            "guides/agent-manifests"
           ]
         },
         {
@@ -249,22 +260,9 @@
           "pages": [
             "guides/docs-json-reference",
             "guides/cli-reference",
+            "guides/mcp-server",
             "architecture",
             "guides/extending"
-          ]
-        },
-        {
-          "group": "Example content",
-          "icon": "book-open",
-          "hidden": true,
-          "pages": [
-            "authentication",
-            "pagination",
-            "webhooks",
-            "sdks",
-            "errors",
-            "customization",
-            "showcase"
           ]
         }
       ]

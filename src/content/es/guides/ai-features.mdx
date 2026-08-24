@@ -79,7 +79,7 @@ GET /llms-full.txt
 Sirve una única página de documentación como Markdown limpio con frontmatter YAML. Útil para el acceso programático a páginas individuales.
 
 ```
-GET /api/docs/guides/authentication
+GET /api/docs/guides/private-docs
 ```
 
 Respuesta:
@@ -88,7 +88,7 @@ Respuesta:
 ---
 title: Authentication
 description: How to authenticate requests to the API.
-url: https://docs.example.com/guides/authentication
+url: https://docs.example.com/guides/private-docs
 ---
 
 # Authentication
@@ -117,7 +117,7 @@ Los resultados se puntúan por calidad de coincidencia en el título (3 pts), de
 Lee el contenido completo de una sola página por su ID.
 
 ```
-Read the "guides/webhooks" page from the acme-docs project
+Read the "guides/api-reference-setup" page from the acme-docs project
 ```
 
 ### `get_context`

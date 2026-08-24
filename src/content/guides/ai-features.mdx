@@ -86,18 +86,18 @@ The `/api/docs/{slug}` endpoint serves different formats based on the request:
 
 ```bash
 # Structured JSON — for agent pipelines
-curl https://docs.example.com/api/docs/guides/authentication \
+curl https://docs.example.com/api/docs/guides/private-docs \
   -H "Accept: application/json"
 
 # Explicit format override — same result, no Accept header needed
-curl "https://docs.example.com/api/docs/guides/authentication?format=json"
+curl "https://docs.example.com/api/docs/guides/private-docs?format=json"
 
 # Markdown with YAML frontmatter — token-efficient for simple lookups (default)
-curl https://docs.example.com/api/docs/guides/authentication \
+curl https://docs.example.com/api/docs/guides/private-docs \
   -H "Accept: text/markdown"
 ```
 
-Agents that visit a human-facing URL (e.g. `/guides/authentication`) with `Accept: application/json` are transparently rewritten to the API — the URL in the response is unchanged.
+Agents that visit a human-facing URL (for example, `/guides/private-docs`) with `Accept: application/json` are transparently rewritten to the API — the URL in the response is unchanged.
 
 ### Response schema
 
@@ -105,9 +105,9 @@ Agents that visit a human-facing URL (e.g. `/guides/authentication`) with `Accep
 {
   "schema_version": "1",
 
-  "id": "guides/authentication",
-  "url": "https://docs.example.com/guides/authentication",
-  "canonical_url": "https://docs.example.com/guides/authentication",
+  "id": "guides/private-docs",
+  "url": "https://docs.example.com/guides/private-docs",
+  "canonical_url": "https://docs.example.com/guides/private-docs",
 
   "title": "Authentication",
   "description": "How to authenticate requests to the API.",
@@ -164,8 +164,8 @@ Every `/api/docs` response includes cache and discovery headers:
 Content-Type: application/json
 Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400
 Vary: Accept
-Link: </guides/authentication>; rel="canonical"
-Link: </guides/authentication?format=json>; rel="alternate"; type="application/json"
+Link: </guides/private-docs>; rel="canonical"
+Link: </guides/private-docs?format=json>; rel="alternate"; type="application/json"
 ```
 
 ### Automatic agent detection
@@ -198,11 +198,11 @@ GET /api/docs-index
   "total": 52,
   "pages": [
     {
-      "id": "guides/authentication",
+      "id": "guides/private-docs",
       "title": "Authentication",
       "description": "How to authenticate requests to the API.",
-      "url": "https://docs.example.com/guides/authentication",
-      "api_url": "https://docs.example.com/api/docs/guides/authentication",
+      "url": "https://docs.example.com/guides/private-docs",
+      "api_url": "https://docs.example.com/api/docs/guides/private-docs",
       "tab": "Guides",
       "group": "Security"
     }
@@ -243,8 +243,8 @@ Every documentation page includes a `<script type="application/ld+json">` block 
   "@type": "TechArticle",
   "name": "Authentication",
   "description": "How to authenticate requests to the API.",
-  "url": "https://docs.example.com/guides/authentication",
-  "identifier": "guides/authentication",
+  "url": "https://docs.example.com/guides/private-docs",
+  "identifier": "guides/private-docs",
   "dateModified": "2026-02-01",
   "isPartOf": { "@type": "WebSite", "url": "https://docs.example.com" }
 }
@@ -254,7 +254,7 @@ Each page's `<head>` also includes a `<link rel="alternate">` pointing to the JS
 
 ```html
 <link rel="alternate" type="application/json"
-  href="/guides/authentication?format=json" />
+  href="/guides/private-docs?format=json" />
 ```
 
 ---
@@ -326,7 +326,7 @@ Results are scored by match quality in title (3 pts), description (2 pts), keywo
 Reads the full content of a single page by its ID.
 
 ```
-Read the "guides/webhooks" page from the acme-docs project
+Read the "guides/api-reference-setup" page from the acme-docs project
 ```
 
 ### `get_context`

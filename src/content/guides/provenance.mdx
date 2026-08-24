@@ -28,10 +28,12 @@ verifiedVersion: "2.3.0"     # optional: the product version it was verified aga
 ```
 
 <Note>
-`lastUpdated` and `lastVerified` mean different things. **Updated** is when the page changed; **verified** is when someone last confirmed it's still correct against the product. A page can be verified without being edited — that's the strongest freshness signal, and no other docs platform ships it in a form agents can read.
+`lastUpdated` and `lastVerified` mean different things. **Updated** is when the
+page changed; **verified** is when someone last confirmed it still matches the
+product. A page can be verified without being edited.
 </Note>
 
-## Internal: sources & drift
+## Private verification metadata
 
 The mechanism behind `lastVerified` is a set of **sources** — the code a page documents — and the commit it was last checked against. These live in frontmatter but are **never published**: a consuming agent can't interpret a file path from a repo it can't see, so Thally strips them from every public projection.
 
@@ -39,7 +41,7 @@ The mechanism behind `lastVerified` is a set of **sources** — the code a page 
 ---
 title: Swap tokens
 lastVerified: 2026-07-01
-# Internal — read only by `thally check --drift`, never served publicly:
+# Read only by `thally check --drift`; never served publicly:
 sources:
   - src/networks.ts
   - "openapi.yaml#/paths/~1swap"

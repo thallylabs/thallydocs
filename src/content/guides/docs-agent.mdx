@@ -16,9 +16,9 @@ drafts a focused change in your house style, runs `thally check`, and gives you
 a branch or pull request to review.
 
 The `thally agent` command and its generated GitHub workflow run in your
-environment with your Anthropic key. Cloud Track uses the same reviewed-output
-contract but runs behind Thally's isolated managed worker. See
-[Thally Track](/guides/thally-track) before choosing the operating model.
+environment with your Anthropic key. Choose [Thally Track](/guides/thally-track)
+instead when you want Thally Cloud to manage product-change detection and the
+drafting workflow.
 
 ## Quick start
 
@@ -75,9 +75,11 @@ Drop an `AGENTS.md` in your docs project to give the agent house rules — tone,
 - New API endpoints go under the "API Reference" tab, not "Guides".
 ```
 
-## Automation
+## Automate review-gated drafts
 
-The CLI is the whole engine. To make it autonomous, wire GitHub triggers that produce the same task — then engineering's contribution to docs is one `@thally` comment, and DevRel reviews a queue of agent-drafted PRs.
+You can connect the docs agent to GitHub so a collaborator can request a draft
+with an `@thally` comment and your documentation team can review the resulting
+pull request.
 
 The model is **hub-and-spoke**: your docs repo is the hub (it holds the workflow, the `ANTHROPIC_API_KEY`, and all config); each product repo gets a tiny sender. Secrets never scatter.
 
