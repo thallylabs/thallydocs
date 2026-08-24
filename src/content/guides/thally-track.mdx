@@ -1,166 +1,183 @@
 ---
 title: Turn product changes into docs pull requests
 navTitle: Thally Track
-description: Connect product repositories, identify affected documentation from evidence, and prepare updates for human review.
+description: Connect Product sources and Knowledge surfaces, then let Thally prepare evidence-backed documentation pull requests for human review.
 keywords:
   - thally track
-  - product changes
-  - documentation pull requests
-  - documentation automation
-  - product knowledge
+  - product sources
+  - knowledge surfaces
+  - docs automation
+  - product knowledge graph
+  - keep docs in sync with code
 ---
 
-Thally Track follows merged product pull requests, identifies documentation
-with an evidence-backed impact, and prepares a documentation pull request for
-your team. The agent never merges its own work.
+Connect the repositories that describe your product. When a matching product
+pull request merges, Thally Track finds affected documentation and prepares a
+pull request for your team to review.
 
-Use **Cloud Track** for the managed workflow in `app.thally.io`. Use the
-`thally track` CLI when you intentionally operate the self-managed GitHub
-workflow from a documentation repository.
+Track is a Thally Cloud service. It connects verified GitHub changes to the
+Product Knowledge Graph, uses evidence-backed impact analysis to select the
+documentation that may need work, and prepares a draft for your team. It never
+auto-merges its pull requests.
 
-## How Cloud Track works
+## Product sources and Knowledge surfaces
 
-```text
-merged product PR
-        │
-        ▼
-exact revision → Product Knowledge → affected pages + evidence
-                                          │
-                                          ▼
-                              documentation pull request
-                                          │
-                                   human review + merge
-                                          │
-                                          ▼
-                               managed documentation release
-```
+These connections have different jobs:
+
+| Connection | What it contributes | What Thally may do |
+| --- | --- | --- |
+| **Product source** | Product code and specifications that Track observes | Read an exact revision, extract evidence, and calculate documentation impact |
+| **Primary docs repository** | The documentation site connected to the Thally site | Open a review-gated docs pull request; publish the exact merged revision when managed hosting is enabled |
+| **Knowledge surface** | Another explicitly connected Markdown or MDX repository | Open a scoped draft pull request; never deploy the repository |
+
+The primary docs repository cannot also be one of its own Product sources. That
+hard boundary prevents a documentation update from looking like a new product
+change and creating a loop.
+
+## Connect Product sources
+
+You can connect Product sources while creating a site or later from the site's
+settings.
 
 <Steps>
-  <Step title="A verified GitHub event records the change">
-    Track acts on a pull request merged into a configured branch, or on an
-    explicitly labelled preview pull request. Direct pushes do not start a
-    Track documentation run.
+  <Step title="Open Product sources">
+    In Thally Cloud, open the site and select **Track**. Owners and editors can
+    manage the connected repositories from that page.
   </Step>
-  <Step title="Product Knowledge reads the exact revision">
-    The ingestion job extracts supported facts and meaningful product changes
-    from the immutable commit. It keeps file evidence for every retained fact.
+  <Step title="Authorize the repository">
+    Install or update the Thally GitHub App for the account that owns the
+    product repository.
   </Step>
-  <Step title="Impact analysis selects documentation">
-    A candidate page must have a supported relationship path and evidence.
-    Search or vector similarity can suggest a page but cannot prove impact.
+  <Step title="Choose what Track watches">
+    Select the repository and base branch. Add path filters when only part of a
+    monorepo represents the product surface Track should observe. You can also
+    choose the destination tab and group where new primary-documentation pages
+    from this source should appear.
   </Step>
-  <Step title="The agent prepares the update">
-    A disposable Track worker receives a bounded evidence bundle and only the
-    affected pages. It edits the documentation checkout, runs `thally check`,
-    and opens a normal GitHub pull request.
-  </Step>
-  <Step title="Your team decides what publishes">
-    Reviewers can correct, merge, or close the pull request. A merge creates a
-    managed documentation release through the same deployment checks as any
-    other production change.
+  <Step title="Save the Product source">
+    Track is ready. Future matching pull requests can create product snapshots
+    and impact runs for this site.
   </Step>
 </Steps>
 
-If no page has a supported impact, the run finishes as **No docs changes
-needed** without creating a pull request.
+Each Product source keeps its own repository, branch, optional path filters,
+destination tab and group placement, and enabled state. A site can connect
+multiple sources so an API, SDK, and web application can contribute to the
+same product model without sharing mutable repository state.
 
-## Set up Cloud Track
+## Connect Knowledge surfaces
 
-You need a Cloud plan or active trial and a GitHub App installation that can
-read the selected product repository and create pull requests in the
-documentation repository.
+Use Knowledge surfaces when a product change may also require an update in a
+separate Markdown or MDX repository—for example SDK guides, tutorials, or
+release notes.
 
-1. Open the site in [Thally Cloud](https://app.thally.io/).
-2. Select **Track**.
-3. If GitHub is not connected, open **Settings → Git** and install or update
-   the Thally GitHub App for the required organization and repositories.
-4. Under **Product repositories**, add the repository, production branch, and
-   any path policy you want Track to watch.
-5. Use the simulation control to test the mapping before you wait for the next
-   merge.
-6. Confirm **Recent updates** shows the run and its current status.
+When Knowledge surfaces are available for the workspace, open **Site settings
+→ Knowledge surfaces**, choose a repository that the Thally GitHub App can
+access, and confirm:
 
-You can also choose up to five product repositories during site creation. The
-documentation repository is excluded from that selection to prevent an update
-loop.
+- the base branch;
+- the repository root Track may inspect;
+- the exact Markdown or MDX paths Track may change;
+- the validation policy; and
+- any administrator instructions for that destination.
 
-## Follow a run
+Thally records those boundaries with each run. Pausing or removing a surface
+affects future product changes without invalidating a run that has already
+been claimed or orphaning an open pull request.
 
-The Track page reports the workflow in user-facing states:
+<Note type="info" title="A Knowledge surface is not another managed site">
+Thally may open a scoped draft pull request in the connected repository, but
+it never runs that repository's dependencies, scripts, generators, or
+workflows and never deploys it. The repository's own team reviews and ships the
+change through its normal process.
+</Note>
 
-| Status | Meaning |
-| --- | --- |
-| Checking changes | Thally is determining whether the product change affects documentation. |
-| Waiting | The run is queued for the next durable step. |
-| Updating docs | The isolated agent is preparing and checking the edit. |
-| Draft ready | A documentation pull request is waiting for review. |
-| Ready to publish | The documentation pull request merged and is waiting for its release. |
-| Publishing | The managed site is publishing the reviewed commit. |
-| Published | The reviewed documentation is live. |
-| No docs changes needed | No evidence-backed page required an update. |
-| Needs attention or Timed out | Open the run for the saved failure and safe next action. |
+## What triggers Track
 
-Read the saved status before you retry a run. Track records GitHub deliveries
-and each claimed step so the same event does not create duplicate work. A
-retry helps only after you resolve the reported requirement.
+Track supports two explicit modes:
 
-## Preview documentation before a product merge
+### Merged product changes
 
-Add the **`docs-preview`** label to an open product pull
-request when you want the proposed docs reviewed beside the product change.
-Track keeps the preview graph separate from production and can refresh the
-draft for a new head commit. The resulting documentation pull request is still
-review-only and cannot publish by itself.
+When a pull request merges into a connected Product source's configured base
+branch, Track evaluates the exact merged revision.
 
-## Use the self-managed CLI workflow
+### Preview product changes
 
-The public CLI keeps a repository-local `tracking` block in `docs.json`. This
-path uses your GitHub workflow and credentials; it does not create a Cloud
-Track configuration.
+An explicitly labelled preview pull request can ask Track to prepare docs
+before the product change merges. Preview runs remain separate from merged
+production runs, so an unmerged revision cannot silently become production
+product knowledge. Preview runs do not fan out to connected Knowledge
+surfaces; those destinations are updated only from merged product changes.
 
-Register and test a repository from the documentation project root:
+## How a Track run works
 
-```bash
-npx thally track add acme/api-server \
-  --branch main \
-  --paths "src/**,openapi.yaml" \
-  --tab "API Reference"
+<Mermaid>{`
+sequenceDiagram
+    participant GH as Product repository
+    participant Cloud as Thally Cloud
+    participant Graph as Product Knowledge Graph
+    participant Track as Track
+    participant Docs as Documentation repository
+    participant Person as Reviewer
 
-npx thally track list
-npx thally track test acme/api-server --pr 128
-npx thally track setup acme/api-server
-```
+    GH->>Cloud: Signed merged or labelled-preview PR event
+    Cloud->>Cloud: Store and claim the verified delivery
+    Cloud->>Graph: Ingest the exact source revision
+    Graph->>Cloud: Return an evidence-backed impact bundle
+    alt No tracked impact
+        Cloud-->>GH: Complete without model work or a pull request
+    else Documentation may need work
+        Cloud->>Track: Send the affected pages and evidence
+        Track->>Track: Prepare and validate the documentation update
+        Track->>Docs: Open a review-gated pull request
+        Person->>Docs: Review, edit, merge, or reject
+        Docs->>Cloud: Verified merge event
+        Cloud->>Cloud: Publish the exact docs commit when managed
+    end
+`}</Mermaid>
 
-`track add` stores the repository owner, name, base branch, optional path
-globs, and optional navigation destination. `track test` uses the specified
-pull request, or the latest pull request merged into the tracked base branch.
-Without `ANTHROPIC_API_KEY`, it prints the bounded instruction and diff
-context. With the key, it can run the docs agent as a dry run.
+Track compares the product revision with the earlier version and gathers the
+evidence behind each suggested documentation page. A text or meaning-based
+match can suggest a page, but inspectable product evidence is what makes the
+suggestion useful to a reviewer.
 
-`track setup` prints the GitHub configuration for the repository-local
-workflow. Follow that output because the required secret depends on the access
-mode you choose.
+## Review and publication
 
-## Run the same self-managed analysis through MCP
+Track's output is a normal GitHub pull request. Reviewers can change, accept,
+or reject it. The activity record keeps the source revision and evidence that
+led to the proposal.
 
-The local MCP server exposes `sync_from_repo`:
+For the primary docs repository, merging the pull request publishes through
+the same path as any other reviewed documentation change. The update becomes
+live only after the resulting release passes validation.
 
-- `dryRun: true` previews the task for a tracked repository and optional pull
-  request number;
-- `dryRun: false` with `docsRepo` dispatches the task to the documentation
-  repository.
+Connected Knowledge surfaces stop at the merged draft pull request. Thally
+does not publish or otherwise operate the connected repository.
 
-This tool reads the local project's `tracking` configuration. It is not the API
-for the Cloud Track page.
+## What to expect
 
-## Keep the trust boundary clear
+- A product change with no documented impact completes without creating a pull
+  request.
+- Every suggestion links back to product evidence you can inspect.
+- Track edits only the documentation destination and paths you allowed.
+- Connected product repositories are read without running their dependencies
+  or scripts.
+- A failed run cannot change the live documentation site.
+- You always review and merge the resulting pull request yourself.
 
-- GitHub remains the source of product and documentation history.
-- Product Knowledge retains exact evidence for the change.
-- Track receives a bounded task, not unrestricted workspace knowledge.
-- Customer repository code is not executed during knowledge extraction.
-- The agent validates the proposed edit but never approves or merges it.
-- A managed release is promoted only after its own build and smoke checks.
+## Self-hosted authoring tools
 
-Continue to [Review Product Knowledge](/guides/product-knowledge) to understand
-the evidence and impact decisions behind each run.
+The public `thally` CLI, docs agent, and MCP server can still help a developer
+prepare documentation locally. Those authoring tools are separate from the
+canonical Cloud Track pipeline described here. You do not need to expose a
+Track webhook from the documentation runtime or store a product-repository PAT
+inside a managed site.
+
+## Next steps
+
+- [Read the architecture guide](/architecture) for the complete site,
+  knowledge, and managed-delivery flow.
+- [Understand the product-change pipeline](/product-change-pipeline).
+- [Use the docs agent locally](/guides/docs-agent).
+- [Connect an MCP client](/guides/mcp-server).
+- [Review provenance and freshness](/guides/provenance).

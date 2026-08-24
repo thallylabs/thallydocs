@@ -1,7 +1,7 @@
 ---
-title: Connect an MCP client
-navTitle: MCP client
-description: Give Claude, Cursor, or another MCP-compatible tool structured access to search, read, and manage your docs.
+title: MCP tools reference
+navTitle: MCP tools
+description: Look up the local authoring and deployed-site tools available through Thally's MCP servers.
 ---
 
 `@thallylabs/mcp` is a [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI tools — Claude Code, Claude Desktop, Cursor, Windsurf — create, read, update, and migrate Thally documentation projects through natural language.
@@ -74,7 +74,9 @@ Once connected, you can talk to your docs like a collaborator: *"Add a page abou
 
 #### `create_project`
 
-Scaffolds a new Thally project from the GitHub template.
+Scaffolds a project from the current immutable starter release. The release
+pins one exact public runtime revision and is shared by the CLI, MCP, migration,
+and Thally Cloud creation flows.
 
 ```
 Create a new Thally project at ~/dev/my-docs with the name "Acme Docs"
@@ -102,7 +104,7 @@ Add a page called "Authentication" to the Guides tab under a "Security" group
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `projectDir` | Yes | Path to the Thally project |
-| `pageId` | Yes | e.g. `guides/authentication` — no `.mdx` extension |
+| `pageId` | Yes | e.g. `guides/private-docs` — no `.mdx` extension |
 | `title` | Yes | Page title (frontmatter) |
 | `description` | No | Page description (frontmatter) |
 | `content` | No | MDX body (placeholder used if omitted) |
@@ -215,13 +217,13 @@ Search the docs for anything about rate limiting
 Reads the full content of a single page by ID.
 
 ```
-Read the "guides/authentication" page
+Read the "guides/private-docs" page
 ```
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `projectDir` | Yes | Path to the Thally project |
-| `pageId` | Yes | e.g. `guides/authentication` |
+| `pageId` | Yes | e.g. `guides/private-docs` |
 
 ---
 
@@ -321,13 +323,17 @@ See [Multi-Language Support](/guides/multi-language) for full setup instructions
 
 ---
 
-### Product changes
+### Product changes (self-managed workflow)
 
 #### `sync_from_repo`
 
-Analyzes a merged pull request in a tracked product repository. It previews the
-documentation task by default, or dispatches the task to the docs repository so
-the review-gated docs agent can draft a pull request.
+Analyzes a merged pull request using the local project's `docs.json` tracking
+configuration. It previews the documentation task by default, or dispatches it
+to the docs repository so the review-gated docs agent can draft a pull request.
+
+For Cloud Track, connect Product sources and Knowledge surfaces in Thally
+Cloud. The managed pipeline uses durable GitHub intake, Product Knowledge
+impact, and scoped repository access; it does not depend on this MCP tool.
 
 ```
 Preview the docs task for pull request 482 in acme/widget
