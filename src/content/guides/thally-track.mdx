@@ -81,9 +81,8 @@ access, and confirm:
 - the validation policy; and
 - any administrator instructions for that destination.
 
-Thally records those boundaries with each run. Pausing or removing a surface
-affects future product changes without invalidating a run that has already
-been claimed or orphaning an open pull request.
+Pausing or removing a surface affects future product changes. Existing pull
+requests remain available for your team to review or close.
 
 <Note type="info" title="A Knowledge surface is not another managed site">
 Thally may open a scoped draft pull request in the connected repository, but
@@ -113,26 +112,21 @@ surfaces; those destinations are updated only from merged product changes.
 
 <Mermaid>{`
 sequenceDiagram
-    participant GH as Product repository
-    participant Cloud as Thally Cloud
-    participant Graph as Product Knowledge Graph
+    participant Product as Product repository
+    participant Knowledge as Product Knowledge
     participant Track as Track
     participant Docs as Documentation repository
     participant Person as Reviewer
 
-    GH->>Cloud: Signed merged or labelled-preview PR event
-    Cloud->>Cloud: Store and claim the verified delivery
-    Cloud->>Graph: Ingest the exact source revision
-    Graph->>Cloud: Return an evidence-backed impact bundle
+    Product->>Knowledge: A connected product change merges
+    Knowledge->>Knowledge: Find affected documentation with evidence
     alt No tracked impact
-        Cloud-->>GH: Complete without model work or a pull request
+        Knowledge-->>Product: Finish without a pull request
     else Documentation may need work
-        Cloud->>Track: Send the affected pages and evidence
+        Knowledge->>Track: Provide the affected pages and evidence
         Track->>Track: Prepare and validate the documentation update
         Track->>Docs: Open a review-gated pull request
         Person->>Docs: Review, edit, merge, or reject
-        Docs->>Cloud: Verified merge event
-        Cloud->>Cloud: Publish the exact docs commit when managed
     end
 `}</Mermaid>
 
@@ -167,16 +161,14 @@ does not publish or otherwise operate the connected repository.
 
 ## Self-hosted authoring tools
 
-The public `thally` CLI, docs agent, and MCP server can still help a developer
-prepare documentation locally. Those authoring tools are separate from the
-canonical Cloud Track pipeline described here. You do not need to expose a
-Track webhook from the documentation runtime or store a product-repository PAT
-inside a managed site.
+The public `thally` CLI, docs agent, and MCP server can also help a developer
+prepare documentation locally. Those self-managed authoring tools are separate
+from the Cloud Track workflow described here.
 
 ## Next steps
 
-- [Read the architecture guide](/architecture) for the complete site,
-  knowledge, and managed-delivery flow.
+- [See how Thally works](/architecture) for the customer-facing publishing and
+  update workflow.
 - [Understand the product-change pipeline](/product-change-pipeline).
 - [Use the docs agent locally](/guides/docs-agent).
 - [Connect an MCP client](/guides/mcp-server).

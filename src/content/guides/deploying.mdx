@@ -4,26 +4,25 @@ navTitle: Deployment
 description: Publish with Thally managed hosting or deploy the open-source runtime to Vercel, Cloudflare, or Docker.
 ---
 
-Use Thally managed hosting when you want production releases, pull-request
-previews, custom domains, rollback, and runtime upgrades managed from one
-workspace. Self-host the open-source runtime when your team needs to own the
-hosting layer as well as the repository.
+Use Thally managed hosting when you want publishing, pull-request previews,
+custom domains, and rollback managed from one workspace. Self-host when your
+team needs to own the hosting layer as well as the repository.
 
 ## Publish with Thally Cloud
 
 The [quickstart](/quickstart) creates or connects a GitHub repository and
-publishes its first immutable release to a `thally.app` address. After that:
+publishes the site to a `thally.app` address. After that:
 
-- pushes to the production branch create production candidates;
+- pushes to the production branch start a publish;
 - documentation pull requests receive isolated previews;
-- content-only changes can reuse a validated runtime;
-- failed candidates leave the previous release online; and
-- a rollback moves the route to an earlier validated release without
-  rewriting Git history.
+- documentation-only changes can publish faster than application changes;
+- a failed publish leaves the previous version online; and
+- rollback restores an earlier successful version without rewriting Git
+  history.
 
-Open **Deployments** for the live release, previews, searchable history,
+Open **Deployments** for the live version, previews, searchable history,
 repairs, redeploys, and rollback. See [Managed hosting](/guides/managed-hosting)
-for the complete release contract.
+for operating instructions.
 
 For a self-hosted deployment, complete the checks below and choose the provider
 that matches your operational requirements.

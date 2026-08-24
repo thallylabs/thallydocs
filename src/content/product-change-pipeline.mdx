@@ -29,11 +29,11 @@ prepares pull requests for people to review.
     and evidence explain why it may need work.
   </Step>
   <Step title="Track updates each allowed destination">
-    Track receives a bounded impact bundle and prepares a pull request for the
-    primary documentation repository. When Knowledge surfaces are connected,
-    scoped child runs may also prepare draft pull requests in those Markdown
-    or MDX repositories. If nothing is affected, the loop stops without model
-    work or a pull request.
+    Track receives the affected pages and supporting evidence, then prepares a
+    pull request for the primary documentation repository. When Knowledge
+    surfaces are connected, it can also prepare draft pull requests in those
+    Markdown or MDX repositories. If nothing is affected, the loop stops
+    without creating a pull request.
   </Step>
   <Step title="A person decides what publishes">
     The result is a normal pull request. Reviewers can accept, correct, or
@@ -75,7 +75,6 @@ prepares pull requests for people to review.
 | Knowledge surfaces | The primary docs repository plus explicitly connected, path-scoped Markdown or MDX repositories |
 | Output | Explained impact results and evidence-backed documentation pull requests |
 | Approval | Existing GitHub review and deployment workflows |
-| Learning | Reviewer decisions can improve later ranking without weakening evidence rules |
 
 <Note type="info" title="Not another knowledge destination">
 Thally includes an open documentation engine, but the product is not trying to
@@ -90,8 +89,8 @@ enter the managed publishing pipeline.
 
 ## Put the pipeline to work
 
-- [Read the full architecture guide](/architecture) to follow site creation,
-  product reading, impact analysis, Track, and managed publication as one flow.
+- [See how Thally works](/architecture) for the customer-facing publishing and
+  update workflow.
 - [Set up Thally Track](/guides/thally-track) to connect a product repository.
 - [Initialize the docs agent](/guides/docs-agent) to prepare reviewable pull
   requests.

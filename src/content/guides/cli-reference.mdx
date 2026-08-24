@@ -28,23 +28,22 @@ npx thally
 | `thally mcp` | Start the local MCP server over standard input/output. |
 | `thally agent "INSTRUCTION"` | Draft a documentation change for review. |
 | `thally track add`, `list`, `test`, or `setup` | Connect product-repository changes to documentation work. |
-| `thally starter update [--apply]` | Review or apply an immutable starter runtime update. |
+| `thally starter update [--apply]` | Preview or apply a compatible framework update. |
 
 Run `npx thally` with no command to see the current command list. For detailed
 agent and tracking workflows, see [Draft updates with the docs agent](/guides/docs-agent)
 and [Turn product changes into docs pull requests](/guides/thally-track).
 
-### Update the starter runtime
+### Update Thally
 
 ```bash
 npx thally starter update
 npx thally starter update --apply
 ```
 
-The first command prints the release plan without changing files. Review that
-plan and your working tree, then pass `--apply` to update framework-owned files.
-Your authored content and configuration remain separate from the runtime
-snapshot.
+The first command previews the update without changing files. Review the plan
+and your working tree, then pass `--apply`. Your authored content and
+configuration are not changed.
 
 ### Preview and build
 
