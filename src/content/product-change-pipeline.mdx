@@ -30,10 +30,11 @@ prepares pull requests for people to review.
   </Step>
   <Step title="Track updates each allowed destination">
     Track receives the affected pages and supporting evidence, then prepares a
-    pull request for the primary documentation repository. When Knowledge
-    surfaces are connected, it can also prepare draft pull requests in those
-    Markdown or MDX repositories. If nothing is affected, the loop stops
-    without creating a pull request.
+    pull request for the primary documentation repository. It may update an
+    existing page or create a new page in the Product source's configured
+    navigation group. When Knowledge surfaces are connected, it can also prepare
+    draft pull requests in those Markdown or MDX repositories. If nothing is
+    affected, the loop stops without creating a pull request.
   </Step>
   <Step title="A person decides what publishes">
     The result is a normal pull request. Reviewers can accept, correct, or
@@ -68,24 +69,32 @@ prepares pull requests for people to review.
 
 ## What Thally handles today
 
-| Area | Current behavior |
-| --- | --- |
-| Product sources | Connected GitHub repositories with OpenAPI, MDX, and TypeScript evidence |
-| Product understanding | Versioned product facts and links tied to exact commits and inspectable evidence |
-| Knowledge surfaces | The primary docs repository plus explicitly connected, path-scoped Markdown or MDX repositories |
-| Output | Explained impact results and evidence-backed documentation pull requests |
-| Approval | Existing GitHub review and deployment workflows |
+| Area                  | Current behavior                                                                                                |
+| --------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Product sources       | Connected GitHub repositories with OpenAPI, MDX, and TypeScript evidence                                        |
+| Product understanding | Versioned product facts and links tied to exact commits and inspectable evidence                                |
+| Knowledge surfaces    | The primary docs repository plus explicitly connected, path-scoped Markdown or MDX repositories                 |
+| Automation            | Automatic drafting with new pages enabled and the workspace's available AI credits reserved for the run         |
+| Output                | Explained impact results and evidence-backed documentation pull requests across existing or newly created pages |
+| Approval              | Existing GitHub review and deployment workflows                                                                 |
 
 <Note type="info" title="Not another knowledge destination">
-Thally includes an open documentation engine, but the product is not trying to
-be another wiki, CMS, or knowledge base. Those tools store knowledge. Thally's
-job is to keep it synchronized as the product changes.
+  Thally includes an open documentation engine, but the product is not trying to
+  be another wiki, CMS, or knowledge base. Those tools store knowledge. Thally's
+  job is to keep it synchronized as the product changes.
 </Note>
 
 Connected Knowledge surfaces remain review-only destinations. Thally opens a
 scoped draft pull request and never deploys the connected repository. The
 primary docs repository is the only destination whose merged Track update can
 enter the managed publishing pipeline.
+
+Track uses bounded stages rather than sending an entire repository to one
+model call. It seals the source evidence and exact destination revision, plans
+the permitted files, drafts inside an isolated disposable sandbox, validates
+the resulting diff, and gives publication authority only to the separate
+review-gated GitHub step. This lets a larger feature change address several
+documentation surfaces while preserving an inspectable source-to-claim trail.
 
 ## Put the pipeline to work
 

@@ -17,18 +17,27 @@ pull request for your team to review.
 
 Track is a Thally Cloud service. It connects verified GitHub changes to the
 Product Knowledge Graph, uses evidence-backed impact analysis to select the
-documentation that may need work, and prepares a draft for your team. It never
-auto-merges its pull requests.
+documentation that may need work, and prepares a draft for your team. Track is
+automatic by default: you do not need to configure an automation mode, a
+per-run credit budget, or whether it may create pages. It never auto-merges its
+pull requests.
+
+<Note type="info" title="What Track does by default">
+  Track drafts consequential updates automatically, may update existing pages or
+  create new ones, uses the workspace's available AI credits for the run, and
+  always stops at a GitHub pull request for human review. Unused reserved
+  credits are returned when the run settles.
+</Note>
 
 ## Product sources and Knowledge surfaces
 
 These connections have different jobs:
 
-| Connection | What it contributes | What Thally may do |
-| --- | --- | --- |
-| **Product source** | Product code and specifications that Track observes | Read an exact revision, extract evidence, and calculate documentation impact |
-| **Primary docs repository** | The documentation site connected to the Thally site | Open a review-gated docs pull request; publish the exact merged revision when managed hosting is enabled |
-| **Knowledge surface** | Another explicitly connected Markdown or MDX repository | Open a scoped draft pull request; never deploy the repository |
+| Connection                  | What it contributes                                     | What Thally may do                                                                                       |
+| --------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Product source**          | Product code and specifications that Track observes     | Read an exact revision, extract evidence, and calculate documentation impact                             |
+| **Primary docs repository** | The documentation site connected to the Thally site     | Open a review-gated docs pull request; publish the exact merged revision when managed hosting is enabled |
+| **Knowledge surface**       | Another explicitly connected Markdown or MDX repository | Open a scoped draft pull request; never deploy the repository                                            |
 
 The primary docs repository cannot also be one of its own Product sources. That
 hard boundary prevents a documentation update from looking like a new product
@@ -55,8 +64,9 @@ settings.
     from this source should appear.
   </Step>
   <Step title="Save the Product source">
-    Track is ready. Future matching pull requests can create product snapshots
-    and impact runs for this site.
+    Track is ready. No policy setup is required. Future matching pull requests
+    can create product snapshots, impact runs, and reviewable documentation pull
+    requests for this site.
   </Step>
 </Steps>
 
@@ -85,10 +95,10 @@ Pausing or removing a surface affects future product changes. Existing pull
 requests remain available for your team to review or close.
 
 <Note type="info" title="A Knowledge surface is not another managed site">
-Thally may open a scoped draft pull request in the connected repository, but
-it never runs that repository's dependencies, scripts, generators, or
-workflows and never deploys it. The repository's own team reviews and ships the
-change through its normal process.
+  Thally may open a scoped draft pull request in the connected repository, but
+  it never runs that repository's dependencies, scripts, generators, or
+  workflows and never deploys it. The repository's own team reviews and ships
+  the change through its normal process.
 </Note>
 
 ## What triggers Track
@@ -124,16 +134,41 @@ sequenceDiagram
         Knowledge-->>Product: Finish without a pull request
     else Documentation may need work
         Knowledge->>Track: Provide the affected pages and evidence
-        Track->>Track: Prepare and validate the documentation update
+        Track->>Track: Plan existing-page and new-page work
+        Track->>Track: Draft and validate in an isolated sandbox
         Track->>Docs: Open a review-gated pull request
         Person->>Docs: Review, edit, merge, or reject
     end
+
 `}</Mermaid>
 
 Track compares the product revision with the earlier version and gathers the
 evidence behind each suggested documentation page. A text or meaning-based
 match can suggest a page, but inspectable product evidence is what makes the
 suggestion useful to a reviewer.
+
+The run advances through seven durable stages: merge received, evidence
+captured, changes analyzed, docs planned, draft created, draft validated, and
+ready for review. The Track page keeps that state even when a worker retries or
+the browser closes.
+
+## Existing pages, new pages, and larger changes
+
+Track first looks for existing documentation that should change. When the
+evidence describes a new concept with no suitable page, Track may create an MDX
+page inside the configured documentation root. It also updates navigation so
+the page appears in the Product source's selected tab and group. The new page
+and navigation change arrive in the same reviewable pull request.
+
+A product pull request may introduce an entire feature rather than one small
+fact. Track can plan changes across guides, API or SDK documentation, examples,
+release notes, and other connected Markdown or MDX surfaces when those
+destinations are explicitly connected. Source diffs are analyzed as bounded
+evidence instead of being rejected merely for being large. Output is still
+bounded by the current writer: a primary-docs plan can change up to 64 files
+and 1 MB, and a connected surface may have a smaller limit. When work exceeds a
+destination's current capability, Track records an explicit oversized outcome
+rather than publishing a partial or silently truncated update.
 
 ## Review and publication
 
@@ -148,6 +183,14 @@ live only after the resulting release passes validation.
 Connected Knowledge surfaces stop at the merged draft pull request. Thally
 does not publish or otherwise operate the connected repository.
 
+## Retries and failures
+
+A failed Track run cannot publish or change live documentation. Its stage and
+diagnostic remain attached to the run. Choosing **Retry** creates a new run from
+the original evidence and current destination revision; it does not erase or
+rewrite the earlier attempt. This preserves an audit trail and prevents a
+delayed worker from turning an old attempt into a second pull request.
+
 ## What to expect
 
 - A product change with no documented impact completes without creating a pull
@@ -156,6 +199,8 @@ does not publish or otherwise operate the connected repository.
 - Track edits only the documentation destination and paths you allowed.
 - Connected product repositories are read without running their dependencies
   or scripts.
+- Drafting happens in an isolated, disposable sandbox with no permission to
+  publish the result.
 - A failed run cannot change the live documentation site.
 - You always review and merge the resulting pull request yourself.
 
