@@ -29,8 +29,8 @@ repository. That repository remains the source your team reviews and owns.
     generated update never approves or merges itself.
   </Step>
   <Step title="Validate before publishing">
-    Thally checks the documentation before a managed publish becomes live. If
-    a publish fails, the current live version stays available.
+    Thally checks the documentation before a managed publish becomes live. If a
+    publish fails, the current live version stays available.
   </Step>
   <Step title="Serve people and agents from the same content">
     The reviewed source powers the website, search, Markdown, structured
@@ -44,40 +44,41 @@ history without rewriting Git history.
 
 ## Keep documentation aligned with the product
 
-Product Knowledge and Track add an optional review loop for teams that connect
-product repositories.
+Track adds an optional review workflow for teams that connect product
+repositories. Site owners can run it for trusted, same-repository, non-draft
+pull request updates, merged changes, UTC schedules, or a combination of those
+triggers.
 
 ```text
-product change
+configured product change
       ↓
-evidence-backed documentation matches
+documentation review and update
       ↓
-proposed documentation pull request
+ready-for-review pull request or no change
       ↓
 human review and merge
       ↓
 published documentation
 ```
 
-Thally reads supported product sources, records the file revision behind each
-fact, and shows why a documentation page may be affected. Search can suggest a
-page, but a suggestion needs supporting evidence before it reaches the review
-queue.
+Track reads the exact source revision and the current documentation, prepares
+the customer-facing updates it finds necessary, and checks the proposed
+result. Your team can follow the run through preparation, writing, validation,
+and pull request creation. If no documentation change is needed, Track finishes
+without opening a pull request.
 
-Track uses those reviewed inputs to prepare a focused documentation pull
-request for the primary docs repository or an explicitly connected Markdown
-or MDX Knowledge surface. Your team can correct, merge, or close the proposal.
-If no page has a supported impact, Track finishes without opening a pull
-request.
+When Track does propose an update, it opens a normal ready-for-review pull
+request in the primary documentation repository. Your team can correct, merge,
+or close it. Track never merges the proposal itself.
 
 ## Know the ownership boundary
 
-| You own | Thally provides |
-| --- | --- |
-| Documentation content and Git history | The open-source documentation site |
-| Product repositories and review decisions | Validation, previews, and managed publishing |
-| Hosting when you choose to self-host | Optional Product Knowledge and Track workflows |
-| Whether a proposed update publishes | Evidence and a reviewable documentation proposal |
+| You own                                   | Thally provides                                  |
+| ----------------------------------------- | ------------------------------------------------ |
+| Documentation content and Git history     | The open-source documentation site               |
+| Product repositories and review decisions | Validation, previews, and managed publishing     |
+| Hosting when you choose to self-host      | Optional Product Knowledge and Track workflows   |
+| Whether a proposed update publishes       | Evidence and a reviewable documentation proposal |
 
 Connecting Thally Cloud does not move ownership of your documentation out of
 Git. You can continue to self-host the site, and disconnecting an optional
