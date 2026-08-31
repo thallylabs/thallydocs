@@ -1,100 +1,93 @@
 ---
 title: The product-change pipeline
 navTitle: Product-change pipeline
-description: How Thally connects product evidence to customer-facing knowledge while keeping people responsible for what publishes.
+description: How Thally turns configured product changes into reviewable documentation updates while keeping people responsible for what publishes.
 keywords:
-  - product knowledge pipeline
+  - product change pipeline
   - product changes
   - documentation automation
-  - evidence-backed updates
+  - documentation pull requests
   - human review
 ---
 
 Product changes can affect documentation, API and SDK references, tutorials,
 release notes, examples, and AI context. Thally connects an exact GitHub change
-to product evidence, identifies the documentation that may need work, and
-prepares pull requests for people to review.
+to the documentation your customers use and prepares a pull request for people
+to review.
 
 ## How it works today
 
 <Steps>
-  <Step title="A product change supplies the evidence">
-    After a product pull request merges, Thally reads the exact merged commit.
-    It extracts supported facts from OpenAPI, MDX, and TypeScript without
-    running customer code, and keeps a link to the file evidence.
+  <Step title="A configured event starts the check">
+    You choose whether Track runs for trusted, same-repository, non-draft pull
+    request updates, merged changes, a UTC schedule, or a combination of those
+    triggers. Track keeps the exact source revision that started each run.
   </Step>
-  <Step title="Thally explains what the change affects">
-    The Product Knowledge Graph compares the new facts with the previous
-    version. Impact analysis keeps a docs page only when a supported graph path
-    and evidence explain why it may need work.
+  <Step title="Track reviews the product change and current docs">
+    Track reads the connected Product source and documentation repository, then
+    proposes the customer-facing documentation changes it considers relevant for
+    review.
   </Step>
-  <Step title="Track updates each allowed destination">
-    Track receives the affected pages and supporting evidence, then prepares a
-    pull request for the primary documentation repository. When Knowledge
-    surfaces are connected, it can also prepare draft pull requests in those
-    Markdown or MDX repositories. If nothing is affected, the loop stops
-    without creating a pull request.
+  <Step title="Track prepares and checks the update">
+    Track updates the relevant pages and validates the proposed documentation.
+    If no documentation change is needed, the run finishes without opening a
+    pull request.
   </Step>
   <Step title="A person decides what publishes">
-    The result is a normal pull request. Reviewers can accept, correct, or
-    reject it; the agent never merges its own work.
+    When an update is needed, Track opens a ready-for-review GitHub pull
+    request. Reviewers can accept, correct, or reject it; Track never merges its
+    own work.
   </Step>
   <Step title="One reviewed source feeds every output">
-    After approval, the content engine serves the same structured source as
-    HTML, Markdown, JSON, JSON-LD, search, embeddings, and agent context.
+    After approval and publication, the same structured source powers HTML,
+    Markdown, JSON, JSON-LD, search, embeddings, and agent context.
   </Step>
 </Steps>
 
 ## The trust contract
 
 <Columns cols={2}>
-  <Card title="The product is the source of truth" icon="code-simple">
-    The pipeline begins with reviewed product evidence, not an ungrounded
-    request to generate content.
+  <Card title="You choose the starting point" icon="code-simple">
+    Configure pull request, merge, and scheduled checks for the way your team
+    ships product changes.
   </Card>
-  <Card title="Understand before generating" icon="link-simple">
-    A change should produce communication work only after Thally can explain
-    what customer-facing knowledge it affects.
+  <Card title="The exact change stays attached" icon="link-simple">
+    Every run keeps the Product source and revision that reviewers need to
+    understand why the documentation proposal exists.
   </Card>
-  <Card title="Evidence before confidence" icon="book-open">
-    The proposed update keeps the product context available for reviewers
-    instead of presenting generated prose as fact.
+  <Card title="No-change is a valid result" icon="book-open">
+    Track can finish without a pull request when the source revision does not
+    require a customer-facing documentation update.
   </Card>
-  <Card title="Humans approve important communication" icon="message">
-    Review remains a product invariant. Automation removes discovery and
-    drafting work, not accountability.
+  <Card title="Humans approve communication" icon="message">
+    Automation removes discovery and drafting work, not accountability for what
+    customers read.
   </Card>
 </Columns>
 
 ## What Thally handles today
 
-| Area | Current behavior |
-| --- | --- |
-| Product sources | Connected GitHub repositories with OpenAPI, MDX, and TypeScript evidence |
-| Product understanding | Versioned product facts and links tied to exact commits and inspectable evidence |
-| Knowledge surfaces | The primary docs repository plus explicitly connected, path-scoped Markdown or MDX repositories |
-| Output | Explained impact results and evidence-backed documentation pull requests |
-| Approval | Existing GitHub review and deployment workflows |
+| Area            | Current behavior                                                                                                     |
+| --------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Product sources | Connected GitHub repositories, branches, and optional watched paths                                                  |
+| Triggers        | Trusted, same-repository, non-draft pull request updates; merged changes; and UTC daily, weekly, or custom schedules |
+| Progress        | Persistent activity from change receipt through preparation, writing, checking, and pull request creation            |
+| Output          | A ready-for-review documentation pull request, no docs change, or a needs-attention result                           |
+| Approval        | Your existing GitHub review and deployment workflows                                                                 |
 
-<Note type="info" title="Not another knowledge destination">
-Thally includes an open documentation engine, but the product is not trying to
-be another wiki, CMS, or knowledge base. Those tools store knowledge. Thally's
-job is to keep it synchronized as the product changes.
+<Note type="info" title="Your repository remains the source of truth">
+  Track prepares a proposal. The live documentation changes only after your team
+  reviews and merges it and the normal publishing checks pass.
 </Note>
-
-Connected Knowledge surfaces remain review-only destinations. Thally opens a
-scoped draft pull request and never deploys the connected repository. The
-primary docs repository is the only destination whose merged Track update can
-enter the managed publishing pipeline.
 
 ## Put the pipeline to work
 
 - [See how Thally works](/architecture) for the customer-facing publishing and
   update workflow.
-- [Set up Thally Track](/guides/thally-track) to connect a product repository.
-- [Initialize the docs agent](/guides/docs-agent) to prepare reviewable pull
-  requests.
+- [Set up Thally Track](/guides/thally-track) to connect a Product source and
+  choose its triggers.
+- [Use the docs agent](/guides/docs-agent) for self-managed authoring tasks.
 - [Add provenance](/guides/provenance) so people and agents can see when pages
   were updated and last verified.
-- Run [`thally check`](/guides/cli-reference) in CI to validate the reviewed
-  source before it publishes.
+- Run [`thally check`](/guides/cli-reference) in CI to validate reviewed source
+  before it publishes.

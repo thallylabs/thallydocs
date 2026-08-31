@@ -1,48 +1,34 @@
 ---
 title: Turn product changes into docs pull requests
 navTitle: Thally Track
-description: Connect Product sources and Knowledge surfaces, then let Thally prepare evidence-backed documentation pull requests for human review.
+description: Choose when Thally Track checks connected product repositories, follow each run, and review the documentation pull requests it prepares.
 keywords:
   - thally track
   - product sources
-  - knowledge surfaces
   - docs automation
-  - product knowledge graph
+  - pull request documentation
+  - scheduled documentation updates
   - keep docs in sync with code
 ---
 
-Connect the repositories that describe your product. When a matching product
-pull request merges, Thally Track finds affected documentation and prepares a
-pull request for your team to review.
+Connect the repositories that describe your product, then choose when Thally
+Track should check them. Track reads the exact product change, reviews it
+against your current documentation, and opens a ready-for-review documentation
+pull request when an update is needed.
 
-Track is a Thally Cloud service. It connects verified GitHub changes to the
-Product Knowledge Graph, uses evidence-backed impact analysis to select the
-documentation that may need work, and prepares a draft for your team. It never
-auto-merges its pull requests.
-
-## Product sources and Knowledge surfaces
-
-These connections have different jobs:
-
-| Connection | What it contributes | What Thally may do |
-| --- | --- | --- |
-| **Product source** | Product code and specifications that Track observes | Read an exact revision, extract evidence, and calculate documentation impact |
-| **Primary docs repository** | The documentation site connected to the Thally site | Open a review-gated docs pull request; publish the exact merged revision when managed hosting is enabled |
-| **Knowledge surface** | Another explicitly connected Markdown or MDX repository | Open a scoped draft pull request; never deploy the repository |
-
-The primary docs repository cannot also be one of its own Product sources. That
-hard boundary prevents a documentation update from looking like a new product
-change and creating a loop.
+Track never merges its own pull requests. Your documentation changes only
+after your team reviews the proposal and merges it through your normal GitHub
+workflow.
 
 ## Connect Product sources
 
 You can connect Product sources while creating a site or later from the site's
-settings.
+Track page.
 
 <Steps>
-  <Step title="Open Product sources">
+  <Step title="Open Track">
     In Thally Cloud, open the site and select **Track**. Owners and editors can
-    manage the connected repositories from that page.
+    manage the connected repositories from this page.
   </Step>
   <Step title="Authorize the repository">
     Install or update the Thally GitHub App for the account that owns the
@@ -50,114 +36,91 @@ settings.
   </Step>
   <Step title="Choose what Track watches">
     Select the repository and base branch. Add path filters when only part of a
-    monorepo represents the product surface Track should observe. You can also
-    choose the destination tab and group where new primary-documentation pages
-    from this source should appear.
+    monorepo represents the product surface Track should watch.
   </Step>
-  <Step title="Save the Product source">
-    Track is ready. Future matching pull requests can create product snapshots
-    and impact runs for this site.
+  <Step title="Choose your triggers">
+    Decide whether Track should run for pull request updates, merged changes,
+    scheduled checks, or a combination of them. New sites keep the familiar
+    merge-only behavior until you change this setting.
   </Step>
 </Steps>
 
 Each Product source keeps its own repository, branch, optional path filters,
-destination tab and group placement, and enabled state. A site can connect
-multiple sources so an API, SDK, and web application can contribute to the
-same product model without sharing mutable repository state.
+and enabled state. A site can connect multiple sources, such as an API, SDK,
+and web application, to the same documentation repository.
 
-## Connect Knowledge surfaces
+## Choose when Track runs
 
-Use Knowledge surfaces when a product change may also require an update in a
-separate Markdown or MDX repository—for example SDK guides, tutorials, or
-release notes.
+Trigger settings apply to every enabled Product source for the site.
 
-When Knowledge surfaces are available for the workspace, open **Site settings
-→ Knowledge surfaces**, choose a repository that the Thally GitHub App can
-access, and confirm:
+| Trigger                  | When Track checks                                                                                            | Use it when                                                              |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| **Pull request updates** | A trusted, same-repository, non-draft pull request opens, becomes ready for review, or receives a new commit | You want documentation ready to review before the product change merges  |
+| **Merged changes**       | A pull request merges into the tracked branch                                                                | You want documentation work to begin only after the product change lands |
+| **Scheduled checks**     | Daily, weekly, or at a custom interval between hourly and weekly                                             | You want Track to catch changes on a predictable UTC schedule            |
 
-- the base branch;
-- the repository root Track may inspect;
-- the exact Markdown or MDX paths Track may change;
-- the validation policy; and
-- any administrator instructions for that destination.
+Pull request updates do not run from forks or untrusted contributor branches.
+Track can evaluate those changes after they merge into the tracked branch.
 
-Pausing or removing a surface affects future product changes. Existing pull
+You can enable pull request and merge triggers together. Track treats them as
+separate review points, while duplicate deliveries for the same source revision
+do not create duplicate work.
+
+The first scheduled check establishes the current branch revision. Later
+checks compare from that point. If the branch has not changed—or its complete
+change falls outside your watched paths—Track finishes without opening a pull
+request.
+
+## Follow a run
+
+The Track page keeps the run visible while you work elsewhere or close the
+browser. A typical run moves through these steps:
+
+1. **Change received**
+2. **Preparing**
+3. **Writing documentation**
+4. **Checking the update**
+5. **Opening pull request**
+
+If Track needs another attempt, the activity shows **Retrying safely**. It also
+shows elapsed time and a typical 15-minute target instead of an artificial
+percentage. You can open the run details to see the source change, current
+attempt, and final result.
+
+## Understand the result
+
+Every run ends with one of three customer-facing outcomes:
+
+| Result               | What it means                                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Ready for review** | Track opened a normal GitHub pull request. Review, edit, merge, or close it through your usual workflow.    |
+| **No docs change**   | Track checked the source revision and found no documentation update to propose. No pull request was opened. |
+| **Needs attention**  | Track stopped before opening a pull request. Open the run details for the available next step.              |
+
+Track may update existing pages, add a page when the product introduces a new
+documented concept, or adjust navigation needed for the proposed content. The
+pull request explains the update and reports whether the documentation checks
+passed; it does not include raw build logs.
+
+## Review and publish
+
+For the site's primary documentation repository, a merged Track pull request
+publishes through the same path as any other reviewed documentation change. The
+update becomes live only after the resulting release passes validation.
+
+Pausing or removing a Product source affects future changes. Existing pull
 requests remain available for your team to review or close.
-
-<Note type="info" title="A Knowledge surface is not another managed site">
-Thally may open a scoped draft pull request in the connected repository, but
-it never runs that repository's dependencies, scripts, generators, or
-workflows and never deploys it. The repository's own team reviews and ships the
-change through its normal process.
-</Note>
-
-## What triggers Track
-
-Track supports two explicit modes:
-
-### Merged product changes
-
-When a pull request merges into a connected Product source's configured base
-branch, Track evaluates the exact merged revision.
-
-### Preview product changes
-
-An explicitly labelled preview pull request can ask Track to prepare docs
-before the product change merges. Preview runs remain separate from merged
-production runs, so an unmerged revision cannot silently become production
-product knowledge. Preview runs do not fan out to connected Knowledge
-surfaces; those destinations are updated only from merged product changes.
-
-## How a Track run works
-
-<Mermaid>{`
-sequenceDiagram
-    participant Product as Product repository
-    participant Knowledge as Product Knowledge
-    participant Track as Track
-    participant Docs as Documentation repository
-    participant Person as Reviewer
-
-    Product->>Knowledge: A connected product change merges
-    Knowledge->>Knowledge: Find affected documentation with evidence
-    alt No tracked impact
-        Knowledge-->>Product: Finish without a pull request
-    else Documentation may need work
-        Knowledge->>Track: Provide the affected pages and evidence
-        Track->>Track: Prepare and validate the documentation update
-        Track->>Docs: Open a review-gated pull request
-        Person->>Docs: Review, edit, merge, or reject
-    end
-`}</Mermaid>
-
-Track compares the product revision with the earlier version and gathers the
-evidence behind each suggested documentation page. A text or meaning-based
-match can suggest a page, but inspectable product evidence is what makes the
-suggestion useful to a reviewer.
-
-## Review and publication
-
-Track's output is a normal GitHub pull request. Reviewers can change, accept,
-or reject it. The activity record keeps the source revision and evidence that
-led to the proposal.
-
-For the primary docs repository, merging the pull request publishes through
-the same path as any other reviewed documentation change. The update becomes
-live only after the resulting release passes validation.
-
-Connected Knowledge surfaces stop at the merged draft pull request. Thally
-does not publish or otherwise operate the connected repository.
 
 ## What to expect
 
-- A product change with no documented impact completes without creating a pull
-  request.
-- Every suggestion links back to product evidence you can inspect.
-- Track edits only the documentation destination and paths you allowed.
-- Connected product repositories are read without running their dependencies
-  or scripts.
-- A failed run cannot change the live documentation site.
-- You always review and merge the resulting pull request yourself.
+- Track runs only for Product sources and branches you connect. Optional watched
+  paths decide which changes proceed to documentation writing; a run wholly
+  outside those paths finishes as **No docs change**. During an admitted run,
+  Track reviews the connected source and current documentation repository.
+- A source change with no documentation impact creates no pull request.
+- A failed or stopped run cannot change the live documentation site.
+- Track opens ready-for-review pull requests and never merges them.
+- Your Git repository remains the source of truth for every published change.
 
 ## Self-hosted authoring tools
 
