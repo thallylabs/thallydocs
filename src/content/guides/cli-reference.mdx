@@ -4,12 +4,13 @@ navTitle: CLI
 description: Use the Thally CLI to create, preview, check, migrate, translate, and publish documentation projects.
 ---
 
-The generated project includes `@thallylabs/cli`, so you can run the unified
-CLI with `npx thally` from the project root. The command keeps routine work
-focused on content and configuration instead of Next.js internals.
+Run the published `@thallylabs/cli` package with `npx` from the project root.
+A generated project does not install a local `thally` binary. The command
+keeps routine work focused on content and configuration instead of Next.js
+internals.
 
 ```bash
-npx thally
+npx --yes @thallylabs/cli@latest
 ```
 
 ## Commands
@@ -30,15 +31,15 @@ npx thally
 | `thally track add`, `list`, `test`, or `setup` | Connect product-repository changes to documentation work. |
 | `thally starter update [--apply]` | Preview or apply a compatible framework update. |
 
-Run `npx thally` with no command to see the current command list. For detailed
+Run `npx --yes @thallylabs/cli@latest` with no command to see the current command list. For detailed
 agent and tracking workflows, see [Draft updates with the docs agent](/guides/docs-agent)
 and [Turn product changes into docs pull requests](/guides/thally-track).
 
 ### Update Thally
 
 ```bash
-npx thally starter update
-npx thally starter update --apply
+npx --yes @thallylabs/cli@latest starter update
+npx --yes @thallylabs/cli@latest starter update --apply
 ```
 
 The first command previews the update without changing files. Review the plan
@@ -48,9 +49,9 @@ configuration are not changed.
 ### Preview and build
 
 ```bash
-npx thally dev
-npx thally build
-npx thally start
+npx --yes @thallylabs/cli@latest dev
+npx --yes @thallylabs/cli@latest build
+npx --yes @thallylabs/cli@latest start
 ```
 
 `dev` starts the project server. `build` creates the production output, and
@@ -59,11 +60,11 @@ npx thally start
 ### Add and check content
 
 ```bash
-npx thally new guides/invite-a-member \
+npx --yes @thallylabs/cli@latest new guides/invite-a-member \
   --title "Invite a team member" \
   --description "Add a teammate and choose their role."
 
-npx thally check
+npx --yes @thallylabs/cli@latest check
 ```
 
 `new` creates the MDX file and registers it in the last group of the first
@@ -74,20 +75,21 @@ content tab. `check` validates the project. Add `--ci` for GitHub annotations,
 ### Deploy
 
 ```bash
-npx thally deploy --prod          # Vercel
-npx thally deploy --cloudflare    # Cloudflare Workers
+npx --yes @thallylabs/cli@latest deploy --prod          # Vercel
 ```
 
-The deploy command builds the provider-specific artifact before it publishes.
-Use the dedicated [deployment guides](/guides/deploying) when you need host
-configuration, durable storage, or a repeatable CI workflow.
+The deploy command builds the Vercel artifact before it publishes. For the
+scaffold's supported Cloudflare Workers/OpenNext path, use
+`npm run deploy:cloudflare`. See the dedicated
+[deployment guides](/guides/deploying) when you need host configuration,
+durable storage, or a repeatable CI workflow.
 
 ## Scaffold with create-thally-docs
 
 Use `create-thally-docs` directly when you are creating or migrating a project:
 
 ```bash
-npx create-thally-docs@latest [command] [args] [options]
+npx --yes create-thally-docs@latest [command] [args] [options]
 ```
 
 ---

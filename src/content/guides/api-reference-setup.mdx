@@ -19,7 +19,7 @@ Before editing, read AGENTS.md if present, docs.json, package.json, the existing
 
 Add or update the API Reference tab in docs.json. Use the exact source path. Derive tagsOrder from tags that actually exist, keep deliberate existing ordering when it remains valid, and choose defaultGroup only for genuinely untagged operations. Preserve operation IDs, paths, methods, servers, security schemes, schemas, examples, and descriptions exactly as the source defines them. Do not invent authentication, credentials, base URLs, response bodies, or business meaning. Never place a production secret in docs.json or an example.
 
-Run npx thally check and npm run build. Start the local site and inspect at least one read operation and one write operation when both exist. Verify navigation grouping, path and method, parameters, request body, response schemas, examples, authentication fields, generated cURL, overflow, and dark-mode syntax contrast. Do not send a live request unless the specification points to a safe test server and I explicitly approve it.
+Run npx --yes @thallylabs/cli@latest check and npm run build. Start the local site and inspect at least one read operation and one write operation when both exist. Verify navigation grouping, path and method, parameters, request body, response schemas, examples, authentication fields, generated cURL, overflow, and dark-mode syntax contrast. Do not send a live request unless the specification points to a safe test server and I explicitly approve it.
 
 Report specification errors separately from Thally configuration errors. Include the exact files changed, commands run, operations inspected, source facts preserved, and anything the API owner must correct. Do not commit, push, deploy, modify the specification itself, or change unrelated framework files unless I ask.
 
@@ -126,7 +126,7 @@ Confirm the expected tags and operations appear, open at least one endpoint,
 and compare its parameters and schemas with the source specification. Then run:
 
 ```bash
-npx thally check
+npx --yes @thallylabs/cli@latest check
 npm run build
 ```
 

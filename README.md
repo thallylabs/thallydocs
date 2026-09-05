@@ -42,9 +42,11 @@ npm ci --ignore-scripts --prefix .github/thally-tooling
 
 ## Deploy
 
-The site is a standard Next.js application. Deploy it through Thally Cloud or
-any compatible Next.js host. Cloudflare Workers configuration is included in
-`open-next.config.ts` and `wrangler.jsonc`.
+Deploy through Thally Cloud, Vercel, the included Cloudflare Workers/OpenNext
+contract, or the documented Docker recipe. The Thally CLI supports the Vercel
+path. For Cloudflare, `open-next.config.ts` and `wrangler.jsonc` provide the
+Workers configuration used by `npm run deploy:cloudflare`. The starter does
+not ship a Netlify build contract.
 
 Copy `.env.example` to `.env.local` only when you need optional services. Never
 commit real credentials.
