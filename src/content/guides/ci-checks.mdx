@@ -27,21 +27,27 @@ External links are skipped by default for deterministic, network-free CI. Pass
 ## Run it
 
 ```bash
-thally check           # human-readable report
-thally check --fix     # auto-add orphan pages to navigation
-thally check --ci      # GitHub annotations + non-zero exit on errors
+npx --yes @thallylabs/cli@latest check           # human-readable report
+npx --yes @thallylabs/cli@latest check --fix     # auto-add orphan pages to navigation
+npx --yes @thallylabs/cli@latest check --ci .    # GitHub annotations + non-zero exit on errors
 ```
 
-No global install? `npx create-thally-docs check --ci .` does the same.
+The scoped package name is required because the unscoped `thally` package is
+not published. `npx` downloads the current CLI when the project has no local
+copy.
 
 ## In GitHub Actions
 
-New projects scaffold a `.github/workflows/thally-check.yml` that runs on every pull
-request and annotates broken links and invalid specs inline on the diff:
+New projects include a pinned checker under `.github/thally-tooling` and run it
+on every pull request. The pinned CI path avoids downloading a mutable package
+in a credential-bearing workflow:
 
 ```yaml
+- name: Install pinned content tooling
+  run: npm ci --ignore-scripts --prefix .github/thally-tooling
+
 - name: thally check
-  run: npx --yes create-thally-docs@latest check --ci .
+  run: .github/thally-tooling/node_modules/.bin/thally check --ci .
 ```
 
 Warnings (orphans, thin pages) are reported but don't fail the build; **errors**

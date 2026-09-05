@@ -21,7 +21,7 @@ Prefer improving the existing page that owns the task. Create one new MDX file u
 
 Write directly to the reader in friendly, concrete language. Include the outcome, prerequisites, ordered steps, exact UI labels or tested commands, realistic examples, expected results, and troubleshooting for the two or three most likely failures. Use code fences with the correct language. Use Note, Warning, Steps, Tabs, Cards, or another built-in component only when it makes the task easier to scan. Never add a second H1 inside the body.
 
-Run every safe command you document when the environment permits. Then run npx thally check and npm run build. Start a local preview, inspect the page in light and dark mode at desktop and narrow widths, and check links, navigation, code contrast, overflow, and headings. Fix regressions caused by your changes.
+Run every safe command you document when the environment permits. Then run npx --yes @thallylabs/cli@latest check and npm run build. Start a local preview, inspect the page in light and dark mode at desktop and narrow widths, and check links, navigation, code contrast, overflow, and headings. Fix regressions caused by your changes.
 
 Report the user outcome, files changed, evidence used for product claims, commands run, visual checks completed, and any facts that still require a product owner. Do not commit, push, deploy, delete content, or modify unrelated framework internals unless I explicitly ask.
 
@@ -238,7 +238,7 @@ Open the page in the [local preview](/guides/preview-locally), follow its
 instructions, test links and interactive components, then run:
 
 ```bash
-npx thally check
+npx --yes @thallylabs/cli@latest check
 npm run build
 ```
 

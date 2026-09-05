@@ -14,7 +14,7 @@ Create `snippets/support-note.mdx`:
 
 ```mdx
 <Note type="info" title="Need help?">
-  Include the output of `npx thally check` when you contact support.
+  Include the output of `npx --yes @thallylabs/cli@latest check` when you contact support.
 </Note>
 ```
 
@@ -57,7 +57,7 @@ After editing a snippet, search for its imports and review every affected page:
 
 ```bash
 rg "support-note" src/content
-npx thally check
+npx --yes @thallylabs/cli@latest check
 npm run build
 ```
 
