@@ -52,24 +52,27 @@ triggers.
 ```text
 configured product change
       ↓
-documentation review and update
+independent primary-docs and connected-surface runs
       ↓
-ready-for-review pull request or no change
+ready-for-review pull request or no change per destination
       ↓
 human review and merge
       ↓
-published documentation
+each repository's publishing workflow
 ```
 
-Track reads the exact source revision and the current documentation, prepares
-the customer-facing updates it finds necessary, and checks the proposed
-result. Your team can follow the run through preparation, writing, validation,
-and pull request creation. If no documentation change is needed, Track finishes
-without opening a pull request.
+Track reads the exact source revision and starts a separate run for the primary
+documentation repository and every enabled Knowledge surface. Each run uses
+its saved branch, root, and path scopes, prepares the customer-facing update it
+finds necessary, and checks the proposed result. If a destination needs no
+change, its run finishes without opening a pull request.
 
 When Track does propose an update, it opens a normal ready-for-review pull
-request in the primary documentation repository. Your team can correct, merge,
-or close it. Track never merges the proposal itself.
+request in that destination. Your team can correct, merge, or close it. Track
+never merges the proposal itself. Only the primary documentation repository
+receives Thally-managed previews and releases; connected destinations keep
+their own preview and publishing workflows. See the
+[Knowledge-surface contract](/guides/knowledge-surfaces).
 
 ## Know the ownership boundary
 

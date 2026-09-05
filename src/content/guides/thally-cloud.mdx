@@ -48,10 +48,12 @@ for the information needed to publish a managed site:
     this step and connect them later from **Track**.
   </Step>
   <Step title="Choose Knowledge surfaces">
-    If this step is available, add Markdown or MDX repositories that contribute
-    to Product Knowledge. These connections are separate from Track, which opens
-    review pull requests only in the site's primary documentation repository.
-    You can manage them later from **Site settings → Knowledge surfaces**.
+    If this step is available, add customer-facing Markdown, MDX, or supported
+    React content repositories as independent Track destinations. Each
+    qualifying Track event creates one run for the primary docs and one for
+    every enabled surface. A destination can open its own path-confined,
+    ready-for-review pull request when it needs an update. You can manage these
+    targets later from **Site settings → Knowledge surfaces**.
   </Step>
   <Step title="Review and publish">
     Confirm the repository, production branch, site address, and optional
@@ -88,7 +90,7 @@ After you choose a site, the dashboard groups work by outcome:
 | **Reader questions** | Review what readers ask through AI answers and use those questions to find documentation gaps.                                                                                    |
 | **Readiness**        | See the published Agent Readiness report and open supported fixes.                                                                                                                |
 | **Knowledge**        | Review product changes, evidence, affected-page matches, and the concepts Thally has learned.                                                                                     |
-| **Track**            | Connect Product sources, choose pull request, merge, or scheduled triggers, and follow each run to a reviewable pull request or no-change result.                                 |
+| **Track**            | Connect Product sources, choose pull request, merge, or scheduled triggers, and follow each primary-docs or Knowledge-surface run to a reviewable pull request or no-change result. |
 | **Deployments**      | Inspect production and preview publishes, filter history, redeploy, repair supported failures, and roll back.                                                                     |
 | **Settings**         | Manage identity, languages, Git source, runtime version, branding, domains, reader access, feedback, analytics, Knowledge surfaces, external-site credentials, and site deletion. |
 
@@ -126,4 +128,5 @@ SCIM provisioning, and access to audit logs.
 - [Publish and operate managed releases](/guides/managed-hosting)
 - [Review Product Knowledge](/guides/product-knowledge)
 - [Turn product changes into documentation pull requests](/guides/thally-track)
+- [Extend Track to Knowledge surfaces](/guides/knowledge-surfaces)
 - [Manage a self-hosted site's built-in dashboard](/guides/admin-dashboard)

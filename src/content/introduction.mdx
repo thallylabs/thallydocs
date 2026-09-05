@@ -15,9 +15,10 @@ mode: home
 
 Connect the repositories that define your product, then connect your docs,
 website, help center, and other customer-facing content. When a pull request
-merges, Thally works out what changed, traces where the impact lands, and opens
-evidence-backed pull requests for your team to review. A no-change result is
-valid. Nothing publishes without human approval.
+merges, Thally works out what changed and gives each enabled destination an
+independent, path-confined Track run. It opens evidence-backed pull requests
+only where an update is needed. A no-change result is valid, and nothing
+publishes without human approval. [See how connected destinations work](/guides/knowledge-surfaces).
 
 ## Start with documentation you own
 
@@ -55,7 +56,7 @@ grounded AI answers.
     Map product changes to exact evidence and confirm which pages need work.
   </Card>
   <Card title="Automate reviewable updates" icon="message" href="/guides/thally-track">
-    Let Track prepare a documentation pull request when a merged product change affects your docs.
+    Let Track prepare one reviewable pull request per affected documentation, website, or support repository.
   </Card>
   <Card title="Document your API" icon="link-simple" href="/guides/api-reference-setup">
     Turn an OpenAPI spec into interactive endpoint pages.

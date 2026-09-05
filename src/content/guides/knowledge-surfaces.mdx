@@ -1,0 +1,92 @@
+---
+title: Extend Track to Knowledge surfaces
+navTitle: Knowledge surfaces
+description: Connect bounded website, help-center, and other content repositories so each qualifying Track event can prepare an independent pull request for review.
+keywords:
+  - knowledge surfaces
+  - Thally Track
+  - connected repositories
+  - website updates
+  - support content
+---
+
+Connect a Knowledge surface when customer-facing content lives outside the
+site's primary documentation repository. Each qualifying Track event then
+checks the primary docs and every enabled surface independently. Track opens a
+ready-for-review pull request only in the repositories that need an update.
+
+Knowledge surfaces are Track destinations. They do not contribute to Product
+Knowledge and do not need a Product Knowledge graph result before Track can
+consider them.
+
+## Understand the fan-out
+
+One accepted Product-source event creates a primary documentation run and one
+separate run for every Knowledge surface that is enabled at that moment.
+
+| Source trigger | When it can fan out |
+| --- | --- |
+| Pull request update | The pull request is open, non-draft, from the tracked repository, and targets the configured branch. Fork and untrusted contributor pull requests do not qualify. |
+| Merged change | The pull request merged into the configured Product-source branch. |
+| Scheduled check | The saved UTC schedule is due and the Product-source branch changed since its previous checkpoint. |
+
+Product-source path filters still gate authoring. A complete change wholly
+outside those paths finishes as **No change** without model work. Duplicate
+delivery of the same source revision does not create another set of runs.
+
+Each destination gets its own snapshot, authoring run, validation result, and
+publication decision. One repository can finish with **No change** while
+another opens a pull request. Connecting a surface after a source event does
+not add it to the earlier event retroactively.
+
+## Connect a surface
+
+Open the site in Thally Cloud, then go to **Site settings → Knowledge
+surfaces**. Owners and editors can connect a repository that the Thally GitHub
+App is allowed to access.
+
+For each destination, confirm:
+
+- the repository and base branch;
+- an optional repository root;
+- the exact files or directories Track may change; and
+- optional authoring guidance for that repository.
+
+Use one path per line. File scopes support Markdown, MDX, JSX, and TSX;
+directory scopes end in `/`. Pause a destination when it should keep its
+configuration but stop receiving new work.
+
+## Stay inside the publication boundary
+
+Track freezes the approved repository, branch, root, and path scopes with each
+run. It checks that authority again before preparation and before opening a
+pull request. Pausing, removing, or changing a destination prevents stale work
+from publishing under the earlier scope.
+
+The publication gate permits changes only inside the saved paths. Markdown and
+MDX must pass the server-owned content checks. Existing JSX or TSX files can
+receive visible prose edits only; imports, handlers, links, scripts, component
+structure, and other executable changes are rejected. Track never installs a
+destination's dependencies or runs its package, build, or CI scripts.
+
+## Review, preview, and publish
+
+Track opens normal ready-for-review GitHub pull requests and never merges them.
+Managed Thally preview URLs apply only to the primary documentation repository,
+which follows the managed release path after your team merges its pull request.
+
+A connected Knowledge surface is not another Thally-managed site. Thally does
+not build, preview, or publish that destination repository. Its pull request
+uses the checks and preview system already configured there; the destination's
+owners decide whether to merge and how the content reaches production.
+
+The public Track preview is also read-only. It can analyze selected product and
+customer-facing repositories, but it does not open pull requests. After you
+create a workspace and connect the approved destinations, the normal Track
+workflow can prepare proposals through the review boundary above.
+
+## Continue the workflow
+
+- [Configure Product sources and triggers](/guides/thally-track).
+- [Review the product-change pipeline](/product-change-pipeline).
+- [Operate primary documentation previews and releases](/guides/managed-hosting).
