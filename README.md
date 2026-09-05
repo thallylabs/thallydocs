@@ -1,8 +1,10 @@
-# Thally Starter
+# Thally Docs
 
-A production-ready documentation site built with the open-source Thally runtime.
-Use this repository as a GitHub template or clone it directly, then replace the
-starter content with documentation for your product.
+**The product knowledge layer for software teams.**
+
+This repository contains the official Thally documentation. Thally keeps your
+docs, website, and help center aligned as your product changes. The pages,
+navigation, and site settings stay in Git so every update remains reviewable.
 
 ## Run locally
 
@@ -14,11 +16,11 @@ npm run dev
 Open [http://localhost:3040](http://localhost:3040). The next available port is
 used automatically when 3040 is occupied.
 
-## Make it yours
+## Update the docs
 
 - Edit pages in `src/content/`.
 - Organize navigation and features in `docs.json`.
-- Set the product name, links, and versioned brand defaults in `src/data/site.ts`.
+- Update site identity, links, and versioned brand defaults in `src/data/site.ts`.
 - Add an OpenAPI specification and enable an API tab when your docs need an API reference.
 - Add logos or favicons in `public/` and reference them from your site settings.
 
