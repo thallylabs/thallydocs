@@ -29,6 +29,36 @@ GitHub repository.
   not turn its database into a second copy of your documentation pages.
 </Note>
 
+## Plan managed-site capacity
+
+| Plan | Active managed-site allowance |
+| --- | --- |
+| Free | One site |
+| Cloud | Three sites included; additional capacity is a recurring site add-on |
+| Enterprise | Contract-specific capacity |
+
+Some paid workspaces also have a persisted grandfathered allowance that
+preserves the non-deleted sites they had when metered site pricing launched.
+For Cloud, the effective limit is the larger of that workspace-specific
+allowance and the three included sites plus its recurring add-ons. This means
+two Cloud workspaces can have different numeric limits; do not treat an older
+workspace's allowance as the standard Cloud cap.
+
+If site creation reports that the workspace has reached its active-site
+allowance, use one of these recovery paths:
+
+1. **Add capacity.** From **Sites**, choose **Upgrade for more sites**, or open
+   **Workspace settings → Billing**. An owner can upgrade from Free or choose
+   **Manage subscription** to add recurring site capacity. Enterprise
+   workspaces can contact billing for a contract-limit change.
+2. **Delete a Cloud site.** An owner can open an existing site, go to
+   **Settings**, and choose **Delete site**. After deletion completes, the site
+   no longer counts toward the active-site allowance. Thally removes it from
+   the Cloud workspace but does not change or delete its GitHub repository or
+   documentation files.
+
+After the allowance changes, return to **Create a site** and retry the publish.
+
 ## Create or connect a site
 
 From the workspace Home page, select **Create a site**. The creation flow asks
@@ -110,7 +140,7 @@ Deleting a site removes it from Thally Cloud but leaves its GitHub repository
 and documentation files unchanged.
 
 Workspace members and unexpired invitations count toward billing. The Cloud
-plan includes three members; additional members are billed separately.
+plan includes five members; additional members are billed separately.
 
 ## Know what the plans unlock
 
