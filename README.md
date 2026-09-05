@@ -2,9 +2,11 @@
 
 **The product knowledge layer for software teams.**
 
-This repository contains the official Thally documentation. Thally keeps your
-docs, website, and help center aligned as your product changes. The pages,
-navigation, and site settings stay in Git so every update remains reviewable.
+This repository contains the official Thally documentation. Thally can prepare
+independent, path-confined pull requests for explicitly connected docs,
+website, and help-center repositories as your product changes. People still
+review and merge every proposal. Pages, navigation, and site settings stay in
+Git so every update remains reviewable.
 
 ## Run locally
 

@@ -28,7 +28,7 @@ Use Thally Cloud at https://app.thally.io/ to create and publish the site. Do no
 4. Select Create a site. Ask me for any missing site name, short description, and preferred thally.app address. Never invent brand or company details.
 5. At Docs source, recommend Create a new docs repository. Use an existing repository only when it is already a current Thally project that I explicitly selected. Needs me: have me install or approve the Thally GitHub App for the intended GitHub organization and repository access. Do not select or modify an unrelated repository.
 6. At Product sources, ask whether I want Thally Track configured now. If yes, show me the available product repositories and confirm the exact selections before continuing. Never select the documentation repository itself. If I do not want Track yet, choose I'll do this later.
-7. If the Knowledge surfaces step is available for my workspace, ask whether Track should also prepare scoped draft pull requests in another Markdown or MDX repository. Treat these as destinations, not Product sources. Confirm the repository, branch, root, and allowed paths before adding one, or skip this optional step.
+7. If the Knowledge surfaces step is available for my workspace, ask whether each qualifying Track event should also check another customer-facing repository. Treat these as independent Track destinations, not Product sources or Product Knowledge inputs. Confirm the repository, branch, root, and exact allowed paths before adding one, or skip this optional step. Each affected destination receives its own ready-for-review pull request; Track never merges it.
 8. Review the site name, thally.app address, documentation repository, production branch, Product sources, and Knowledge surfaces with me. Select Publish site only after those values match what I approved.
 9. Wait for Thally Cloud to create or connect the GitHub repository and finish the first production deployment. Do not retry blindly. If publishing fails, report the exact message and preserve the created repository and site state for a safe retry.
 10. Confirm the workspace Home page shows the site as Live. Record the documentation repository and live https://SITE_SLUG.thally.app URL from the site summary.
@@ -97,9 +97,13 @@ excluded to prevent update loops.
 <Step title="Choose Knowledge surfaces">
 
 If this step is available for your workspace, you can add another Markdown or
-MDX repository where Track may prepare path-scoped draft pull requests. This
-repository is a review destination, not a Product source or another managed
+MDX repository where Track may prepare path-scoped, ready-for-review pull
+requests. Each qualifying Track event gives the primary docs and every enabled
+surface an independent run and no-change decision. A surface is a Track review
+destination, not a Product source, Product Knowledge input, or another managed
 site. You can also add it later from **Site settings → Knowledge surfaces**.
+See [how Knowledge-surface fan-out works](/guides/knowledge-surfaces) before
+approving its branch and path boundaries.
 
 </Step>
 

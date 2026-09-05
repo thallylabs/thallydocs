@@ -92,6 +92,9 @@ jobs:
       - name: Install pinned content tooling
         run: npm ci --ignore-scripts --prefix .github/thally-tooling
 
+      - name: Verify Knowledge-surface documentation contract
+        run: node --test .github/scripts/knowledge-surface-docs-contract.test.mjs
+
       - name: Check authored content
         run: .github/thally-tooling/node_modules/.bin/thally check --ci .
 
