@@ -21,9 +21,9 @@ Migrate SOURCE_URL into a new Thally project at TARGET_DIRECTORY. You are done w
 
 Before writing files, read repository instructions in the current workspace and inspect TARGET_DIRECTORY. Stop if the target exists and is not empty. Determine whether SOURCE_URL is a source repository, a public site, or both. Prefer the source GitHub repository when it is available because it preserves authored MDX, configuration, redirects, and assets. Confirm ambiguous sources or destinations with me rather than substituting one.
 
-Use the local Thally MCP migrate_docs tool if connected; otherwise run npx create-thally-docs@latest migrate SOURCE_URL TARGET_DIRECTORY. Never use import_docs or --into unless I explicitly request an in-place merge and approve the destination. Preserve the importer output and warnings.
+Use the local Thally MCP migrate_docs tool if connected; otherwise run npx --yes create-thally-docs@latest migrate SOURCE_URL TARGET_DIRECTORY. Never use import_docs or --into unless I explicitly request an in-place merge and approve the destination. Preserve the importer output and warnings.
 
-After migration, compare source and destination page counts, top-level navigation, redirects, important assets and downloads, code languages, custom components, and API references. Install dependencies with the generated project's existing package manager and lockfile. Run npx thally check and npm run build.
+After migration, compare source and destination page counts, top-level navigation, redirects, important assets and downloads, code languages, custom components, and API references. Install dependencies with the generated project's existing package manager and lockfile. Run npx --yes @thallylabs/cli@latest check and npm run build.
 
 Start the local site and inspect the homepage, every primary navigation tab, representative shallow and deep pages, links, headings, code blocks, images, tables, callouts, and any API reference. Check light and dark mode plus a narrow viewport. Look for missing assets, raw unsupported MDX, broken anchors, horizontal overflow, duplicate headings, placeholder copy, and content that became generic during conversion.
 
@@ -45,7 +45,7 @@ You need:
 Pass the source GitHub repository and the directory to create:
 
 ```bash
-npx create-thally-docs@latest migrate https://github.com/example/docs ./example-docs
+npx --yes create-thally-docs@latest migrate https://github.com/example/docs ./example-docs
 ```
 
 <Note type="info" title="Repository migration is recommended">
@@ -61,13 +61,13 @@ If you select auto-detection for a live URL, the CLI recommends migrating from t
 For example, this command starts the interactive flow for a live site:
 
 ```bash
-npx create-thally-docs@latest migrate https://relay.dev/ ./relay-docs --max-pages 1000
+npx --yes create-thally-docs@latest migrate https://relay.dev/ ./relay-docs --max-pages 1000
 ```
 
 For scripts and CI, select the adapter explicitly:
 
 ```bash
-npx create-thally-docs@latest migrate https://relay.dev/ ./relay-docs \
+npx --yes create-thally-docs@latest migrate https://relay.dev/ ./relay-docs \
   --platform docusaurus \
   --max-pages 1000 \
   --yes
@@ -80,7 +80,7 @@ npx create-thally-docs@latest migrate https://relay.dev/ ./relay-docs \
 When only the deployed site is available, pass its public URL:
 
 ```bash
-npx create-thally-docs@latest migrate https://docs.example.com ./example-docs
+npx --yes create-thally-docs@latest migrate https://docs.example.com ./example-docs
 ```
 
 For public sites, Thally looks for machine-readable indexes such as `llms.txt` and `sitemap.xml`, then follows same-origin documentation navigation within the submitted path. It preserves the discovered hierarchy, portable MDX components, assets, redirects, and OpenAPI metadata where the source exposes them.
@@ -90,7 +90,7 @@ For public sites, Thally looks for machine-readable indexes such as `llms.txt` a
 The crawler imports up to 1,000 pages by default. Use `--max-pages` to run a smaller trial migration or limit a large site:
 
 ```bash
-npx create-thally-docs@latest migrate https://docs.example.com ./example-docs --max-pages 100
+npx --yes create-thally-docs@latest migrate https://docs.example.com ./example-docs --max-pages 100
 ```
 
 `--max-pages` accepts an integer from 1 to 1,000. A limit applies to imported content pages, not discovery files such as sitemaps.
@@ -122,7 +122,7 @@ Open the local URL printed by the dev server. Check the top-level tabs, sidebar 
 Then run the project checks:
 
 ```bash
-npx create-thally-docs@latest check .
+npx --yes create-thally-docs@latest check .
 npm test
 ```
 
@@ -213,7 +213,7 @@ The docs directory is auto-detected from common locations such as `docs/`, `docu
 Use `--into` to add migrated content to a Thally project without replacing its existing pages:
 
 ```bash
-npx create-thally-docs@latest migrate https://docs.example.com --into ./existing-docs --max-pages 250
+npx --yes create-thally-docs@latest migrate https://docs.example.com --into ./existing-docs --max-pages 250
 ```
 
 New navigation groups are merged into the existing `docs.json`. Review the result before committing because source sites can use components or API-reference features that need a final editorial pass.

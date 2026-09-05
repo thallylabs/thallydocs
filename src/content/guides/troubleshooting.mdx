@@ -14,7 +14,7 @@ From the project root, run:
 
 ```bash
 node --version
-npx thally check
+npx --yes @thallylabs/cli@latest check
 npm run build
 ```
 
@@ -27,7 +27,7 @@ same behavior occurs in `npm run dev`.
 - Derive the URL from the file path without `src/content/` or `.mdx`.
 - Add the page ID to a group in `docs.json` if it should appear in navigation.
 - Check the page and group for `hidden: true`.
-- Run `npx thally check` for orphaned or missing page IDs.
+- Run `npx --yes @thallylabs/cli@latest check` for orphaned or missing page IDs.
 
 ## The build fails on MDX
 
@@ -73,7 +73,7 @@ content index includes the change.
 When asking for help, include:
 
 - the Thally and Node versions;
-- the output of `npx thally check`;
+- the output of `npx --yes @thallylabs/cli@latest check`;
 - the smallest page or `docs.json` fragment that reproduces the problem;
 - whether development and production differ;
 - relevant host logs with credentials removed.

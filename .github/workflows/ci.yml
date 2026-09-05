@@ -15,6 +15,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  cli-contract:
+    name: Fresh scaffold · CLI check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+
+      # This intentionally exercises the public packages a new user receives,
+      # including the absence of a project-local `thally` binary.
+      - name: Create a clean project
+        run: >-
+          npx --yes create-thally-docs@latest
+          "$RUNNER_TEMP/thally-cli-contract"
+          --yes --no-install
+
+      - name: Run the documented first check
+        working-directory: ${{ runner.temp }}/thally-cli-contract
+        run: npx --yes @thallylabs/cli@latest check --ci .
+
   verify:
     name: Test · Build
     runs-on: ubuntu-latest
