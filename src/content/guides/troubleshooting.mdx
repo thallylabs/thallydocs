@@ -62,6 +62,25 @@ build.
 - Check function logs for the failing `/api/...` request.
 - Redeploy after changing environment variables.
 
+## The provider reports success but every route returns 404
+
+A deploy-complete message proves that the provider accepted an artifact. It
+does not prove the artifact contains a runnable Thally application.
+
+1. Run the [post-deploy HTTP smoke checks](/guides/deploying#verify-the-live-site).
+2. Confirm the deploy used a [supported target and command](/guides/deploying#choose-a-supported-deployment-path).
+3. Inspect the provider's build log, framework detection, and published
+   artifact. Uploading the repository root or serving `.next/` as a plain
+   static directory returns 404 even when the upload succeeds.
+4. Redeploy with the Vercel adapter, the included Cloudflare/OpenNext script,
+   or the documented Docker server recipe. Test the generated provider artifact
+   before changing content routes.
+
+An untouched Thally scaffold does not include a Netlify build contract. If
+`netlify deploy --build --prod` reported success and every route is 404, stop
+retrying the same upload. Use a supported target, or add and maintain a tested
+Netlify-specific Next.js integration as infrastructure your team owns.
+
 ## Search does not find a page
 
 Confirm the page is navigable or allowed by the configured SEO indexing mode.

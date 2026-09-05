@@ -48,6 +48,9 @@ Cloudflare Workers configuration.
 
 Open the deployed URL and test a normal page, a search, and each enabled server
 feature. Confirm `/llms.txt` and `/api/docs-index` use the expected origin.
+Run the homepage, nested-page, and `/llms.txt` HTTP smoke commands from
+[Verify the live site](/guides/deploying#verify-the-live-site) before relying
+on the Worker deploy result.
 
 If the custom domain differs from the initial Worker URL, update
 `THALLY_SITE_URL` and redeploy so canonical and agent-facing links use the
