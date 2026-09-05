@@ -8,6 +8,24 @@ Use Thally managed hosting when you want publishing, pull-request previews,
 custom domains, and rollback managed from one workspace. Self-host when your
 team needs to own the hosting layer as well as the repository.
 
+## Choose a supported deployment path
+
+| Target | Shipped contract | Production command or action |
+| --- | --- | --- |
+| Thally Cloud | Managed build, previews, releases, routing, and rollback | Publish the site from [Thally Cloud](https://app.thally.io/) |
+| Vercel | Native Next.js build through the Thally CLI | `npx --yes @thallylabs/cli@latest deploy --prod` |
+| Cloudflare Workers | OpenNext configuration, Wrangler configuration, and project scripts | `npm run deploy:cloudflare` |
+| Docker or a container host | The documented server-image recipe | `docker build -t my-docs .` |
+
+<Warning title="Netlify is not a shipped deployment target">
+  An untouched scaffold has no `netlify.toml`, Netlify adapter, or tested
+  publish-directory contract. Do not run `netlify deploy --build --prod`
+  against it: the CLI can report a live deploy after uploading the repository
+  root, while `/` and every documentation route return 404. Use one of the
+  supported paths above, or own and test a Netlify-specific Next.js integration
+  before treating Netlify as a production target.
+</Warning>
+
 ## Publish with Thally Cloud
 
 The [quickstart](/quickstart) creates or connects a GitHub repository and
@@ -38,7 +56,7 @@ that matches your operational requirements.
 2. Validate content and navigation:
 
    ```bash
-   npx thally check --ci
+   npx --yes @thallylabs/cli@latest check --ci .
    ```
 
 3. Create a production build:
@@ -94,7 +112,24 @@ can instead persist the local `.data/` directory on a volume.
 
 ## Verify the live site
 
-After deployment:
+Do not treat a provider CLI's success message as proof that the site works.
+For a public site, run GET requests against the homepage, a real nested page,
+and an agent endpoint:
+
+```bash
+DEPLOY_URL=https://docs.example.com
+curl --fail --silent --show-error --location "$DEPLOY_URL/" >/dev/null
+curl --fail --silent --show-error --location "$DEPLOY_URL/quickstart" >/dev/null
+curl --fail --silent --show-error --location "$DEPLOY_URL/llms.txt" >/dev/null
+```
+
+All three commands exit with status `0` on success and fail on HTTP 4xx or 5xx
+responses. Replace `/quickstart` with a nested route your project actually
+publishes. For protected documentation, make the same requests with the
+authentication your readers use and verify the unauthenticated response
+separately.
+
+Then:
 
 1. Open the homepage and one nested page on desktop and mobile.
 2. Follow sidebar, search, breadcrumb, and previous/next links.
@@ -102,6 +137,12 @@ After deployment:
 4. Test any enabled server feature, including Try It, chat, feedback, admin, or
    access protection.
 5. Confirm canonical URLs use the production domain.
+
+If the provider reports success but these requests return 404, inspect the
+build log and uploaded artifact before changing application routes. A deploy
+that uploaded the repository root or treated `.next/` as an ordinary static
+directory did not publish a runnable Thally server artifact. Follow the
+[all-routes-404 diagnosis](/guides/troubleshooting#the-provider-reports-success-but-every-route-returns-404).
 
 ## Next steps
 

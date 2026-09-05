@@ -25,13 +25,13 @@ have a deliberate per-environment URL strategy.
 From the project root, run:
 
 ```bash
-npx thally deploy
+npx --yes @thallylabs/cli@latest deploy
 ```
 
 Use `--prod` for a production deployment:
 
 ```bash
-npx thally deploy --prod
+npx --yes @thallylabs/cli@latest deploy --prod
 ```
 
 The command builds the site, runs the Agent Readiness check when the project
@@ -56,7 +56,8 @@ first use.
 
 Open the production domain and test the routes and enabled features listed in
 [Deploy your documentation site](/guides/deploying#verify-the-live-site).
-Confirm the Vercel build log contains no `thally check` or MDX errors.
+Run the homepage, nested-page, and `/llms.txt` HTTP smoke commands from that
+section. Confirm the Vercel build log contains no `thally check` or MDX errors.
 
 ## Next steps
 
