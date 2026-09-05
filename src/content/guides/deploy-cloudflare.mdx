@@ -41,14 +41,8 @@ Use the project script:
 npm run deploy:cloudflare
 ```
 
-Or use the unified CLI:
-
-```bash
-npx --yes @thallylabs/cli@latest deploy --cloudflare
-```
-
-The CLI builds the OpenNext artifact, runs the Agent Readiness check when the
-project provides it, and publishes through the Cloudflare adapter.
+The script builds the OpenNext artifact and publishes it through the included
+Cloudflare Workers configuration.
 
 ## Verify the Worker
 
