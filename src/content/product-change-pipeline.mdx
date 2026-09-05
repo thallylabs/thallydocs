@@ -23,20 +23,20 @@ to review.
     request updates, merged changes, a UTC schedule, or a combination of those
     triggers. Track keeps the exact source revision that started each run.
   </Step>
-  <Step title="Track reviews the product change and current docs">
-    Track reads the connected Product source and documentation repository, then
-    proposes the customer-facing documentation changes it considers relevant for
-    review.
+  <Step title="Track fans the change out to review destinations">
+    Track reads the connected Product source and starts an independent run for
+    the primary documentation repository and every Knowledge surface enabled
+    for the site when the event arrives.
   </Step>
-  <Step title="Track prepares and checks the update">
-    Track updates the relevant pages and validates the proposed documentation.
-    If no documentation change is needed, the run finishes without opening a
-    pull request.
+  <Step title="Each destination prepares and checks its result">
+    Every run uses the saved repository, branch, root, and exact path scopes.
+    A destination that needs no update finishes without opening a pull request;
+    other destinations continue independently.
   </Step>
   <Step title="A person decides what publishes">
-    When an update is needed, Track opens a ready-for-review GitHub pull
-    request. Reviewers can accept, correct, or reject it; Track never merges its
-    own work.
+    When an update is needed, Track opens a ready-for-review GitHub pull request
+    in that destination. Reviewers can accept, correct, or reject it; Track
+    never merges its own work.
   </Step>
   <Step title="One reviewed source feeds every output">
     After approval and publication, the same structured source powers HTML,
@@ -72,13 +72,17 @@ to review.
 | Product sources | Connected GitHub repositories, branches, and optional watched paths                                                  |
 | Triggers        | Trusted, same-repository, non-draft pull request updates; merged changes; and UTC daily, weekly, or custom schedules |
 | Progress        | Persistent activity from change receipt through preparation, writing, checking, and pull request creation            |
-| Output          | A ready-for-review documentation pull request, no docs change, or a needs-attention result                           |
+| Output          | An independent ready-for-review pull request, no-change decision, or needs-attention result for every destination  |
 | Approval        | Your existing GitHub review and deployment workflows                                                                 |
 
 <Note type="info" title="Your repository remains the source of truth">
-  Track prepares a proposal. The live documentation changes only after your team
-  reviews and merges it and the normal publishing checks pass.
+  Track prepares proposals. Primary docs publish through the managed release
+  path after review. Connected surfaces use their own repository checks,
+  previews, reviewers, and publishing workflows.
 </Note>
+
+For the complete trigger, confinement, validation, preview, and publication
+contract, read [Extend Track to Knowledge surfaces](/guides/knowledge-surfaces).
 
 ## Put the pipeline to work
 
@@ -86,6 +90,8 @@ to review.
   update workflow.
 - [Set up Thally Track](/guides/thally-track) to connect a Product source and
   choose its triggers.
+- [Connect Knowledge surfaces](/guides/knowledge-surfaces) for customer-facing
+  content outside the primary documentation repository.
 - [Use the docs agent](/guides/docs-agent) for self-managed authoring tasks.
 - [Add provenance](/guides/provenance) so people and agents can see when pages
   were updated and last verified.

@@ -6,21 +6,21 @@ description: Learn the small set of Thally commands used to create, edit, valida
 
 The `thally` CLI is the main interface for a documentation project. It wraps
 the framework so you can work with content and configuration instead of Next.js
-internals. Generated projects include `@thallylabs/cli`; run it with `npx` from
-the project root.
+internals. Run the published `@thallylabs/cli` package with `npx` from the
+project root; a generated project does not install a local `thally` binary.
 
 ```bash
-npx thally
+npx --yes @thallylabs/cli@latest
 ```
 
 ## The five-command path
 
 ```bash
-npx create-thally-docs@latest my-docs --yes --install
+npx --yes create-thally-docs@latest my-docs --yes --install
 cd my-docs
-npx thally dev
-npx thally new guides/invite-a-member --title "Invite a team member"
-npx thally check
+npx --yes @thallylabs/cli@latest dev
+npx --yes @thallylabs/cli@latest new guides/invite-a-member --title "Invite a team member"
+npx --yes @thallylabs/cli@latest check
 ```
 
 Use `build` when the project is ready for production and `deploy` when you want
@@ -45,8 +45,8 @@ the CLI to publish it through a supported provider.
 
 ## `thally` and `create-thally-docs`
 
-Use `npx thally` for routine work inside a project. Use
-`npx create-thally-docs@latest` when you need the newest scaffold before a
+Use `npx --yes @thallylabs/cli@latest` for routine work inside a project. Use
+`npx --yes create-thally-docs@latest` when you need the newest scaffold before a
 project exists. `thally init` and `thally migrate` delegate to the scaffold
 package, so both interfaces produce the same supported project shape.
 
@@ -61,9 +61,9 @@ Audit and repair the current Thally documentation project without changing its p
 
 1. Confirm the working directory contains package.json, docs.json, and src/content. Read AGENTS.md or equivalent repository instructions before changing files. Record the current git status and preserve unrelated edits.
 2. Read docs.json, package.json scripts, src/data/site.ts, and any configuration or content files named by existing errors. Do not edit generated output or hidden framework internals when an authored content or configuration fix exists.
-3. Run npx thally check without a fix flag first. Group results into blocking errors, warnings that can be proven from repository state, and warnings that require editorial or product judgment.
+3. Run npx --yes @thallylabs/cli@latest check without a fix flag first. Group results into blocking errors, warnings that can be proven from repository state, and warnings that require editorial or product judgment.
 4. Fix only issues you can prove: missing navigation targets, invalid or incomplete frontmatter, duplicate page IDs, broken local links, malformed configuration, and clearly accidental orphan pages. Do not delete or publish orphan content merely to silence a warning. Do not rewrite product claims unless the implementation or tests contradict them.
-5. Run npx thally check again. When it passes, run npm run build. If a command fails, isolate whether the failure came from your edit, existing repository state, the environment, or an external service before changing more files.
+5. Run npx --yes @thallylabs/cli@latest check again. When it passes, run npm run build. If a command fails, isolate whether the failure came from your edit, existing repository state, the environment, or an external service before changing more files.
 6. Start the local site when possible and inspect the homepage, primary navigation, one representative guide, a code-heavy page, images, and any API reference. Check narrow and wide layouts, light and dark mode, broken links, horizontal overflow, and console errors.
 7. Summarize the initial findings, exact files changed, why each edit was safe, final command results, visual checks, and remaining warnings with a recommended owner and next step.
 
