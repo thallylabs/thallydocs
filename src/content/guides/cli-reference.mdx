@@ -76,12 +76,13 @@ content tab. `check` validates the project. Add `--ci` for GitHub annotations,
 
 ```bash
 npx --yes @thallylabs/cli@latest deploy --prod          # Vercel
-npx --yes @thallylabs/cli@latest deploy --cloudflare    # Cloudflare Workers
 ```
 
-The deploy command builds the provider-specific artifact before it publishes.
-Use the dedicated [deployment guides](/guides/deploying) when you need host
-configuration, durable storage, or a repeatable CI workflow.
+The deploy command builds the Vercel artifact before it publishes. For the
+scaffold's supported Cloudflare Workers/OpenNext path, use
+`npm run deploy:cloudflare`. See the dedicated
+[deployment guides](/guides/deploying) when you need host configuration,
+durable storage, or a repeatable CI workflow.
 
 ## Scaffold with create-thally-docs
 
