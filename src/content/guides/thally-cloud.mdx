@@ -59,6 +59,26 @@ allowance, use one of these recovery paths:
 
 After the allowance changes, return to **Create a site** and retry the publish.
 
+## Understand trial access and AI Credits
+
+A workspace with no previous subscription can start a one-time, 14-day Cloud
+trial without a payment card. The site wizard previews trial capabilities,
+including Track, available Knowledge surfaces, and three active managed sites.
+Opening the wizard or inspecting repository paths does not start the trial.
+
+An authorized **Publish site** submission starts the trial before background
+site creation and deployment finish. A later publishing failure does not reset
+the trial clock, and retrying does not extend it. A workspace with an existing
+subscription cannot start another trial. After a trial expires, the workspace
+uses Free capabilities unless it has a qualifying paid subscription.
+
+The default initial allowance is 10,000 shared AI Credits per workspace.
+Track uses the workspace balance across its runs and destinations; this is
+not a separate allowance for each site or repository. Check your workspace's
+AI Credit balance before running Track. Credits and feature access are
+separate: a remaining balance does not keep paid features unlocked after the
+trial expires.
+
 ## Create or connect a site
 
 From the workspace Home page, select **Create a site**. The creation flow asks
