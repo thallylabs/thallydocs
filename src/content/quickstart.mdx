@@ -26,10 +26,10 @@ Use Thally Cloud at https://app.thally.io/ to create and publish the site. Do no
 2. Open https://app.thally.io/. If you cannot control a browser, tell me to open that URL and guide me only through the browser steps that require my account while you handle all repository and terminal work yourself.
 3. Needs me: ask me to sign in or create an account if the browser is not already authenticated. Never request my password, verification code, session cookie, or recovery code in chat.
 4. Select Create a site. Ask me for any missing site name, short description, and preferred thally.app address. Never invent brand or company details.
-5. At Docs source, recommend Create a new docs repository. Use an existing repository only when it is already a current Thally project that I explicitly selected. Needs me: have me install or approve the Thally GitHub App for the intended GitHub organization and repository access. Do not select or modify an unrelated repository.
+5. At Docs source, recommend Create a new docs repository. Use an existing repository only when it is already a current Thally project that I explicitly selected. Needs me: have me install or approve the Thally GitHub App for the intended GitHub account. Explain that fresh repository creation requires All repositories access so the app can initialize the new repository. If I require selected-repository access, use an existing compatible Thally repository I approve and grant access to it. Do not select or modify an unrelated repository.
 6. At Product sources, ask whether I want Thally Track configured now. If yes, show me the available product repositories and confirm the exact selections before continuing. Never select the documentation repository itself. If I do not want Track yet, choose I'll do this later.
 7. If the Knowledge surfaces step is available for my workspace, ask whether each qualifying Track event should also check another customer-facing repository. Treat these as independent Track destinations, not Product sources or Product Knowledge inputs. Confirm the repository, branch, root, and exact allowed paths before adding one, or skip this optional step. Each affected destination receives its own ready-for-review pull request; Track never merges it.
-8. Review the site name, thally.app address, documentation repository, production branch, Product sources, and Knowledge surfaces with me. Select Publish site only after those values match what I approved.
+8. Review the site name, thally.app address, documentation repository, production branch, Product sources, and Knowledge surfaces with me. Explain that an eligible workspace previews trial features during setup and starts its one-time 14-day Cloud trial when an authorized Publish site submission is accepted, even if background publishing later fails. Select Publish site only after those values match what I approved.
 9. Wait for Thally Cloud to create or connect the GitHub repository and finish the first production deployment. Do not retry blindly. If publishing fails, report the exact message and preserve the created repository and site state for a safe retry.
 10. Confirm the workspace Home page shows the site as Live. Record the documentation repository and live https://SITE_SLUG.thally.app URL from the site summary.
 11. If I provided existing documentation and the Cloud-created repository still contains starter content, clone the exact documentation repository. For a GitHub repository or public docs URL, import into the existing Thally project with npx --yes create-thally-docs@latest migrate SOURCE --into REPOSITORY_DIRECTORY --yes. For local files, preserve the authored content and adapt it under src/content without deleting unrelated project files. If I connected an existing Thally repository, do not overwrite it.
@@ -53,6 +53,11 @@ You need a [Thally Cloud](https://app.thally.io/) account and a GitHub account
 with permission to install or approve the Thally GitHub App for the organization
 that will own the documentation repository. You do not need Node.js or a local
 checkout to publish the starter site.
+
+If your workspace has never had a subscription, setup previews the features
+and three-site allowance of its one-time Cloud trial. Browsing the wizard does
+not start the trial. See [trial access and AI Credits](/guides/thally-cloud#understand-trial-access-and-ai-credits)
+before publishing.
 
 <Note type="info" title="Check workspace capacity before you publish">
   Review [managed-site capacity](/guides/thally-cloud#plan-managed-site-capacity)
@@ -87,6 +92,12 @@ a GitHub repository from the current verified starter release, gives you
 editable source files, and manages the first deployment. The starter is pinned
 to one exact public Thally runtime revision.
 
+For this fresh-repository path, choose **All repositories** when installing
+the Thally GitHub App on the intended account. This lets the app initialize
+the repository it creates. If your organization requires selected-repository
+access, use an existing compatible Thally repository and grant the app access
+to that repository instead.
+
 Choose **Use an existing repository** only when the repository is already a
 Thally project. Install or approve the Thally GitHub App when prompted, then
 confirm the GitHub account and repository details.
@@ -103,9 +114,11 @@ excluded to prevent update loops.
 
 <Step title="Choose Knowledge surfaces">
 
-If this step is available for your workspace, you can add another Markdown or
-MDX repository where Track may prepare path-scoped, ready-for-review pull
-requests. Each qualifying Track event gives the primary docs and every enabled
+If this step is available for your workspace, you can add another repository
+with Markdown, MDX, or supported React content. Existing JSX and TSX files can
+receive visible prose edits; executable code and component structure stay
+unchanged. Track may prepare path-scoped, ready-for-review pull requests.
+Each qualifying Track event gives the primary docs and every enabled
 surface an independent run and no-change decision. A surface is a Track review
 destination, not a Product source, Product Knowledge input, or another managed
 site. You can also add it later from **Site settings → Knowledge surfaces**.
