@@ -43,14 +43,27 @@ Use `<Note>`, `<Tip>`, `<Warning>`, and `<Info>` to draw attention to important 
 
 ## Generic `<Callout>`
 
-Migrated content from other platforms may use the generic `<Callout type="...">` form — this is supported as an alias:
+Use the generic `<Callout>` for custom-coloured callouts or callouts with a specific icon:
+
+<Callout icon="key" color="#C77DFF">
+  Keep your API key safe — never expose it in client code.
+</Callout>
 
 ```mdx
-<Callout type="warning">
-  This maps to a Warning callout.
+<Callout icon="key" color="#C77DFF">
+  Keep your API key safe — never expose it in client code.
 </Callout>
 ```
 
+Migrated content that uses `<Callout type="...">` is also supported. The `type` value is normalised case-insensitively, and migration aliases `success` and `error` map to **Check** and **Danger** respectively.
+
 ## Props
 
-All callout components accept arbitrary MDX children including inline code, links, and lists. No additional props are required.
+All callout components accept arbitrary MDX children including inline code, links, and lists.
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `title` | string | Optional heading displayed above the callout body. |
+| `icon` | string | Replaces the default type glyph with a named icon from the shared icon set. |
+| `color` | CSS colour | A plain CSS colour literal (hex, named, or functional notation such as `oklch()`) that drives the callout hue. |
+| `colorDark` | CSS colour | Dark-mode override. When omitted, `color` is used in both themes. |
