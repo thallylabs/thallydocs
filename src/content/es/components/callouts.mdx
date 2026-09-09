@@ -43,14 +43,27 @@ Usa `<Note>`, `<Tip>`, `<Warning>` e `<Info>` para llamar la atención sobre con
 
 ## `<Callout>` genérico
 
-El contenido migrado desde otras plataformas puede usar la forma genérica `<Callout type="...">` — esto es compatible como un alias:
+Usa el `<Callout>` genérico para callouts con un color o ícono personalizado:
+
+<Callout icon="key" color="#C77DFF">
+  Mantén tu clave API segura — nunca la expongas en código del cliente.
+</Callout>
 
 ```mdx
-<Callout type="warning">
-  This maps to a Warning callout.
+<Callout icon="key" color="#C77DFF">
+  Mantén tu clave API segura — nunca la expongas en código del cliente.
 </Callout>
 ```
 
+El contenido migrado que usa `<Callout type="...">` también es compatible. El valor de `type` se normaliza sin distinguir mayúsculas, y los alias de migración `success` y `error` se asignan a **Check** y **Danger** respectivamente.
+
 ## Props
 
-Todos los componentes de callout aceptan hijos MDX arbitrarios, incluyendo código en línea, enlaces y listas. No se requieren props adicionales.
+Todos los componentes de callout aceptan hijos MDX arbitrarios, incluyendo código en línea, enlaces y listas.
+
+| Prop | Tipo | Descripción |
+| --- | --- | --- |
+| `title` | string | Encabezado opcional que se muestra sobre el cuerpo del callout. |
+| `icon` | string | Reemplaza el glifo de tipo predeterminado con un ícono del conjunto de íconos compartido. |
+| `color` | color CSS | Un literal de color CSS (hex, nombre o notación funcional como `oklch()`) que define el tono del callout. |
+| `colorDark` | color CSS | Variante para modo oscuro. Si se omite, se usa `color` en ambos temas. |
