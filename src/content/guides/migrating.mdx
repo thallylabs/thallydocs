@@ -21,9 +21,9 @@ Migrate SOURCE_URL into a new Thally project at TARGET_DIRECTORY. You are done w
 
 Before writing files, read repository instructions in the current workspace and inspect TARGET_DIRECTORY. Stop if the target exists and is not empty. Determine whether SOURCE_URL is a source repository, a public site, or both. Prefer the source GitHub repository when it is available because it preserves authored MDX, configuration, redirects, and assets. Confirm ambiguous sources or destinations with me rather than substituting one.
 
-Use the local Thally MCP migrate_docs tool if connected; otherwise run npx --yes create-thally-docs@latest migrate SOURCE_URL TARGET_DIRECTORY. Never use import_docs or --into unless I explicitly request an in-place merge and approve the destination. Preserve the importer output and warnings.
+Use the local Thally MCP migrate_docs tool if connected; otherwise run npx --yes @thallylabs/cli@latest migrate SOURCE_URL TARGET_DIRECTORY. Never use import_docs or --into unless I explicitly request an in-place merge and approve the destination. Preserve the importer output and warnings.
 
-After migration, compare source and destination page counts, top-level navigation, redirects, important assets and downloads, code languages, custom components, and API references. Install dependencies with the generated project's existing package manager and lockfile. Run npx --yes @thallylabs/cli@latest check and npm run build.
+After migration, compare source and destination page counts, top-level navigation, redirects, important assets and downloads, code languages, custom components, and API references. The migration installs dependencies and runs content validation and a production build itself; read migration-report.json before doing anything else. After your edits, run npx --yes @thallylabs/cli@latest check and npm run build again.
 
 Start the local site and inspect the homepage, every primary navigation tab, representative shallow and deep pages, links, headings, code blocks, images, tables, callouts, and any API reference. Check light and dark mode plus a narrow viewport. Look for missing assets, raw unsupported MDX, broken anchors, horizontal overflow, duplicate headings, placeholder copy, and content that became generic during conversion.
 
@@ -42,11 +42,15 @@ You need:
 
 ## 1. Migrate the documentation
 
-Pass the source GitHub repository and the directory to create:
+Pass the source GitHub repository, name the platform that hosts it, and skip the prompts. A `tree/<branch>/<directory>` URL sets the branch and docs directory for you:
 
 ```bash
-npx --yes create-thally-docs@latest migrate https://github.com/example/docs ./example-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/triggerdotdev/trigger.dev/tree/main/docs --platform mintlify --yes
 ```
+
+Add an output directory after the URL to control where the project is created. Without one, Thally names the directory after the repository with a `-docs` suffix, so this example creates `trigger-dev-docs`.
+
+The command scaffolds a fresh Thally project, imports the source, installs dependencies, then runs content validation and a production build. It writes the result to `migration-report.json` in the new project. Migration runs project code locally, including imported MDX and components, so migrate only sources you own or trust.
 
 <Note type="info" title="Repository migration is recommended">
   A repository gives Thally the original content and configuration instead of reconstructed browser output. This is the most accurate path when you select auto-detection.
@@ -61,13 +65,13 @@ If you select auto-detection for a live URL, the CLI recommends migrating from t
 For example, this command starts the interactive flow for a live site:
 
 ```bash
-npx --yes create-thally-docs@latest migrate https://relay.dev/ ./relay-docs --max-pages 1000
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ ./relay-docs --max-pages 1000
 ```
 
 For scripts and CI, select the adapter explicitly:
 
 ```bash
-npx --yes create-thally-docs@latest migrate https://relay.dev/ ./relay-docs \
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ ./relay-docs \
   --platform docusaurus \
   --max-pages 1000 \
   --yes
@@ -80,7 +84,7 @@ npx --yes create-thally-docs@latest migrate https://relay.dev/ ./relay-docs \
 When only the deployed site is available, pass its public URL:
 
 ```bash
-npx --yes create-thally-docs@latest migrate https://docs.example.com ./example-docs
+npx --yes @thallylabs/cli@latest migrate https://docs.example.com ./example-docs
 ```
 
 For public sites, Thally looks for machine-readable indexes such as `llms.txt` and `sitemap.xml`, then follows same-origin documentation navigation within the submitted path. It preserves the discovered hierarchy, portable MDX components, assets, redirects, and OpenAPI metadata where the source exposes them.
@@ -90,7 +94,7 @@ For public sites, Thally looks for machine-readable indexes such as `llms.txt` a
 The crawler imports up to 1,000 pages by default. Use `--max-pages` to run a smaller trial migration or limit a large site:
 
 ```bash
-npx --yes create-thally-docs@latest migrate https://docs.example.com ./example-docs --max-pages 100
+npx --yes @thallylabs/cli@latest migrate https://docs.example.com ./example-docs --max-pages 100
 ```
 
 `--max-pages` accepts an integer from 1 to 1,000. A limit applies to imported content pages, not discovery files such as sitemaps.
@@ -98,6 +102,10 @@ npx --yes create-thally-docs@latest migrate https://docs.example.com ./example-d
 <Note type="warning" title="Choose a representative limit">
   A small limit is useful for reviewing conversion quality, but the generated navigation includes only pages imported during that run. Run the final migration with a high enough limit before publishing.
 </Note>
+
+### Mintlify migrations
+
+For Mintlify repositories, Thally reads `docs.json` or `mint.json` for navigation, redirects, and OpenAPI references, converts the pages to Thally MDX, and renames only the components that do not share a name with a Thally equivalent. See the [component mapping](/guides/cli-reference#component-mapping) for the full list.
 
 ### Docusaurus migrations
 
@@ -109,24 +117,27 @@ The importer has been verified against every current canonical documentation pag
 
 ## 2. Review the generated site
 
-Install dependencies, run the project, and inspect its primary navigation paths:
+Dependencies are already installed, so start the project and inspect its primary navigation paths:
 
 ```bash
-cd example-docs
-npm install
+cd trigger-dev-docs
 npm run dev
 ```
 
 Open the local URL printed by the dev server. Check the top-level tabs, sidebar groups, internal links, code blocks, cards, tabs, images, and API reference pages.
 
-Then run the project checks:
+Read `migration-report.json` for importer warnings and the validation result. If the report shows a failed content check or build, fix the cause before publishing. After editing, rerun the checks:
 
 ```bash
-npx --yes create-thally-docs@latest check .
-npm test
+npx --yes @thallylabs/cli@latest check
+npm run build
 ```
 
-Review any migration warnings printed by the CLI. You can edit the generated MDX in `src/content/`, navigation in `docs.json`, and branding in `src/data/site.ts` before publishing.
+<Note type="info" title="Skipping validation">
+  Pass `--skip-validation` to import without installing dependencies or running the build. The report then marks the import unverified, so run the checks above before publishing.
+</Note>
+
+You can edit the generated MDX in `src/content/`, navigation in `docs.json`, and branding in `src/data/site.ts` before publishing.
 
 ## 3. Push the generated project to GitHub
 
@@ -137,7 +148,7 @@ git init
 git add .
 git commit -m "docs: migrate documentation to Thally"
 git branch -M main
-gh repo create example-docs --private --source=. --remote=origin --push
+gh repo create trigger-dev-docs --private --source=. --remote=origin --push
 ```
 
 You can make the repository public by replacing `--private` with `--public`. Do not initialize the GitHub repository with a README or license before pushing; the generated project already contains its own files.
@@ -190,6 +201,7 @@ Future pushes to the production branch trigger new deployments, so the GitHub re
 | `--docs-dir <path>` | Override the auto-detected docs subdirectory for a repository source |
 | `--platform <name>` | Select `mintlify`, `docusaurus`, or `auto` |
 | `--api-key <key>` | Anthropic API key, or `ANTHROPIC_API_KEY`, for non-Markdown conversion |
+| `--skip-validation` | Import only; skip dependency installation, content checks, and the production build |
 | `--yes`, `-y` | Accept defaults and live-site limitations, then skip all prompts |
 
 ## How repository sources are detected
@@ -198,22 +210,23 @@ For GitHub repositories, Thally detects common platform configuration and conten
 
 | File | Platform detected |
 |------|-------------------|
-| `docs.json` / `mint.json` | Mintlify |
-| `docusaurus.config.js` + `sidebars.js` | Docusaurus |
-| `book.yaml` / `SUMMARY.md` | GitBook |
-| `_meta.json` | Nextra |
-| `vitepress.config.*` | VitePress |
-| `.starlight/` | Starlight |
+| `mint.json`, or a `docs.json` with Mintlify navigation | Mintlify |
+| `docs.json` with Thally `tabs` | Existing Thally project |
+| `docusaurus.config.js`, `.ts`, or `.mjs` | Docusaurus |
+| `SUMMARY.md` | GitBook |
+| `.vitepress/` | VitePress |
+| `astro.config.mjs` or `.ts` | Starlight |
+| `_meta.json` or `pages/_meta.json` | Nextra |
 | *(none of the above)* | Plain Markdown directory structure |
 
-The docs directory is auto-detected from common locations such as `docs/`, `documentation/`, `content/`, `src/content/`, `pages/`, or the repository root. Docusaurus projects nested in monorepos and additional docs-plugin roots are discovered automatically.
+Thally checks these in order and uses the first match. The docs directory is auto-detected from `docs/`, `documentation/`, `content/`, `pages/`, `src/content/`, `src/pages/`, `guide/`, `guides/`, or the repository root, taking the first one that contains Markdown. Docusaurus projects nested in monorepos and additional docs-plugin roots are discovered automatically.
 
 ## Migrate into an existing project
 
 Use `--into` to add migrated content to a Thally project without replacing its existing pages:
 
 ```bash
-npx --yes create-thally-docs@latest migrate https://docs.example.com --into ./existing-docs --max-pages 250
+npx --yes @thallylabs/cli@latest migrate https://docs.example.com --into ./existing-docs --max-pages 250
 ```
 
 New navigation groups are merged into the existing `docs.json`. Review the result before committing because source sites can use components or API-reference features that need a final editorial pass.
@@ -242,4 +255,4 @@ Open the GitHub App installation settings from the source step and grant access 
 
 ### The repository is rejected as incompatible
 
-Run the migration with `create-thally-docs@latest`, commit every generated runtime file, and ensure `package-lock.json`, `wrangler.jsonc`, and `open-next.config.ts` are present on the selected branch.
+Run the migration with `@thallylabs/cli@latest`, commit every generated runtime file, and ensure `package-lock.json`, `wrangler.jsonc`, and `open-next.config.ts` are present on the selected branch.

@@ -133,7 +133,7 @@ Migrate SOURCE_URL into a new Thally project at TARGET_DIRECTORY. You are done w
 
 Before writing files, read repository instructions in the current workspace and inspect TARGET_DIRECTORY. Stop if the target exists and is not empty; never overwrite or merge into it by assumption. Determine whether SOURCE_URL is a GitHub documentation repository, a public documentation site, or both. Prefer the source repository when it is available because it preserves source MDX, configuration, history, and assets. Confirm the exact source and target with me if either is ambiguous.
 
-Use the local Thally MCP migrate_docs tool if connected. Otherwise run npx --yes create-thally-docs@latest migrate SOURCE_URL TARGET_DIRECTORY. Do not use import_docs or --into unless I explicitly ask for an in-place merge and approve the destination. Preserve the migration log and warnings.
+Use the local Thally MCP migrate_docs tool if connected. Otherwise run npx --yes @thallylabs/cli@latest migrate SOURCE_URL TARGET_DIRECTORY. Do not use import_docs or --into unless I explicitly ask for an in-place merge and approve the destination. Preserve the migration log and warnings.
 
 After migration:
 

@@ -41,12 +41,12 @@ npx create-thally-docs my-docs --yes
 
 ---
 
-## create-thally-docs migrate
+## thally migrate
 
 Migra un sitio público de documentación o un repositorio de GitHub a un proyecto Thally.
 
 ```bash
-npx create-thally-docs migrate <github-or-docs-url> [output-dir] [options]
+npx --yes @thallylabs/cli@latest migrate <github-or-docs-url> [output-dir] [options]
 ```
 
 Para una URL pública, Thally descubre el sitemap, la navegación renderizada, las redirecciones y el contenido portátil. Para una URL de GitHub, clona el repositorio y lee Markdown, MDX, assets y la configuración de la plataforma de forma estática.
@@ -61,22 +61,22 @@ Para una URL pública, Thally descubre el sitemap, la navegación renderizada, l
 
 ```bash
 # Recomendado: detectar la plataforma desde el repositorio fuente
-npx create-thally-docs migrate https://github.com/org/repo my-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/org/repo my-docs
 
 # Usar el sitio público cuando el repositorio no está disponible
-npx create-thally-docs migrate https://relay.dev/ relay-docs --max-pages 1000
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs --max-pages 1000
 
 # Ejecutar la misma migración Docusaurus sin prompts
-npx create-thally-docs migrate https://relay.dev/ relay-docs --platform docusaurus --max-pages 1000 --yes
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs --platform docusaurus --max-pages 1000 --yes
 
 # Derivar el directorio de salida del nombre del repositorio
-npx create-thally-docs migrate https://github.com/mintlify/starter
+npx --yes @thallylabs/cli@latest migrate https://github.com/mintlify/starter
 
 # Migrar una rama o subdirectorio específico
-npx create-thally-docs migrate https://github.com/org/repo/tree/main/docs my-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/org/repo/tree/main/docs my-docs
 
 # Migrar contenido a un proyecto Thally existente
-npx create-thally-docs migrate https://github.com/org/repo --into ./existing-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/org/repo --into ./existing-docs
 ```
 
 ### Qué se migra
@@ -131,12 +131,12 @@ Los archivos en formato `.rst` u otros formatos requieren una clave API de Anthr
 
 ---
 
-## create-thally-docs check
+## thally check
 
 Verifica un proyecto Thally en busca de problemas comunes e informa errores y advertencias.
 
 ```bash
-npx create-thally-docs check [project-dir]
+npx --yes @thallylabs/cli@latest check [project-dir]
 ```
 
 Usa el directorio actual si no se proporciona ninguna ruta.
@@ -155,13 +155,13 @@ Usa el directorio actual si no se proporciona ninguna ruta.
 
 ```bash
 # Verificar el proyecto actual
-npx create-thally-docs check
+npx --yes @thallylabs/cli@latest check
 
 # Verificar un directorio específico
-npx create-thally-docs check /path/to/my-docs
+npx --yes @thallylabs/cli@latest check /path/to/my-docs
 
 # Corregir automáticamente archivos huérfanos agregándolos a la navegación
-npx create-thally-docs check --fix
+npx --yes @thallylabs/cli@latest check --fix
 ```
 
 La CLI termina con el código `1` si se encuentran errores, `0` si el proyecto está limpio o solo tiene advertencias.

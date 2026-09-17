@@ -3,10 +3,10 @@ title: Migrando a Thally
 description: Mueve tu documentación existente de Mintlify, Docusaurus, GitBook o cualquier plataforma basada en Markdown a Thally con un solo comando.
 ---
 
-El comando `create-thally-docs migrate` importa un repositorio de GitHub o un sitio público de documentación y lo convierte en un proyecto Thally en funcionamiento. Para la detección automática, usa el repositorio fuente siempre que esté disponible: conserva la navegación, los assets, los archivos OpenAPI, las redirecciones y la estructura MDX originales.
+El comando `thally migrate` importa un repositorio de GitHub o un sitio público de documentación y lo convierte en un proyecto Thally en funcionamiento. Para la detección automática, usa el repositorio fuente siempre que esté disponible: conserva la navegación, los assets, los archivos OpenAPI, las redirecciones y la estructura MDX originales.
 
 ```bash
-npx create-thally-docs@latest migrate https://github.com/example/docs my-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/example/docs my-docs
 ```
 
 <Note type="info" title="Se recomienda migrar desde el repositorio">
@@ -80,13 +80,13 @@ Todas las páginas convertidas se escriben en `src/content/`. La navegación de 
 Ejecuta el comando sin `--yes` para elegir de forma interactiva:
 
 ```bash
-npx create-thally-docs@latest migrate https://relay.dev/ relay-docs --max-pages 1000
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs --max-pages 1000
 ```
 
 Para una migración no interactiva, selecciona la plataforma explícitamente:
 
 ```bash
-npx create-thally-docs@latest migrate https://relay.dev/ relay-docs \
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs \
   --platform docusaurus \
   --max-pages 1000 \
   --yes
@@ -99,7 +99,7 @@ Para una URL pública, `--platform auto` y `--yes` aceptan de forma no interacti
 ### Mintlify
 
 ```bash
-npx create-thally-docs migrate https://github.com/mintlify/starter my-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/mintlify/starter my-docs
 ```
 
 La navegación se lee desde `docs.json` (Mintlify v3) o `mint.json`. Las especificaciones OpenAPI en el directorio `api-reference/` se detectan y conectan automáticamente.
@@ -107,7 +107,7 @@ La navegación se lee desde `docs.json` (Mintlify v3) o `mint.json`. Las especif
 ### Docusaurus
 
 ```bash
-npx create-thally-docs@latest migrate https://relay.dev/ relay-docs --platform docusaurus
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs --platform docusaurus
 ```
 
 En sitios públicos, Thally reconstruye la navegación de la versión actual, sigue redirecciones canónicas, conserva rutas sensibles a mayúsculas y excluye árboles de versiones antiguas o `next`. Los avisos, pestañas, tablas y bloques de código resaltados se convierten a MDX compilable de Thally.
@@ -119,7 +119,7 @@ El importador se verificó con los conjuntos completos de documentación actual 
 ### GitBook
 
 ```bash
-npx create-thally-docs migrate https://github.com/your-org/gitbook-docs my-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/your-org/gitbook-docs my-docs
 ```
 
 `SUMMARY.md` se usa para inferir el orden de navegación. Los bloques `{% hint %}` se convierten al componente de llamada de atención correspondiente de Thally.
@@ -129,7 +129,7 @@ npx create-thally-docs migrate https://github.com/your-org/gitbook-docs my-docs
 Cualquier repositorio con archivos Markdown funciona — la navegación se construye a partir de la estructura de directorios.
 
 ```bash
-npx create-thally-docs migrate https://github.com/your-org/docs my-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/your-org/docs my-docs
 ```
 
 ---
@@ -139,7 +139,7 @@ npx create-thally-docs migrate https://github.com/your-org/docs my-docs
 Usa `--into` para agregar contenido de otro repositorio a un proyecto Thally existente sin sobreescribirlo. Las nuevas pestañas y grupos se fusionan; el contenido existente no se modifica.
 
 ```bash
-npx create-thally-docs migrate https://github.com/your-org/api-docs --into ./my-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/your-org/api-docs --into ./my-docs
 ```
 
 ---
@@ -181,10 +181,10 @@ cd my-docs
 npm run dev
 ```
 
-Luego ejecuta `create-thally-docs check` para detectar cualquier problema antes de publicar:
+Luego ejecuta `thally check` para detectar cualquier problema antes de publicar:
 
 ```bash
-npx create-thally-docs check my-docs
+npx --yes @thallylabs/cli@latest check my-docs
 ```
 
 Tareas comunes posteriores a la migración:
