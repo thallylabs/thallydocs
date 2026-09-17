@@ -68,20 +68,20 @@ can preserve authored Markdown or MDX, navigation, local assets, snippets,
 locales, redirects, and OpenAPI files that a public website may not expose.
 
 ```bash
-npx create-thally-docs migrate https://github.com/acme/docs acme-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/acme/docs acme-docs
 ```
 
 You can also migrate a public documentation URL:
 
 ```bash
-npx create-thally-docs migrate https://docs.acme.com acme-docs
+npx --yes @thallylabs/cli@latest migrate https://docs.acme.com acme-docs
 ```
 
 The interactive flow asks whether the source uses Mintlify, Docusaurus, or
 automatic detection. For non-interactive runs, select the adapter explicitly:
 
 ```bash
-npx create-thally-docs migrate https://github.com/acme/docs acme-docs --platform mintlify --yes
+npx --yes @thallylabs/cli@latest migrate https://github.com/acme/docs acme-docs --platform mintlify --yes
 ```
 
 <Note type="info" title="Review a migration before publishing">

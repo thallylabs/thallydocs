@@ -86,7 +86,7 @@ durable storage, or a repeatable CI workflow.
 
 ## Scaffold with create-thally-docs
 
-Use `create-thally-docs` directly when you are creating or migrating a project:
+Use `create-thally-docs` directly when you are creating a project before the CLI has anything to run against:
 
 ```bash
 npx --yes create-thally-docs@latest [command] [args] [options]
@@ -131,10 +131,10 @@ npx create-thally-docs my-docs --yes
 Migrates a public documentation URL or GitHub documentation repository into a Thally project.
 
 ```bash
-npx create-thally-docs migrate <github-or-docs-url> [output-dir] [options]
+npx --yes @thallylabs/cli@latest migrate <github-or-docs-url> [output-dir] [options]
 ```
 
-For repository sources, Thally clones and reads the source content directly. For live sites, it discovers machine-readable indexes, sitemaps, and same-origin documentation navigation. Both paths produce the same ready-to-run Thally project.
+For repository sources, Thally clones and reads the source content directly. For live sites, it discovers machine-readable indexes, sitemaps, and same-origin documentation navigation. Both paths produce the same ready-to-run Thally project. For a new project, the command also installs dependencies, runs content checks and a production build, and records the outcome in `migration-report.json`; pass `--skip-validation` to import only.
 
 **Dedicated adapters:** Mintlify and Docusaurus. Automatic detection can also
 import repositories with plain Markdown or MDX and crawl a public docs site,
@@ -149,25 +149,25 @@ platforms.
 
 ```bash
 # Recommended: auto-detect from the source repository
-npx create-thally-docs migrate https://github.com/org/repo my-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/org/repo my-docs
 
 # Use a live site when the repository is unavailable
-npx create-thally-docs migrate https://relay.dev/ relay-docs --max-pages 1000
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs --max-pages 1000
 
 # Run the same Docusaurus migration without prompts
-npx create-thally-docs migrate https://relay.dev/ relay-docs --platform docusaurus --max-pages 1000 --yes
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs --platform docusaurus --max-pages 1000 --yes
 
 # Trial a large live site with at most 100 pages
-npx create-thally-docs migrate https://docs.example.com example-docs --max-pages 100
+npx --yes @thallylabs/cli@latest migrate https://docs.example.com example-docs --max-pages 100
 
 # Derive the output dir from the repo name
-npx create-thally-docs migrate https://github.com/mintlify/starter
+npx --yes @thallylabs/cli@latest migrate https://github.com/mintlify/starter
 
 # Migrate a specific branch or subdirectory
-npx create-thally-docs migrate https://github.com/org/repo/tree/main/docs my-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/org/repo/tree/main/docs my-docs
 
 # Migrate content into an existing Thally project
-npx create-thally-docs migrate https://github.com/org/repo --into ./existing-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/org/repo --into ./existing-docs
 ```
 
 ### What gets migrated
@@ -189,6 +189,7 @@ npx create-thally-docs migrate https://github.com/org/repo --into ./existing-doc
 | `--docs-dir <path>` | Override the auto-detected docs subdirectory |
 | `--platform <name>` | Select `mintlify`, `docusaurus`, or `auto` |
 | `--api-key <key>` | Anthropic API key for converting non-Markdown files (e.g. `.rst`). Falls back to `ANTHROPIC_API_KEY` env var |
+| `--skip-validation` | Import only; skip dependency installation, content checks, and the production build |
 | `--yes`, `-y` | Accept defaults and live-site limitations, then skip all prompts |
 
 <Warning>
@@ -229,7 +230,7 @@ See [Migrate and publish existing documentation](/guides/migrating) for the comp
 Lints a Thally project for common issues and reports errors and warnings.
 
 ```bash
-npx create-thally-docs check [project-dir]
+npx --yes @thallylabs/cli@latest check [project-dir]
 ```
 
 Defaults to the current directory if no path is given.
@@ -248,13 +249,13 @@ Defaults to the current directory if no path is given.
 
 ```bash
 # Check the current project
-npx create-thally-docs check
+npx --yes @thallylabs/cli@latest check
 
 # Check a specific directory
-npx create-thally-docs check /path/to/my-docs
+npx --yes @thallylabs/cli@latest check /path/to/my-docs
 
 # Auto-fix orphan files by adding them to the nav
-npx create-thally-docs check --fix
+npx --yes @thallylabs/cli@latest check --fix
 ```
 
 The CLI exits with code `1` if any errors are found, `0` if the project is clean or only has warnings.
