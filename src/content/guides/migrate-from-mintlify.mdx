@@ -1,0 +1,41 @@
+---
+title: Migrate from Mintlify
+navTitle: Mintlify
+description: Move a Mintlify docs site to Thally with one command and run it locally.
+---
+
+Thally has a dedicated Mintlify adapter. One command imports your pages, `docs.json` or `mint.json` navigation, snippets, redirects, local components, and OpenAPI reference into a new Thally project.
+
+## Migrate and run locally
+
+Point the CLI at the GitHub repository that holds your Mintlify project:
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/example/product --platform mintlify --yes
+```
+
+Start the site:
+
+```bash
+cd product-docs
+npm run dev
+```
+
+Open [http://localhost:3040](http://localhost:3040). Your Mintlify docs are running on Thally.
+
+The command creates `product-docs`, installs dependencies, runs the checks and a production build, and makes an initial Git commit. If the Mintlify project lives in a subfolder, use a `tree/<branch>/<dir>` URL such as `https://github.com/example/product/tree/main/docs`. If you only have the live site, pass its URL instead of the repository.
+
+## What to check
+
+- **Navigation.** Tabs, groups, dropdowns, versions, and languages come across with their original nesting and order. Open each one.
+- **Components.** Thally renders most Mintlify components under the same names. Only differently named ones are renamed, such as `<Check>` to `<Note>` and `<Tile>` to `<Card>`. See the [component mapping](/guides/cli-reference#component-mapping).
+- **Custom components.** Local JSX and TSX components land in `src/mdx/migrated/`. Any that import packages the project does not ship fail the build until you install the package or replace the component.
+- **Branding.** Colors, logo, and favicon are not imported. Set them in `src/data/site.ts`. See [Branding and theming](/guides/branding-and-theming).
+- **Warnings.** `migration-report.json` lists anything the importer could not carry over, such as a snippet it could not resolve.
+
+After edits, run `npx --yes @thallylabs/cli@latest check` and `npm run build`, then commit.
+
+## Next steps
+
+- [Publish the site](/guides/migrating#publish)
+- [Troubleshoot a migration](/guides/migrating#troubleshooting)

@@ -1,0 +1,41 @@
+---
+title: Migrate from Docusaurus
+navTitle: Docusaurus
+description: Move a Docusaurus docs site to Thally with one command and run it locally.
+---
+
+Thally has a dedicated Docusaurus adapter. One command imports your pages, sidebars, categories, admonitions, tabs, and `static/` assets into a new Thally project, from a repository or a live site.
+
+## Migrate and run locally
+
+Point the CLI at the GitHub repository that holds your Docusaurus project:
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/example/product --platform docusaurus --yes
+```
+
+Start the site:
+
+```bash
+cd product-docs
+npm run dev
+```
+
+Open [http://localhost:3040](http://localhost:3040). Your Docusaurus docs are running on Thally.
+
+The command creates `product-docs`, installs dependencies, runs the checks and a production build, and makes an initial Git commit. For a monorepo, use a `tree/<branch>/<dir>` URL such as `https://github.com/example/product/tree/main/website`. If you only have the live site, pass its URL instead of the repository; the adapter follows the current version and skips legacy and `next` trees.
+
+## What to check
+
+- **Navigation.** Sidebars are parsed as data, never executed. Categories, positions, and generated index pages come across. A sidebar that uses function calls falls back to folder-based navigation, which the report says.
+- **Admonitions and tabs.** `:::note`, `:::tip`, and `:::info` become `<Note>`, `:::warning` and `:::caution` become `<Warning>`, `:::danger` becomes `<Error>`, and `<TabItem>` becomes `<Tab>`.
+- **React components.** Imports from `@site/src/components` are not copied. Remove the import and use a Thally component, or add the component as described in [Extend Thally](/guides/extending).
+- **Scope.** Only the docs plugin content is imported. The blog, custom pages, and theme config such as the navbar and colors are not. Set branding in `src/data/site.ts`.
+- **Warnings.** `migration-report.json` lists anything the importer could not carry over.
+
+After edits, run `npx --yes @thallylabs/cli@latest check` and `npm run build`, then commit.
+
+## Next steps
+
+- [Publish the site](/guides/migrating#publish)
+- [Troubleshoot a migration](/guides/migrating#troubleshooting)
