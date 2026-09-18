@@ -89,15 +89,20 @@ Las tarjetas pueden incluir una imagen en la parte superior, útil para mostrar 
 
 ### `<Card>`
 
-| Prop | Tipo | Descripción |
-|---|---|---|
-| `title` | `string` | Encabezado de la tarjeta |
-| `href` | `string` | URL de destino — hace que toda la tarjeta sea clicable |
-| `icon` | `string` | Nombre del icono (ver [iconos disponibles](/components/tooltip)) |
-| `img` | `string` | Ruta de imagen mostrada en la parte superior de la tarjeta |
+| Prop | Tipo | Predeterminado | Descripción |
+|---|---|---|---|
+| `title` | `string` | — | Encabezado de la tarjeta |
+| `href` | `string` | — | URL de destino — hace que toda la tarjeta sea clicable |
+| `icon` | `string` | — | Nombre del icono (ver [iconos disponibles](/components/tooltip)) |
+| `color` | `string` | Acento del tema | Color del icono |
+| `img` | `string` | — | Ruta de imagen mostrada en la parte superior de la tarjeta |
+| `horizontal` | `boolean` | `false` | Usa un diseño horizontal en lugar de apilar el icono encima del título |
+| `cta` | `string` | — | Etiqueta de acción explícita |
+| `arrow` | `boolean` | `false` | Muestra una flecha direccional en la esquina superior derecha |
+| `type` | `info \| success \| warning \| danger \| note \| tip \| check` | — | Tratamiento visual según la intención |
 
 ### `<CardGroup>`
 
 | Prop | Tipo | Predeterminado | Descripción |
 |---|---|---|---|
-| `cols` | `1 \| 2 \| 3 \| 4` | `3` | Número de columnas en la cuadrícula |
+| `cols` | `1 \| 2 \| 3 \| 4` | `2` | Número de columnas en la cuadrícula |

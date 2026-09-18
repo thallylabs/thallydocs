@@ -89,15 +89,20 @@ Cards can include a top image — useful for showcasing screenshots, product pre
 
 ### `<Card>`
 
-| Prop | Type | Description |
-|---|---|---|
-| `title` | `string` | Card heading |
-| `href` | `string` | Destination URL — makes the entire card clickable |
-| `icon` | `string` | Icon name (see [available icons](/components/tooltip)) |
-| `img` | `string` | Image path shown at the top of the card |
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `string` | — | Card heading |
+| `href` | `string` | — | Destination URL — makes the entire card clickable |
+| `icon` | `string` | — | Icon name (see [available icons](/components/tooltip)) |
+| `color` | `string` | Theme accent | Icon color |
+| `img` | `string` | — | Image path shown at the top of the card |
+| `horizontal` | `boolean` | `false` | Uses a horizontal layout instead of stacking the icon above the title |
+| `cta` | `string` | — | Explicit action label |
+| `arrow` | `boolean` | `false` | Shows a directional arrow in the top-right corner |
+| `type` | `info \| success \| warning \| danger \| note \| tip \| check` | — | Intent-aware surface treatment |
 
 ### `<CardGroup>`
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `cols` | `1 \| 2 \| 3 \| 4` | `3` | Number of columns in the grid |
+| `cols` | `1 \| 2 \| 3 \| 4` | `2` | Number of columns in the grid |
