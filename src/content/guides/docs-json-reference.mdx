@@ -91,6 +91,12 @@ Operation keys use `METHOD /path` exactly as written in the specification.
 | Root field | Purpose |
 | --- | --- |
 | `theme` | Structural theme: `default`, `maple`, `sharp`, or `minimal`. |
+| `appearance.default` | Initial reader theme mode: `system` (default), `light`, or `dark`. |
+| `appearance.showToggle` | Show the theme switch. Defaults to `true`. When `false`, the chosen mode is enforced and readers cannot override it. |
+| `appearance.contentIcons` | Card and tile icon treatment: `accent` or `neutral` (default). |
+| `background.image` | Background image for light mode (or shared). Public-relative PNG, JPG, JPEG, or WebP path, or HTTPS URL. |
+| `background.imageDark` | Dark-mode background image. Falls back to `image` when omitted. |
+| `background.decoration` | Overlay decoration: `none` (default), `grid`, or `gradient`. |
 | `banner` | `content` plus optional `dismissible`. Markdown links are supported. |
 | `navbar` | Secondary `links` and an optional primary action. |
 | `footer` | Social URLs and columns of links. |
