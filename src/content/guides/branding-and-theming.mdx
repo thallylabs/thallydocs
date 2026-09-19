@@ -4,33 +4,74 @@ navTitle: Brand and theme
 description: Apply your product identity, colors, logos, and theme settings to the documentation site.
 ---
 
-## Choose where to set your brand
+## Two places to set your brand
 
-Thally reads branding from three supported surfaces:
+Thally reads branding from two layers:
 
-1. **Thally Cloud → Settings → Branding** — set the visual defaults for a
-   managed site. Saved changes publish through the managed release workflow.
-2. **The built-in `/admin/branding` page** — apply supported runtime overrides
-   on a self-hosted site. These settings layer over the file defaults.
-3. **Source files** (`src/data/site.ts`, `docs.json`) — keep product identity
-   and portable defaults under Git review. A new or unconnected deployment
-   starts from these values.
+1. **The admin dashboard** (`/admin/branding`) — an Owner picks the structural theme, brand accent, logo, and favicon and hits **Save**. Changes apply to the live docs site immediately, with **no rebuild or redeploy**. These settings are stored at runtime and layered *on top of* the file defaults below.
+2. **Source files** (`src/data/site.ts`, `docs.json`) — the git-committed defaults. They define what a freshly scaffolded site looks like and what renders before any dashboard override exists. Anything not overridden in the dashboard falls back to these.
 
 <Note type="info" title="Which should I use?">
-Use **Thally Cloud** for a managed site, the built-in admin for a self-hosted
-runtime override, and **source files** when the setting must remain portable
-and version-controlled. Do not edit framework-owned components to change the
-brand.
+Use the **dashboard** for day-to-day changes — theme, brand accent, logo, favicon — with no deploy. Edit the **source files** to set the baseline for a new project, to keep branding in version control, or when you don't run the admin dashboard.
 </Note>
 
 The dashboard overrides the structural theme, the **brand accent** (and its focus ring), the logo, and the favicon. The rest of the palette (backgrounds, borders, sidebar tokens) is defined in the source files described below.
 
+### Site backgrounds in Thally Cloud
+
+In your site's **Settings → Branding → Site background**, choose a separate
+background for light and dark mode. Use the color picker or enter a hex color.
+The preview updates as you edit; the contrast readouts compare your brand color
+and the default text palette with the selected background.
+
+The override covers the page canvas, header, sidebar, and cards. It keeps text,
+borders, code blocks, and other semantic colors in their existing palette.
+Choose a light background for light mode and a dark background for dark mode,
+then check readability in both previews.
+
+Choose **Use site default** to remove an override. With no override, the
+background comes from `src/data/site.ts`. Managed sites publish these changes
+with the next site version. Sites pinned to an older runtime must first upgrade
+to a runtime that supports background overrides.
+
+### Reader appearance and background imagery
+
+In **Settings → Branding**, choose the default appearance: **System**, **Light**,
+or **Dark**. With the appearance toggle enabled, readers can choose a mode and
+their browser remembers it. Hiding the toggle enforces your selection, including
+following OS changes for System, even when a reader previously saved another mode.
+The default remains System with the toggle visible.
+
+Add one shared background image, or provide separate light and dark images.
+The light/shared image is also used in dark mode unless a dark image is set.
+A dark image without a shared image appears only in dark mode. Choose **None**,
+**Grid**, or **Gradient** for an optional decoration over the background color
+and image. Reading surfaces keep a translucent background for legibility.
+
+Self-hosted sites can configure the same options in `docs.json`:
+
+```json
+{
+  "appearance": { "default": "system", "showToggle": true },
+  "background": {
+    "image": "public/brand/background-light.png",
+    "imageDark": "public/brand/background-dark.png",
+    "decoration": "grid"
+  }
+}
+```
+
+Merge these fields into your existing configuration; keep its navigation and
+other options. Images may use public-relative PNG, JPG, JPEG, or WebP paths,
+or HTTPS image URLs without credentials. Remote images load directly in the
+reader's browser. Paths cannot contain traversal segments, and SVG backgrounds
+are not supported. Existing sites with no background image or decoration keep
+their current appearance. Managed branding overrides matching `docs.json`
+fields and takes effect in the next published version; upgrade older runtimes first.
+
 ## Site configuration
 
-Versioned site identity and links live in `src/data/site.ts`. Edit this file to
-set the product name, description, repository URL, and navigation links. A
-managed site's saved Cloud settings can override supported identity fields in
-the published runtime.
+All site-level settings live in `src/data/site.ts`. Edit this file to set your product name, description, and links. (Name, description, and repo URL can also be overridden live from the dashboard.)
 
 ```ts
 export const siteConfig: SiteConfig = {
@@ -62,14 +103,28 @@ const brandPreset: BrandPresetKey = 'primary'  // or 'secondary'
 
 ## Brand accent (the color picker)
 
-The fastest managed path is **Settings → Branding** in Thally Cloud. Choose the
-accent for light and dark mode, review the preview, and save. Thally publishes
-the updated portable configuration. On a self-hosted site,
-`/admin/branding` provides the equivalent runtime override.
+The fastest way to recolor the site is the **dashboard**: under **Branding → Brand accent**, an Owner picks the accent with a color wheel, a set of presets, or by typing a hex/RGB value — for both light and dark mode. A live preview updates as you drag, and **Save** applies it to the running site with no rebuild. The accent drives links, active nav/sidebar states, buttons, and the focus ring; if you set only the light accent, Thally derives a sensible dark-mode shade automatically.
 
 This overrides the accent and focus ring. The rest of the palette—backgrounds,
 borders, and sidebar tokens—comes from the source-file presets below. Use the
 dashboard for a live adjustment and the files as the versioned baseline.
+
+Card and tile icons are neutral by default. To color every content icon with
+the current light or dark brand accent, add this to `docs.json`:
+
+```json
+"appearance": {
+  "contentIcons": "accent"
+}
+```
+
+Choosing `"accent"` also gives cards and tiles a restrained accent-aware
+border that deepens slightly on hover. Use `iconColor="accent"` or
+`iconColor="neutral"` on an individual Card or Tile when one item needs
+to override the site-wide choice — the border treatment follows the same
+per-card override. Accent icons and card chrome use the same live token as
+links and controls, so changing the owner-selected brand accent updates them
+automatically, in both themes and every locale.
 
 ## Custom colors
 
@@ -97,14 +152,13 @@ Most colors are hex values (e.g. `#10B981`) which are auto-converted to HSL. Opt
 
 ## Dark mode
 
-Dark mode is handled automatically by `next-themes`. Users toggle it with the theme switch in the top bar. Your brand palette defines both light and dark variants, so both themes stay on-brand.
+Dark mode is handled automatically by `next-themes`. By default, users toggle it with the theme switch in the top bar. Your brand palette defines both light and dark variants, so both themes stay on-brand.
+
+To set a different initial mode or hide the toggle entirely, use the `appearance` block in `docs.json`. When `showToggle` is `false`, the chosen mode is enforced and the theme switch is removed — readers cannot override it. Setting `"default": "system"` with the toggle hidden makes the site follow the reader's OS preference in real time without offering a manual switch.
 
 ## Logo & favicon (light and dark)
 
-For a managed site, upload the logo and favicon under **Settings → Branding**.
-For a self-hosted runtime override, use `/admin/branding`. The accepted upload
-limit and formats are shown beside the control; validate both light and dark
-previews before saving.
+The quickest way to set a logo is the **dashboard**: upload a PNG, JPEG, or WebP under **Branding → Logo & favicon** and it appears in the header and social cards immediately — no code change.
 
 You can upload **separate assets for light and dark mode** — both a logo and a favicon per mode. The site serves the variant that matches the viewer's theme; if you upload only the light-mode asset, dark mode falls back to it, so a single upload still works. This is how a wordmark that reads on a white header can be swapped for a light-on-dark version at night.
 
@@ -123,8 +177,7 @@ The body and heading fonts are set from a `fonts` block in `docs.json` — any G
 }
 ```
 
-The defaults are **Inter** for body text and **JetBrains Mono** for code. See
-[Custom fonts](/guides/custom-fonts) for the supported configuration.
+The defaults are **Inter** (body) and **JetBrains Mono** (code). The monospace font is still configured in `src/app/layout.tsx` via `next/font/google`. See [Custom fonts](/guides/custom-fonts) for the full reference.
 
 ## Version switcher
 
