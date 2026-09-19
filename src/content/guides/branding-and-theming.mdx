@@ -95,9 +95,55 @@ To define your own palette, edit the `brandPresets` object in `site.ts`. Each pr
 
 Most colors are hex values (e.g. `#10B981`) which are auto-converted to HSL. Optional tokens fall back to their nearest core surface, so existing palettes remain valid. The sidebar state tokens (`sidebarActiveBg`, `sidebarActiveText`) may also use raw HSL strings with opacity (e.g. `'152 60% 88% / 0.55'`) for translucent effects.
 
-## Dark mode
+## Dark mode and appearance locking
 
-Dark mode is handled automatically by `next-themes`. Users toggle it with the theme switch in the top bar. Your brand palette defines both light and dark variants, so both themes stay on-brand.
+Dark mode is handled automatically. By default, readers toggle it with the theme switch in the top bar. Your brand palette defines both light and dark variants, so both themes stay on-brand.
+
+You can control the initial color mode and whether readers can change it by adding `appearance` settings to `docs.json`:
+
+```json
+{
+  "appearance": {
+    "default": "dark",
+    "showToggle": false,
+    "contentIcons": "accent"
+  }
+}
+```
+
+| Key | Type | Default | Purpose |
+| --- | --- | --- | --- |
+| `default` | `"system"`, `"light"`, or `"dark"` | `"system"` | Initial color mode for new readers. |
+| `showToggle` | boolean | `true` | Show the theme toggle in the top bar. When `false`, the mode set by `default` is enforced and the toggle is hidden. |
+| `contentIcons` | `"neutral"` or `"accent"` | `"accent"` | Card and tile icon treatment. |
+
+When `showToggle` is `false`, a flash-free pre-paint script runs in the document head so the locked mode is applied before the page renders. Reader preferences stored from a previous visit are ignored while the toggle is hidden.
+
+Thally Cloud managed sites can also override appearance settings per-field through the Cloud branding configuration.
+
+## Background images and decoration
+
+Add a site-wide background behind the document surface with the `background` object in `docs.json`:
+
+```json
+{
+  "background": {
+    "image": "/images/bg-light.webp",
+    "imageDark": "/images/bg-dark.webp",
+    "decoration": "grid"
+  }
+}
+```
+
+| Key | Type | Default | Purpose |
+| --- | --- | --- | --- |
+| `image` | string | — | Background image for light mode. A path under `public/` or an HTTPS URL. Accepted formats: PNG, JPEG, WebP. |
+| `imageDark` | string | — | Background image for dark mode. Falls back to `image` when omitted. |
+| `decoration` | `"none"`, `"grid"`, or `"gradient"` | `"none"` | Overlay decoration rendered on top of the background image. |
+
+The background image is rendered as a fixed, full-viewport layer behind the page. When a background image is active, content and sidebar surfaces become translucent to keep text legible over the imagery. Omit the `background` object entirely (or set all fields to their defaults) to leave the site surfaces unchanged.
+
+Thally Cloud managed sites can also supply background images and decoration through the Cloud branding configuration, with managed values taking per-field precedence over the repository config.
 
 ## Logo & favicon (light and dark)
 
