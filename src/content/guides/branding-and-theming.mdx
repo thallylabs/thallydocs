@@ -23,7 +23,7 @@ and version-controlled. Do not edit framework-owned components to change the
 brand.
 </Note>
 
-The dashboard overrides the structural theme, the **brand accent** (and its focus ring), the logo, and the favicon. The rest of the palette (backgrounds, borders, sidebar tokens) is defined in the source files described below.
+The dashboard overrides the structural theme, colors (accent, primary, and background), the logo, and the favicon. When a custom background color is set, secondary surfaces — muted backgrounds, borders, form inputs, and secondary text — automatically harmonize with that background. Tokens not covered by a dashboard override are defined in the source files described below.
 
 ## Site configuration
 
@@ -67,9 +67,7 @@ accent for light and dark mode, review the preview, and save. Thally publishes
 the updated portable configuration. On a self-hosted site,
 `/admin/branding` provides the equivalent runtime override.
 
-This overrides the accent and focus ring. The rest of the palette—backgrounds,
-borders, and sidebar tokens—comes from the source-file presets below. Use the
-dashboard for a live adjustment and the files as the versioned baseline.
+This overrides the accent and focus ring; it does not change backgrounds, borders, or secondary surfaces. A custom **background color** has a broader effect: muted backgrounds, borders, form inputs, and secondary text automatically harmonize with the chosen canvas so the full page stays cohesive. Tokens not covered by a color override come from the source-file presets below. Use the dashboard for a live adjustment and the files as the versioned baseline.
 
 ## Custom colors
 
