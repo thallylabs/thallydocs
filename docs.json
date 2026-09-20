@@ -203,6 +203,15 @@
       "tab": "Guides",
       "groups": [
         {
+          "group": "Migrate to Thally",
+          "icon": "book-open",
+          "pages": [
+            "guides/migrating",
+            "guides/migrate-from-mintlify",
+            "guides/migrate-from-docusaurus"
+          ]
+        },
+        {
           "group": "Document your API",
           "icon": "link-simple",
           "pages": [
@@ -238,8 +247,7 @@
           "pages": [
             "guides/thally-cloud",
             "guides/analytics-and-feedback",
-            "guides/troubleshooting",
-            "guides/migrating"
+            "guides/troubleshooting"
           ]
         },
         {
