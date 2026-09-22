@@ -9,17 +9,27 @@ shared access. This is separate from authentication for the `/admin` dashboard.
 
 ## Enable the visitor gate
 
-Set `THALLY_ACCESS_PASSWORD` in the hosting provider:
+Set `THALLY_ACCESS_PASSWORD` and a signing secret in the hosting provider:
 
 ```bash
 THALLY_ACCESS_PASSWORD=a-long-random-visitor-password
+THALLY_ACCESS_SECRET=a-separate-high-entropy-signing-secret
 ```
+
+`THALLY_ACCESS_SECRET` signs the session cookie. It is required in production —
+without it, sign-in returns an error. When unset, it falls back to
+`THALLY_ADMIN_SECRET`, but a dedicated value is preferred. Generate a
+high-entropy random value; never reuse the visitor password.
 
 Redeploy the site. A visitor who opens a protected page is redirected to
 `/access`, then returned to the requested page after entering the password.
 Access is stored in a secure, HTTP-only cookie for seven days.
 
-Do not commit this password to `.env`, `docs.json`, or the repository. Use the
+Password sign-in is rate-limited to eight attempts per minute per IP address.
+After exceeding the limit, subsequent attempts receive a `429` response until
+the window resets.
+
+Do not commit these values to `.env`, `docs.json`, or the repository. Use the
 host's encrypted secret settings.
 
 ## Manage the password from Thally Cloud
