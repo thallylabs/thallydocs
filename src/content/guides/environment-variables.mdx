@@ -33,8 +33,9 @@ Rotate or revoke this token from Thally Cloud. Managed sites do not use it.
 | Variable | When you need it | Purpose |
 | --- | --- | --- |
 | `THALLY_ADMIN_PASSWORD` | Shared-password access to `/admin` | Grants Owner access. Use a long random value. |
-| `THALLY_ADMIN_SECRET` | A separate admin signing secret | Optional; defaults to the admin password. |
+| `THALLY_ADMIN_SECRET` | Production password admin access | Required when `THALLY_ADMIN_PASSWORD` is set in production. Generate a high-entropy random value; never reuse the admin password. |
 | `THALLY_ACCESS_PASSWORD` | Shared visitor access | Requires readers to enter a password before opening the docs. |
+| `THALLY_ACCESS_SECRET` | Production visitor access | Required when `THALLY_ACCESS_PASSWORD` is set in production. Falls back to `THALLY_ADMIN_SECRET` when unset, but a separate value is preferred. |
 | `THALLY_AUTH_SECRET` | OIDC team sign-in | Signs admin sessions. |
 | `THALLY_OIDC_ISSUER` | OIDC team sign-in | OpenID Connect issuer URL. |
 | `THALLY_OIDC_CLIENT_ID` | OIDC team sign-in | OIDC client identifier. |

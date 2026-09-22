@@ -41,14 +41,23 @@ sign-in methods.
 
 ### Break-glass password
 
-Set a strong secret in your hosting provider:
+Set both secrets in your hosting provider:
 
 ```bash
 THALLY_ADMIN_PASSWORD=a-long-random-admin-password
+THALLY_ADMIN_SECRET=a-separate-high-entropy-signing-secret
 ```
 
-This is the shortest setup and a useful recovery path. Do not commit the value
-to the repository or place it in a public environment variable.
+`THALLY_ADMIN_SECRET` signs the session cookie. It is required in production
+when password admin access is enabled — without it, sign-in returns an error.
+Generate a high-entropy random value; never reuse the admin password.
+
+Password sign-in is rate-limited to eight attempts per minute per IP address.
+After exceeding the limit, subsequent attempts receive a `429` response until
+the window resets.
+
+This is the shortest setup and a useful recovery path. Do not commit either
+value to the repository or place them in public environment variables.
 
 ### OIDC for a team
 
