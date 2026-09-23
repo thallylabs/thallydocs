@@ -5,11 +5,11 @@
   "defaultBranch": "main",
   "runtime": {
     "repository": "thallylabs/thally",
-    "commitSha": "d18190d3c708d74e95d2639c300cbe9265c3fd7a",
-    "treeSha": "fa6612f626a417ee18ae28016793e6a0f8f56649"
+    "commitSha": "121b18b4647517049aac6c17e53616ab9f2ed96a",
+    "treeSha": "d7040bf9c874687a7c03338509ce4f38d7bb4405"
   },
   "packages": {
-    "@thallylabs/core": "^0.2.4"
+    "@thallylabs/core": "^0.2.7"
   },
   "ownership": {
     "frameworkSyncEligible": [

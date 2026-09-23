@@ -12,8 +12,10 @@ vi.mock('../client', () => ({
   getCloudServiceGrant: mocks.getCloudServiceGrant,
   getCloudSiteConfig: mocks.getCloudSiteConfig,
 }))
-vi.mock('@thallylabs/core', () => ({
+vi.mock('@thallylabs/core/embeddings', () => ({
   getRelevantChunks: mocks.getRelevantChunks,
+}))
+vi.mock('@thallylabs/core/registry', () => ({
   registerAsyncContentDocumentSource: vi.fn(),
   registerAsyncDocEntriesSource: vi.fn(),
   registerContentDocumentSource: vi.fn(),
@@ -100,6 +102,7 @@ describe('Thally Cloud service adapters', () => {
     expect(mocks.getRelevantChunks).toHaveBeenCalledWith('How do I install?', {
       k: 8,
       tokenBudget: 4_000,
+      maxPerPage: 3,
     })
     expect(fetchMock).toHaveBeenCalledWith(
       new URL('https://cloud.example.com/api/runtime/chat'),
@@ -114,6 +117,32 @@ describe('Thally Cloud service adapters', () => {
     // The runtime opts in to follow-ups; with none returned, none are relayed.
     expect(fetchMock.mock.calls[0]?.[1]?.body).toContain('"followUps":true')
     expect(response.headers.get('x-thally-ai-follow-ups')).toBeNull()
+  })
+
+  it('retrieves a follow-up with the previous question as weighted context', async () => {
+    vi.stubEnv('THALLY_CLOUD_URL', 'https://cloud.example.com')
+    mocks.getRelevantChunks.mockResolvedValue([])
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('Grounded answer'))
+
+    await handleCloudAiChat(
+      new Request('https://docs.example.com/api/chat', {
+        method: 'POST',
+        body: JSON.stringify({
+          messages: [
+            { role: 'user', content: 'How do I deploy to Cloudflare?' },
+            { role: 'assistant', content: 'Run the deploy command.' },
+            { role: 'user', content: 'And on Vercel?' },
+          ],
+        }),
+      }),
+    )
+
+    expect(mocks.getRelevantChunks).toHaveBeenCalledWith('And on Vercel?', {
+      k: 8,
+      tokenBudget: 4_000,
+      maxPerPage: 3,
+      context: 'How do I deploy to Cloudflare?',
+    })
   })
 
   it('re-normalizes model-written follow-ups before relaying them to the browser', async () => {
