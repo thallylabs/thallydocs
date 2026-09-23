@@ -82,7 +82,7 @@ The most capable way for an AI agent to consume your docs. Every page is availab
 
 ### Content negotiation
 
-The `/api/docs/{slug}` endpoint serves different formats based on the request:
+The `/api/docs/{slug}` endpoint serves different formats based on the request. For translated content, prefix the slug with the locale code: `/api/docs/{locale}/{slug}`.
 
 ```bash
 # Structured JSON — for agent pipelines
@@ -95,6 +95,10 @@ curl "https://docs.example.com/api/docs/guides/private-docs?format=json"
 # Markdown with YAML frontmatter — token-efficient for simple lookups (default)
 curl https://docs.example.com/api/docs/guides/private-docs \
   -H "Accept: text/markdown"
+
+# Translated page content
+curl https://docs.example.com/api/docs/es/guides/private-docs \
+  -H "Accept: application/json"
 ```
 
 Agents that visit a human-facing URL (for example, `/guides/private-docs`) with `Accept: application/json` are transparently rewritten to the API — the URL in the response is unchanged.
@@ -185,15 +189,19 @@ Human visitors with a normal browser `Accept` header always receive the pre-rend
 
 ## Page index
 
-A flat JSON index of every page in your site — use this first to discover what pages exist before fetching individual ones.
+A flat JSON index of every page in your site. Use this first to discover what pages exist before fetching individual ones.
 
 ```bash
 GET /api/docs-index
+GET /api/docs-index?locale=es
 ```
+
+Adding `?locale=` filters the index to pages that have a published translation in that language and returns translated titles, descriptions, and keywords. Pages without a translation in the requested language are omitted. API operations are included only for the default locale.
 
 ```json
 {
   "schema_version": "1",
+  "locale": "en",
   "as_of": "2026-02-25T10:00:00.000Z",
   "total": 52,
   "pages": [
@@ -227,6 +235,14 @@ Allow: /
 Allow: /api/docs/
 Allow: /api/docs-index
 Disallow: /api/chat
+```
+
+When two or more locales are configured, the file also advertises locale-specific endpoints:
+
+```
+Docs-Locale-Index: /api/docs-index?locale={locale}
+Docs-Locale-Search: /api/search?q={query}&locale={locale}
+Docs-Locale-Page: /api/docs/{locale}/{slug}
 ```
 
 Generated dynamically at `/ai.txt` from your live navigation, so it always reflects the current set of pages and endpoints.

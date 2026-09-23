@@ -114,11 +114,11 @@ El comando de traducción usa Claude para traducir tu documentación con estas r
 
 ## Comportamiento de reserva
 
-Si una página no ha sido traducida para un locale, Thally sirve el contenido en el idioma principal y muestra un banner ámbar:
+Cuando existe una página fuente pero falta su traducción, Thally muestra el contenido en el idioma fuente con un banner informativo. Una traducción huérfana cuya página fuente fue eliminada devuelve 404.
 
 > ⚠️ Esta página aún no ha sido traducida a **es**. Mostrando la versión original en **EN**.
 
-Si el archivo principal ha sido actualizado después de que se creó la traducción, Thally muestra un banner amarillo de antigüedad:
+Si el hash de la fuente registrado en una traducción generada difiere del contenido fuente actual, Thally muestra un banner de antigüedad:
 
 > Esta traducción puede estar desactualizada. [Ver original →]
 
@@ -134,7 +134,7 @@ Una vez que tienes 2 o más locales configurados, aparece un **ícono de globo**
 
 ## SEO
 
-Thally agrega automáticamente etiquetas `hreflang` y `canonical` para todos los locales configurados:
+Thally agrega etiquetas `hreflang` y `canonical` solo cuando la página tiene un archivo MDX traducido y ni la fuente ni la traducción están ocultas o marcadas como `noindex`:
 
 ```html
 <link rel="canonical" href="https://docs.example.com/es/introduction" />
@@ -144,7 +144,7 @@ Thally agrega automáticamente etiquetas `hreflang` y `canonical` para todos los
 <link rel="alternate" hreflang="x-default" href="https://docs.example.com/introduction" />
 ```
 
-Cada página traducida tiene su propia URL canónica. Los enlaces `hreflang` recíprocos conectan todos los idiomas y `x-default` apunta a la página en el idioma predeterminado.
+Las traducciones reales usan su propia URL de locale como canónica. Un fallback sin traducción se marca como `noindex` y se canonicaliza a la URL fuente, para que los rastreadores no indexen contenido en inglés como si fuera otro idioma.
 
 ---
 
