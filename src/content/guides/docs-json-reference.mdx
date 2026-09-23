@@ -91,11 +91,49 @@ Operation keys use `METHOD /path` exactly as written in the specification.
 | Root field | Purpose |
 | --- | --- |
 | `theme` | Structural theme: `default`, `maple`, `sharp`, or `minimal`. |
+| `appearance` | Reader color mode and toggle control (see below). |
+| `background` | Site-wide background image and decoration (see below). |
 | `banner` | `content` plus optional `dismissible`. Markdown links are supported. |
 | `navbar` | Secondary `links` and an optional primary action. |
 | `footer` | Social URLs and columns of links. |
 | `fonts` | Google Font `family` and optional `weight` arrays for `body` and `heading`. |
 | `customScripts` | External script `src` plus optional loading `strategy`. |
+
+### Appearance
+
+```json
+{
+  "appearance": {
+    "default": "system",
+    "showToggle": true,
+    "contentIcons": "accent"
+  }
+}
+```
+
+| Field | Default | Purpose |
+| --- | --- | --- |
+| `appearance.default` | `"system"` | Initial reader color mode: `"system"`, `"light"`, or `"dark"`. |
+| `appearance.showToggle` | `true` | Show the theme toggle. Set `false` to lock readers into the mode set by `default`. |
+| `appearance.contentIcons` | `"accent"` | Card and tile icon treatment: `"accent"` or `"neutral"`. |
+
+### Background
+
+```json
+{
+  "background": {
+    "image": "/images/bg-light.webp",
+    "imageDark": "/images/bg-dark.webp",
+    "decoration": "grid"
+  }
+}
+```
+
+| Field | Default | Purpose |
+| --- | --- | --- |
+| `background.image` | — | Background image for light mode. Public path or HTTPS URL (PNG, JPEG, WebP). |
+| `background.imageDark` | — | Background image for dark mode. Falls back to `image` when omitted. |
+| `background.decoration` | `"none"` | Overlay decoration: `"none"`, `"grid"`, or `"gradient"`. |
 
 Navbar links contain `label`, `href`, and optional `type: "github"`. A primary
 action contains `label` and `href`. Footer columns contain a `heading` and an

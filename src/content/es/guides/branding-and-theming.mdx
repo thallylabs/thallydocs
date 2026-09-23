@@ -53,9 +53,51 @@ Para definir tu propia paleta, edita el objeto `brandPresets` en `site.ts`. Cada
 
 La mayoría de los colores son valores hexadecimales (p. ej. `#10B981`) que se convierten automáticamente a HSL. Los tokens de la barra lateral (`sidebarActiveBg`, `sidebarActiveText`) usan cadenas HSL sin procesar con opacidad (p. ej. `'152 60% 88% / 0.55'`) para efectos translúcidos.
 
-## Modo oscuro
+## Modo oscuro y bloqueo de apariencia
 
-El modo oscuro es gestionado automáticamente por `next-themes`. Los usuarios lo activan con el interruptor de tema en la barra superior. Tu paleta de marca define las variantes tanto clara como oscura, por lo que ambos temas mantienen la identidad de marca.
+El modo oscuro se gestiona automáticamente. Por defecto, los usuarios lo activan con el interruptor de tema en la barra superior. Tu paleta de marca define las variantes tanto clara como oscura, por lo que ambos temas mantienen la identidad de marca.
+
+Puedes controlar el modo de color inicial y si los lectores pueden cambiarlo añadiendo configuración de `appearance` en `docs.json`:
+
+```json
+{
+  "appearance": {
+    "default": "dark",
+    "showToggle": false,
+    "contentIcons": "accent"
+  }
+}
+```
+
+| Clave | Tipo | Predeterminado | Propósito |
+| --- | --- | --- | --- |
+| `default` | `"system"`, `"light"` o `"dark"` | `"system"` | Modo de color inicial para nuevos lectores. |
+| `showToggle` | boolean | `true` | Muestra el interruptor de tema en la barra superior. Cuando es `false`, se aplica el modo definido en `default` y el interruptor se oculta. |
+| `contentIcons` | `"neutral"` o `"accent"` | `"accent"` | Tratamiento de iconos en tarjetas y mosaicos. |
+
+Cuando `showToggle` es `false`, un script de pre-renderizado se ejecuta en el encabezado del documento para aplicar el modo bloqueado antes de que la página se renderice, evitando destellos de color.
+
+## Imágenes de fondo y decoración
+
+Añade un fondo a nivel de sitio detrás de la superficie del documento con el objeto `background` en `docs.json`:
+
+```json
+{
+  "background": {
+    "image": "/images/bg-light.webp",
+    "imageDark": "/images/bg-dark.webp",
+    "decoration": "grid"
+  }
+}
+```
+
+| Clave | Tipo | Predeterminado | Propósito |
+| --- | --- | --- | --- |
+| `image` | string | — | Imagen de fondo para modo claro. Una ruta dentro de `public/` o una URL HTTPS. Formatos aceptados: PNG, JPEG, WebP. |
+| `imageDark` | string | — | Imagen de fondo para modo oscuro. Si se omite, usa `image`. |
+| `decoration` | `"none"`, `"grid"` o `"gradient"` | `"none"` | Decoración superpuesta sobre la imagen de fondo. |
+
+La imagen de fondo se renderiza como una capa fija a pantalla completa detrás de la página. Cuando hay una imagen de fondo activa, las superficies de contenido y barra lateral se vuelven translúcidas para mantener la legibilidad del texto sobre la imagen.
 
 ## Logotipo
 
