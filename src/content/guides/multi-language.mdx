@@ -23,8 +23,8 @@ Thally supports build-time multi-language documentation. Translated MDX files li
 </Card>
 
 <Card title="AI-powered translation" icon="wrench">
-  One command translates your entire docs site. Code blocks, component tags, and
-  URLs are preserved automatically.
+  Thally Cloud generates translations when you save languages. Self-hosted
+  sites can translate with one command. Code and MDX structure are validated.
 </Card>
 
 <Card title="Automatic fallbacks" icon="book-open">
@@ -64,13 +64,17 @@ Adding a new locale never breaks existing URLs.
 <Step title="Choose languages in Thally Cloud">
 
 For a managed site, open **Site settings → Languages**, choose every language
-readers should see, and save. Thally publishes the selection with the site's
-portable configuration; the language menu and locale routes update without a
-repository edit.
+readers should see, and save. Confirm that Thally may use your site's Anthropic
+key or your workspace's AI Credits. You can leave the page while Thally
+generates missing or stale translations, validates the complete batch, commits
+the MDX files to your connected repository, and publishes the site. Thally
+never overwrites team-authored translations.
 
-English remains the source language at unprefixed URLs. Adding a language
-makes its route available immediately, while missing translations display the
-English source content.
+English remains the source language at unprefixed URLs. The selected languages
+go live only after the full batch succeeds. If generation or validation fails,
+no translation files are published; fix the reported problem and select
+**Refresh translations**. The Languages section shows current, stale, missing,
+and human-authored coverage from your connected repository.
 
 </Step>
 
