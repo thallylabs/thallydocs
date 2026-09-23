@@ -188,15 +188,15 @@ npx create-thally-docs translate --locale es --pages guides/getting-started --fo
 
 Thally never returns a 404 for a missing translation. Instead, it serves the primary-language content with an informative banner:
 
-**Missing translation** — the page hasn't been translated for that locale yet:
+**Missing translation**: the page hasn't been translated for that locale yet.
 
 > ⚠️ This page hasn't been translated to **Español** yet. Showing the original **English** version.
 
-**Stale translation** — the primary-language file was updated after the translation was last generated:
+**Stale translation**: a managed AI translation's recorded source hash differs from the current source.
 
 > This translation may be outdated. [View original →]
 
-Both banners appear only on secondary-locale routes. The primary route is never affected.
+Both banners appear only on secondary-locale routes. The primary route is never affected. Human-authored or unmarked translations are not labeled stale from deployment timestamps; review their freshness manually.
 
 Source-content fallbacks are canonicalized to the English page and marked
 `noindex, follow`. Crawlers therefore discover real translated content without
