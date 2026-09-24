@@ -23,8 +23,9 @@ Thally supports build-time multi-language documentation. Translated MDX files li
 </Card>
 
 <Card title="AI-powered translation" icon="wrench">
-  Thally Cloud generates translations when you save languages. Self-hosted
-  sites can translate with one command. Code and MDX structure are validated.
+  Thally Cloud generates translations using your workspace's AI Credits.
+  Self-hosted sites can translate with one command. Code and MDX structure are
+  validated.
 </Card>
 
 <Card title="Automatic fallbacks" icon="book-open">
@@ -64,8 +65,8 @@ Adding a new locale never breaks existing URLs.
 <Step title="Choose languages in Thally Cloud">
 
 For a managed site, open **Site settings → Languages**, choose every language
-readers should see, and save. Confirm that Thally may use your site's Anthropic
-key or your workspace's AI Credits. You can leave the page while Thally
+readers should see, and save. Confirm that Thally may use your workspace's
+shared AI Credits to generate translations. You can leave the page while Thally
 generates missing or stale translations, validates the complete batch, commits
 the MDX files to your connected repository, and publishes the site. Thally
 never overwrites team-authored translations.
@@ -103,9 +104,11 @@ Once this is saved, a globe icon appears in the top bar automatically.
 
 </Step>
 
-<Step title="Translate your pages with the CLI">
+<Step title="Translate your pages locally with the CLI">
 
-Run the translate command to generate translated MDX files for a locale:
+This optional, local workflow is separate from Thally Cloud's managed
+translation. Run the translate command in your documentation repository to
+generate translated MDX files for a locale:
 
 ```bash
 npx create-thally-docs translate --locale es
@@ -136,17 +139,18 @@ npx create-thally-docs translate --locale es --force
 | `--model <id>`    | Claude model to use. Default: `claude-sonnet-4-6`.                           |
 | `--yes`, `-y`     | Skip the confirmation prompt.                                                |
 
-<Note type="info" title="API key required">
-  The translate command calls Claude via the Anthropic API. Set
-  `ANTHROPIC_API_KEY` in your environment or pass `--api-key` directly.
-  Translating a typical docs page costs a fraction of a cent.
+<Note type="info" title="Local CLI key only">
+  The CLI command runs in your own environment and calls Claude through the
+  Anthropic API. Set `ANTHROPIC_API_KEY` locally or pass `--api-key` to that
+  command. These options do not apply to Thally Cloud, which uses workspace AI
+  Credits for managed translation.
 </Note>
 
 </Step>
 
-<Step title="Review and commit">
+<Step title="Review and commit local translations">
 
-After translation, your content directory will look like this:
+After a local CLI translation, your content directory will look like this:
 
 ```
 src/content/
@@ -202,7 +206,8 @@ When a source page exists but its translation is missing, Thally shows the sourc
 
 Both banners appear only on secondary-locale routes. The primary route is never affected.
 
-To fix a stale or missing translation, run the translate command for that page:
+For a managed site, select **Refresh translations** in **Site settings →
+Languages**. For a local CLI workflow, run the translate command for that page:
 
 ```bash
 npx create-thally-docs translate --locale es --pages guides/getting-started
