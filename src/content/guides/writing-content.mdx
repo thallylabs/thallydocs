@@ -196,9 +196,21 @@ For asset organization, alt text, downloads, and review guidance, see
 
 ## Heading anchor links
 
-Every `h2` and `h3` heading is a permalink. Selecting the heading copies the
+Every `h2` through `h6` heading is a permalink. Selecting the heading copies the
 section URL without adding a visible marker beside it, so you can share a
 specific answer while keeping the page visually clean.
+
+When two headings on the same page produce the same slug, Thally appends a
+numeric suffix to keep fragment IDs unique (for example, `#setup`, `#setup-2`).
+
+To set a custom anchor, write the heading as a JSX element with an `id` prop:
+
+```mdx
+<h2 id="custom-anchor">My heading</h2>
+```
+
+The authored ID is used as-is. When no `id` is provided, Thally generates one
+from the heading text.
 
 ## Tables
 

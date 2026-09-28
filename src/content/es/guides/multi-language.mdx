@@ -128,6 +128,41 @@ Ambos banners solo aparecen en rutas de locales secundarios — la ruta principa
 
 ---
 
+## Navegación específica por idioma
+
+Por defecto, todos los idiomas comparten la navegación del `tabs` raíz. Para
+proporcionar etiquetas de barra lateral traducidas o una estructura de páginas
+diferente para un idioma, agrega un mapa `navigation` bajo `i18n`:
+
+```json
+{
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": [
+      { "code": "en", "label": "English" },
+      { "code": "es", "label": "Español" }
+    ],
+    "navigation": {
+      "es": [
+        {
+          "tab": "Empezar",
+          "groups": [
+            { "group": "Inicio", "pages": ["es/introduction", "es/quickstart"] }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+Cada entrada usa la misma estructura de array `tabs` que la raíz. Cuando un
+idioma no tiene entrada en `navigation`, Thally recurre al `tabs` raíz. La
+navegación específica por idioma se refleja en la barra lateral, las migas de
+pan y los enlaces anterior/siguiente.
+
+---
+
 ## Selector de idioma
 
 Una vez que tienes 2 o más locales configurados, aparece un **ícono de globo** en la barra superior. Al hacer clic, se abre un menú desplegable con todos los locales configurados. Seleccionar un locale navega a la misma página en ese locale.

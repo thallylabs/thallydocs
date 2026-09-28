@@ -108,9 +108,43 @@ previews before saving.
 
 You can upload **separate assets for light and dark mode** — both a logo and a favicon per mode. The site serves the variant that matches the viewer's theme; if you upload only the light-mode asset, dark mode falls back to it, so a single upload still works. This is how a wordmark that reads on a white header can be swapped for a light-on-dark version at night.
 
-When no uploaded asset is configured, the runtime uses its built-in mark and
-the name from `siteConfig`. Keep framework-owned logo components unchanged;
-use the branding controls or user-owned configuration instead.
+### Source-controlled fallbacks in docs.json
+
+When no managed or admin asset is configured, Thally checks `docs.json` for
+portable logo and favicon paths before falling back to the built-in defaults.
+
+**Logo.** Set `navbar.logo` to control the logo image, site name visibility,
+and the right-of-logo label:
+
+```json
+"navbar": {
+  "logo": {
+    "light": "/brand/logo-light.svg",
+    "dark": "/brand/logo-dark.svg",
+    "showTitle": true,
+    "rightText": "Docs"
+  }
+}
+```
+
+See [Customize the navbar and footer](/guides/navbar-and-footer) for all options.
+
+**Favicon.** Set `favicon` at the root level of `docs.json`:
+
+```json
+{
+  "favicon": {
+    "light": "/brand/favicon-light.svg",
+    "dark": "/brand/favicon-dark.svg"
+  }
+}
+```
+
+Paths must point to files inside `public/`. External URLs, path traversal,
+query strings, and backslashes are rejected. When no source is configured at
+any level, the runtime uses its built-in mark and the name from `siteConfig`.
+Keep framework-owned logo components unchanged; use the branding controls or
+the docs.json configuration instead.
 
 ## Fonts
 

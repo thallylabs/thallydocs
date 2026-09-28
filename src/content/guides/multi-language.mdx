@@ -215,6 +215,40 @@ npx create-thally-docs translate --locale es --pages guides/getting-started
 
 ---
 
+## Locale-specific navigation
+
+By default, every locale shares the root `tabs` navigation. To provide
+translated sidebar labels or a different page structure for a locale, add a
+`navigation` map under `i18n`:
+
+```json
+{
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": [
+      { "code": "en", "label": "English" },
+      { "code": "es", "label": "Español" }
+    ],
+    "navigation": {
+      "es": [
+        {
+          "tab": "Empezar",
+          "groups": [
+            { "group": "Inicio", "pages": ["es/introduction", "es/quickstart"] }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+Each entry uses the same `tabs` array structure as the root. When a locale has
+no entry in `navigation`, Thally falls back to the root `tabs`. Locale-specific
+navigation is reflected in the sidebar, breadcrumbs, and previous/next links.
+
+---
+
 ## Language switcher
 
 Once you have two or more locales configured, a **globe icon** appears in the top bar automatically. Clicking it opens a dropdown listing all configured locales.

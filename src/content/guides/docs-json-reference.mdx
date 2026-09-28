@@ -92,14 +92,21 @@ Operation keys use `METHOD /path` exactly as written in the specification.
 | --- | --- |
 | `theme` | Structural theme: `default`, `maple`, `sharp`, or `minimal`. |
 | `banner` | `content` plus optional `dismissible`. Markdown links are supported. |
-| `navbar` | Secondary `links` and an optional primary action. |
-| `footer` | Social URLs and columns of links. |
+| `navbar` | Secondary `links`, an optional primary action, and a portable `logo` fallback. |
+| `favicon` | Source-controlled favicon fallback: `{ "light": "...", "dark": "..." }`. Used when no managed or admin favicon is configured. Paths must reference files inside `public/`. |
+| `footer` | Social URLs, columns of links, and an optional `copyright` string. |
 | `fonts` | Google Font `family` and optional `weight` arrays for `body` and `heading`. |
 | `customScripts` | External script `src` plus optional loading `strategy`. |
 
 Navbar links contain `label`, `href`, and optional `type: "github"`. A primary
-action contains `label` and `href`. Footer columns contain a `heading` and an
-`items` array of `{ "label", "href" }` objects.
+action contains `label` and `href`, or `null` to disable the CTA entirely. The
+`logo` object provides a source-owned logo fallback with `light`, optional
+`dark`, `showTitle`, and `rightText` fields. Footer columns contain a `heading`
+and an `items` array of `{ "label", "href" }` objects. Set `footer.copyright` to
+a custom string with an optional `{year}` placeholder.
+
+See [Customize the navbar and footer](/guides/navbar-and-footer) for details and
+examples.
 
 ## Redirects and indexing
 
@@ -173,6 +180,35 @@ reader-facing site, so use placeholders or public sandbox credentials only.
   }
 }
 ```
+
+To provide locale-specific navigation trees, add a `navigation` map under
+`i18n`. Each key is a locale code, and its value is an array of tabs with the
+same structure as the root `tabs`:
+
+```json
+{
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": [
+      { "code": "en", "label": "English" },
+      { "code": "es", "label": "Español" }
+    ],
+    "navigation": {
+      "es": [
+        {
+          "tab": "Empezar",
+          "groups": [
+            { "group": "Inicio", "pages": ["es/introduction", "es/quickstart"] }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+When a locale has no entry in `navigation`, Thally falls back to the root
+`tabs`.
 
 See [Publish multiple languages](/guides/multi-language) for content paths and
 fallback behavior.
