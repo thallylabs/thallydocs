@@ -110,6 +110,39 @@ Try It is ready when the specification provides at least one server URL. Add
 authentication placeholders only when your API requires them; readers can
 enter their own credentials before sending a request.
 
+## Multiple API specifications
+
+A site that documents more than one API can bind a separate OpenAPI spec to each
+tab. The first API-bound tab keeps the default routing at `/api/...`; each
+additional tab routes its operations under `/api/<tabId>/...`, where `tabId` is
+the slugified tab label.
+
+```json
+{
+  "tabs": [
+    {
+      "tab": "REST API",
+      "api": {
+        "source": "openapi.yaml",
+        "tagsOrder": ["Users", "Orders"]
+      }
+    },
+    {
+      "tab": "WebSocket API",
+      "api": {
+        "source": "asyncapi.yaml",
+        "defaultGroup": "Events"
+      }
+    }
+  ]
+}
+```
+
+In this example the REST operations appear under `/api/...` and the WebSocket
+operations under `/api/websocket-api/...`. Each tab generates its own sidebar
+navigation and each spec is parsed independently, so tags, overrides, and groups
+are scoped to the tab that owns them.
+
 ## Replace the example spec
 
 The template ships with a JSONPlaceholder specification so you can test the

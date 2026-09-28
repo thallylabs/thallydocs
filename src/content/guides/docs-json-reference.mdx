@@ -49,7 +49,9 @@ examples.
 
 ## API reference
 
-Add `api` to the tab that should generate endpoint navigation:
+Add `api` to any tab that should generate endpoint navigation. A site can have
+multiple API-bound tabs, each with its own spec. The first keeps the default
+`/api/...` routes; additional tabs route at `/api/<tabId>/...`.
 
 ```json
 {
