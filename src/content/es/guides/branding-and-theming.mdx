@@ -57,25 +57,41 @@ La mayoría de los colores son valores hexadecimales (p. ej. `#10B981`) que se c
 
 El modo oscuro es gestionado automáticamente por `next-themes`. Los usuarios lo activan con el interruptor de tema en la barra superior. Tu paleta de marca define las variantes tanto clara como oscura, por lo que ambos temas mantienen la identidad de marca.
 
-## Logotipo
+## Logotipo y favicon
 
-El componente de logotipo se encuentra en `src/components/layout/logo.tsx`. Reemplaza el SVG con el tuyo propio:
+Para un sitio administrado, sube el logotipo y favicon en **Configuración → Marca**.
+Para un override en runtime autohospedado, usa `/admin/branding`.
 
-```tsx
-export function Logo({ className, showText = true }: LogoProps) {
-  return (
-    <div className={cn('inline-flex items-center gap-2', className)}>
-      {/* Replace this SVG with your logo */}
-      <img src="/logo.svg" alt="Logo" width={32} height={32} />
-      {showText ? (
-        <span className="text-lg font-bold tracking-tight text-foreground">
-          Your Product
-        </span>
-      ) : null}
-    </div>
-  )
+Cuando no hay un recurso administrado o de admin configurado, Thally busca en
+`docs.json` rutas portátiles de logotipo y favicon antes de usar los valores
+predeterminados integrados.
+
+**Logotipo.** Establece `navbar.logo` para controlar la imagen, la visibilidad del nombre del sitio y la etiqueta a la derecha del logotipo:
+
+```json
+"navbar": {
+  "logo": {
+    "light": "/brand/logo-light.svg",
+    "dark": "/brand/logo-dark.svg",
+    "showTitle": true,
+    "rightText": "Docs"
+  }
 }
 ```
+
+**Favicon.** Establece `favicon` en el nivel raíz de `docs.json`:
+
+```json
+{
+  "favicon": {
+    "light": "/brand/favicon-light.svg",
+    "dark": "/brand/favicon-dark.svg"
+  }
+}
+```
+
+Las rutas deben apuntar a archivos dentro de `public/`. Se rechazan URLs
+externas, traversal de rutas, cadenas de consulta y barras invertidas.
 
 ## Fuentes
 
