@@ -58,7 +58,7 @@ The command scaffolds a fresh Thally project, imports the source, installs depen
 
 ### Select the source platform
 
-When you omit both `--platform` and `--yes`, the CLI asks which platform currently hosts the documentation: Mintlify, Docusaurus, or another platform that Thally should detect automatically.
+When you omit both `--platform` and `--yes`, the CLI asks which platform currently hosts the documentation: Mintlify, Docusaurus, Fern, or another platform that Thally should detect automatically.
 
 If you select auto-detection for a live URL, the CLI recommends migrating from the source GitHub repository first and lets you enter it. You can continue with the live URL only after accepting that the result may need manual alignment. For agent-assisted cleanup, use the [Thally MCP server](/guides/mcp-server) and ask your coding agent to open a PR.
 
@@ -106,6 +106,12 @@ npx --yes @thallylabs/cli@latest migrate https://docs.example.com ./example-docs
 ### Mintlify migrations
 
 For Mintlify repositories, Thally reads `docs.json` or `mint.json` for navigation, redirects, and OpenAPI references, converts the pages to Thally MDX, and renames only the components that do not share a name with a Thally equivalent. See the [component mapping](/guides/cli-reference#component-mapping) for the full list.
+
+### Fern migrations
+
+For Fern repositories, Thally reads `docs.yml` for tabs, sections, pages, navbar links, and redirects. Multi-product sites (entries under `products:`) are imported as separate top-level tabs. Each `api:` section is imported with its own spec, resolved from `generators.yml` by `api-name`. Slug overrides (`slug` and `skip-slug` in `docs.yml`, plus frontmatter `slug`) are preserved, and only pages referenced from `docs.yml` are imported. Local React components are copied with the pages, and Fern-specific components are renamed to Thally equivalents (see the [component mapping](/guides/cli-reference#component-mapping)).
+
+AsyncAPI, OpenRPC, and Fern Definition APIs are not rendered and produce a warning naming the affected specs. Remote OpenAPI URLs are listed in the migration report for manual download.
 
 ### Docusaurus migrations
 
@@ -199,7 +205,7 @@ Future pushes to the production branch trigger new deployments, so the GitHub re
 | `--into <dir>` | Merge content into an existing Thally project |
 | `--branch <name>` | Override the auto-detected GitHub branch |
 | `--docs-dir <path>` | Override the auto-detected docs subdirectory for a repository source |
-| `--platform <name>` | Select `mintlify`, `docusaurus`, or `auto` |
+| `--platform <name>` | Select `mintlify`, `docusaurus`, `fern`, or `auto` |
 | `--api-key <key>` | Anthropic API key, or `ANTHROPIC_API_KEY`, for non-Markdown conversion |
 | `--skip-validation` | Import only; skip dependency installation, content checks, and the production build |
 | `--yes`, `-y` | Accept defaults and live-site limitations, then skip all prompts |
@@ -211,6 +217,7 @@ For GitHub repositories, Thally detects common platform configuration and conten
 | File | Platform detected |
 |------|-------------------|
 | `mint.json`, or a `docs.json` with Mintlify navigation | Mintlify |
+| `docs.yml` and `fern.config.json` in the same directory | Fern |
 | `docs.json` with Thally `tabs` | Existing Thally project |
 | `docusaurus.config.js`, `.ts`, or `.mjs` | Docusaurus |
 | `SUMMARY.md` | GitBook |
