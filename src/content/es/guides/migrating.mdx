@@ -1,6 +1,6 @@
 ---
 title: Migrando a Thally
-description: Mueve tu documentación existente de Mintlify, Docusaurus, GitBook o cualquier plataforma basada en Markdown a Thally con un solo comando.
+description: Mueve tu documentación existente de Mintlify, Docusaurus, Fern, GitBook o cualquier plataforma basada en Markdown a Thally con un solo comando.
 ---
 
 El comando `thally migrate` importa un repositorio de GitHub o un sitio público de documentación y lo convierte en un proyecto Thally en funcionamiento. Para la detección automática, usa el repositorio fuente siempre que esté disponible: conserva la navegación, los assets, los archivos OpenAPI, las redirecciones y la estructura MDX originales.
@@ -21,7 +21,7 @@ npx --yes @thallylabs/cli@latest migrate https://github.com/example/docs my-docs
 
 <Step title="Elegir la plataforma fuente">
 
-En una migración interactiva, Thally pregunta si Mintlify, Docusaurus u otra plataforma aloja la documentación. Para scripts y CI, usa `--platform mintlify`, `--platform docusaurus` o `--platform auto`.
+En una migración interactiva, Thally pregunta si Mintlify, Docusaurus, Fern u otra plataforma aloja la documentación. Para scripts y CI, usa `--platform mintlify`, `--platform docusaurus`, `--platform fern` o `--platform auto`.
 
 Si eliges la detección automática para una URL pública, la CLI recomienda primero el repositorio de GitHub y permite que lo introduzcas. Solo puedes continuar con la URL después de aceptar que el resultado puede requerir ajustes manuales. Para completar esos ajustes con un agente, usa el [servidor MCP de Thally](/guides/mcp-server) y solicita un PR.
 
@@ -38,6 +38,7 @@ Las importaciones de repositorios reconocen estos archivos:
 | Archivo | Plataforma detectada |
 |------|-------------------|
 | `docs.json` / `mint.json` | Mintlify |
+| `docs.yml` y `fern.config.json` en el mismo directorio | Fern |
 | `docusaurus.config.js` + `sidebars.js` | Docusaurus |
 | `book.yaml` | GitBook |
 | `_meta.json` | Nextra |
@@ -104,6 +105,16 @@ npx --yes @thallylabs/cli@latest migrate https://github.com/mintlify/starter my-
 
 La navegación se lee desde `docs.json` (Mintlify v3) o `mint.json`. Las especificaciones OpenAPI en el directorio `api-reference/` se detectan y conectan automáticamente.
 
+### Fern
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/fern-api/docs-starter --platform fern
+```
+
+Thally lee `docs.yml` para pestañas, secciones, páginas, enlaces de navbar y redirecciones. Los sitios multi-producto (entradas bajo `products:`) se importan como pestañas de nivel superior separadas. Cada sección `api:` se importa con su propia especificación, resuelta desde `generators.yml` por `api-name`. Solo se importan las páginas referenciadas desde `docs.yml`. Los componentes locales de React se copian con las páginas, y los componentes específicos de Fern se renombran a sus equivalentes en Thally.
+
+Las APIs AsyncAPI, OpenRPC y Fern Definition no se renderizan y producen una advertencia. Las URLs de OpenAPI remotas se listan en el informe de migración para descarga manual.
+
 ### Docusaurus
 
 ```bash
@@ -151,7 +162,7 @@ npx --yes @thallylabs/cli@latest migrate https://github.com/your-org/api-docs --
 | `--into <dir>` | Fusionar en un proyecto existente |
 | `--branch <name>` | Anular la rama de git detectada automáticamente |
 | `--docs-dir <path>` | Anular el subdirectorio de documentación detectado automáticamente |
-| `--platform <name>` | Adaptador fuente: `mintlify`, `docusaurus` o `auto` |
+| `--platform <name>` | Adaptador fuente: `mintlify`, `docusaurus`, `fern` o `auto` |
 | `--max-pages <count>` | Máximo de páginas de un sitio público que se importarán (`1`–`1000`) |
 | `--api-key <key>` | Clave API de Anthropic (o establecer `ANTHROPIC_API_KEY`) para conversión de archivos no Markdown |
 | `--yes`, `-y` | Aceptar valores predeterminados y las limitaciones del sitio público, y omitir todos los prompts |

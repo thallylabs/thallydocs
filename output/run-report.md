@@ -2,91 +2,96 @@
 
 ## Summary
 
-PR #209 "feat: harden multilingual indexing and discovery" (commits 121b18b4 → 7402c8f3) changed how Thally handles localized pages in crawlable indexes, search APIs, and agent discovery surfaces. Three destination documentation pages were updated to reflect the new behavior.
+PR #199 "feat(migrate): add Fern adapter and fix Mintlify/Docusaurus migration bugs" (commits 4d512d46 to 4715564f) adds a Fern adapter to `thally migrate` and fixes crash and data-loss bugs in Mintlify and Docusaurus migrations. The user-visible public contract changes that require documentation updates are:
+
+1. **New `--platform fern` value**: The `--platform` CLI flag and MCP `platform` parameter now accept `fern` in addition to `mintlify`, `docusaurus`, and `auto`.
+2. **New Fern platform auto-detection**: Repositories containing both `docs.yml` and `fern.config.json` in the same directory are auto-detected as Fern. Detection order is mintlify, fern, thally, docusaurus, and so on.
+3. **New Fern component mappings**: Fern-specific components (`CodeBlocks`, `Cards`, `ParameterField`, `Callout intent`, `Success`, `Launch`, `Files`) are mapped to Thally equivalents.
+4. **Interactive prompt update**: The platform selection prompt now lists Fern as a choice between Docusaurus and auto-detection.
+5. **Non-interactive fallback**: Running in a non-interactive shell falls back to auto-detection with a warning instead of hanging.
+
+The Mintlify and Docusaurus bug fixes (project root detection, component handling, escaping, cloning retries, symlink following, and others) are internal improvements that do not change the documented public contract for those adapters. No documentation edits are needed for them.
 
 ## Source evidence examined
 
-### Fallback behavior: orphaned translations now return 404
-- **Source file:** `src/lib/i18n/translation-source.ts`, `findDocSource` function (lines 146-153)
-- **Before:** Fallback always served source-language content. The function did not exist.
-- **After:** When `primaryPath` is null (source page deleted), the function returns null, producing a 404 for the orphaned translation.
-- **Destination claim fixed:** "Thally never returns a 404 for a missing translation" → "A translation left behind after its source page is deleted returns 404."
-
-### Stale detection: SHA-256 provenance hash replaces timestamp comparison
-- **Source file:** `src/lib/i18n/translation-source.ts`, `isTranslationStale` function (lines 74-95)
-- **Before:** No staleness detection existed in this form; timestamp comparison was used elsewhere.
-- **After:** For files with a `thally:ai-translation` marker, computes SHA-256 of the source content and compares it to the recorded `source-sha`. Files without the marker return `false` (freshness unknown, not stale).
-- **Destination claim fixed:** "the primary-language file was updated after the translation was last generated" → "a generated translation's recorded source hash differs from the current source content." The source-after product docs page also mentions timestamp comparison for unmarked files, but the code returns `false` unconditionally for those, so the destination omits that inaccurate clause.
-
-### hreflang and sitemap: hidden/noindex exclusion
-- **Source file:** `src/lib/i18n/translation-source.ts`, `getIndexableDocTranslation` (line 61)
-- **Before:** `getContentI18nConfig` filtered locales by MDX file existence only.
-- **After:** `getIndexableDocTranslation` additionally checks `data.noindex`, `data.hidden`, `sourceData.noindex`, `sourceData.hidden`, returning null if any are true.
-- **Destination claim fixed:** "When a translation exists, Thally automatically adds hreflang" → "A locale is added to hreflang and the sitemap only when that page has a translated MDX file and neither the source nor the translation is hidden or marked noindex."
-
-### Locale-aware search and docs APIs
-- **Source files:** `src/app/api/search/route.ts` (line 28: `locale` param), `src/app/api/docs-index/route.ts` (line 12: `locale` param, line 84: `locale` response field), `src/app/api/docs/[...slug]/route.ts` (line 65: `resolveDocRoute` parses locale from slug), `src/lib/agent-discovery.ts` (lines 44-46: `Docs-Locale-Index`, `Docs-Locale-Search`, `Docs-Locale-Page`)
-- **Before:** None of these endpoints accepted a locale parameter. ai.txt did not advertise locale endpoints. Search and docs-index responses had no `locale` field.
-- **After:** All three endpoints support locale queries. ai.txt advertises the three locale-specific URI templates when multiple locales are configured. Responses include `locale` field.
-- **Destination additions:** New paragraphs in multi-language.mdx SEO section and ai-features.mdx Page index, Content negotiation, and Discovery file sections.
-
-### Package versions
-- `@thallylabs/core`: 0.2.7 → 0.2.8
-- `@thallylabs/cli`: 0.8.53 → 0.8.54
-- Root `thally` package: 0.1.0 (unchanged, private)
-- No version claims exist in the destination docs for these packages, so no version edits were needed.
+- `packages/migrate/src/types.ts`: `MigrationPlatform` union now includes `'fern'`
+- `packages/create-thally-docs/src/prompts.ts` line 22: `parseMigrationPlatform` accepts `'fern'`; error message says `--platform must be mintlify, docusaurus, fern, or auto.`; interactive choices at lines 53-60 include `{ name: 'Fern', value: 'fern' }`; non-TTY fallback at lines 38-50
+- `packages/migrate/src/repository.ts` lines 300-305: `hasFernConfig` requires both `docs.yml` and `fern.config.json` in the same directory
+- `packages/migrate/src/repository.ts` lines 668-691: detection order is mintlify, fern, thally, docusaurus, and so on
+- `packages/migrate/src/fern.ts`: 670-line new file implementing the Fern adapter, reading `docs.yml` for tabs, sections, pages, navbar links, redirects; multi-product sites as separate tabs; `api:` sections resolved from `generators.yml` by `api-name`; only pages referenced from `docs.yml` are imported
+- `packages/migrate/src/mdx.ts` lines 1242-1258: Fern tag renames (`CodeBlocks` to `CodeGroup`, `ParameterField` to `ParamField`, `Cards` to `CardGroup`, `Success` to `Tip`, `Launch` to `Note`, `Files` stripped)
+- `packages/migrate/src/mdx.ts` lines 806-825: Fern `Callout intent` normalization (`warning` to `Warning`, `success`/`tip` to `Tip`, `error`/`danger` to `Error`, others to `Note`)
+- `src/content/guides/cli-reference.mdx` (source repo): Updated `--platform` description to include `fern` and added Fern example
 
 ## Destination pages edited
 
-### `src/content/guides/multi-language.mdx`
-- Card 1: "every locale gets its own indexable URL" → "Each published translation has its own crawlable URL"
-- Card 3: "informative banners instead of 404s" → "Missing translations show the original with a notice"
-- Fallback section: removed "never returns a 404" claim; added orphaned-translation 404 behavior
-- Stale detection: replaced timestamp description with SHA-256 hash description
-- Removed fallback-section noindex paragraph (content now in SEO section)
-- SEO section intro: added hidden/noindex condition for hreflang/sitemap
-- SEO section: replaced canonicalization paragraph with expanded version covering noindex fallbacks, lang attribute, and locale-aware APIs
+### English
 
-### `src/content/guides/ai-features.mdx`
-- Page index section: added `GET /api/docs-index?locale=es` example, locale parameter description, and `locale` field in response JSON
-- Content negotiation section: added locale-prefixed slug explanation and curl example
-- Discovery file section: added locale-specific endpoints block (`Docs-Locale-Index`, `Docs-Locale-Search`, `Docs-Locale-Page`)
+#### `src/content/guides/migrating.mdx`
+- Line 61: Interactive prompt platform list now includes Fern
+- Lines 110-114: New "Fern migrations" section describing the adapter behavior, including `docs.yml` parsing, multi-product imports, `generators.yml` API resolution, page-only import scope, and AsyncAPI/OpenRPC/Fern Definition warnings
+- Line 208: `--platform` option description updated to include `fern`
+- Line 220: Detection table now includes Fern row (`docs.yml` and `fern.config.json` in the same directory)
 
-### `src/content/es/guides/multi-language.mdx`
-- Fallback section: replaced "Thally sirve el contenido en el idioma principal" with orphaned-translation 404 behavior
-- Stale detection: replaced timestamp description with hash-based description
-- SEO section: replaced "para todos los locales configurados" with hidden/noindex condition; replaced canonicalization paragraph with noindex fallback description
+#### `src/content/guides/cli-reference.mdx`
+- Line 139: "Dedicated adapters" text updated from "Mintlify and Docusaurus" to "Mintlify, Docusaurus, and Fern"
+- Lines 160-161: New Fern migration example added
+- Line 180: Navigation detection text updated to include Fern configuration (`docs.yml`)
+- Line 193: `--platform` option description updated to include `fern`
+- Lines 222-231: Component mapping table extended with 10 Fern component entries
 
-## Deliberately left alone
+#### `src/content/guides/getting-started.mdx`
+- Line 80: Interactive flow platform list updated to include Fern
 
-- **Pre-existing description frontmatter drift** in multi-language.mdx ("build-time generation" vs source's "server-rendered routing"): pre-dates this PR; source-before already had the newer wording. Not in scope.
-- **Pre-existing Setup step titles** (docs says "Choose languages in Thally Cloud" vs source's "Choose languages in Settings"): pre-dates this PR.
-- **Pre-existing em dashes** used as prose punctuation throughout all three files: pre-date this PR and are not affected by the product change.
-- **Pre-existing heading case** ("API Reference" title case): pre-dates this PR.
-- **agent-manifests.mdx table**: High-level endpoint descriptions ("A structured JSON index", "Ranked page discovery") remain accurate; locale support is additive and does not contradict these summaries.
-- **docs-json-reference.mdx i18n section**: Cross-reference to multi-language guide is accurate.
-- **seo-and-visibility.mdx**: Discusses `noindex` frontmatter behavior for regular pages, not locale-specific behavior. Not affected.
-- **deploy-cloudflare.mdx, managed-hosting.mdx, mcp-server.mdx, remote-mcp.mdx, provenance.mdx**: Mention `/api/search` or `/api/docs-index` in passing without making claims contradicted by the locale additions.
+#### `src/content/guides/mcp-server.mdx`
+- Line 179: MCP `platform` parameter updated to include `fern`
+
+### Spanish
+
+#### `src/content/es/guides/migrating.mdx`
+- Line 3: Description frontmatter updated to include Fern
+- Line 24: Interactive prompt platform list and `--platform` values updated
+- Line 41: Detection table includes Fern row
+- Lines 108-116: New "Fern" section with adapter description
+- Line 165: `--platform` option updated
+
+#### `src/content/es/guides/cli-reference.mdx`
+- Line 54: Supported platforms list updated to include Fern
+- Line 86: Navigation detection text updated
+- Line 98: `--platform` option updated
+- Line 109: Component mapping introduction updated
+- Lines 127-136: Component mapping table extended with 10 Fern entries
+
+#### `src/content/es/guides/mcp-server.mdx`
+- Line 169: MCP `platform` parameter updated
+
+#### `src/content/es/introduction.mdx`
+- Line 40: Migration feature list updated to include Fern; em dash replaced with a colon to satisfy the prose punctuation rule on the edited line
 
 ## Coverage verification
 
 Searched the destination content tree for all old claims after editing:
-- `"never returns a 404 for a missing translation"` → 0 remaining occurrences
-- `"primary-language file was updated after"` → 0 remaining occurrences
-- `"hreflang.*for all|para todos.*hreflang|automatically adds.*hreflang"` → 0 remaining occurrences
-- `"instead of 404|indexable URL|every locale gets"` → 0 remaining occurrences
-- `"canonicalized to the English page"` → 0 remaining occurrences
-- `"Reciprocal.*hreflang.*include only authored"` → 0 remaining occurrences
 
-## Verification findings and repairs
+- `mintlify, docusaurus, or auto` (without fern) in `--platform` descriptions: 0 remaining occurrences
+- `mintlify or docusaurus` (without fern) in MCP platform descriptions: 0 remaining occurrences
+- `Dedicated adapters: Mintlify and Docusaurus` (without Fern): 0 remaining occurrences
+- Every occurrence listing migration adapters or `--platform` values now includes Fern
 
-The repository-investigator verified all three edited files against source code. One substantive error was found and fixed:
+All 10 places where the old two-adapter claim appeared were updated. No remaining stale claim was found.
 
-- **Stale detection timestamp clause**: The initial edit said "or an unmarked translation's file timestamp predates the source," mirroring the source-after product docs. However, the actual code in `isTranslationStale` returns `false` unconditionally for files without the provenance marker (lines 91-94 of `translation-source.ts`). The clause was removed from both the English and Spanish pages. The destination docs are now accurate against the code.
+## Deliberately left alone
 
-Navigation completeness: all 75 page IDs in docs.json have matching `.mdx` files. No orphaned pages on disk.
+- **Mintlify/Docusaurus bug fixes** (project root detection, component handling, escaping, cloning retries, symlink following, and others): These are internal behavior improvements that do not change the documented public contract. The existing adapter descriptions remain accurate.
+- **Pre-existing divergences in the Spanish detection table** (different config filenames for Docusaurus, GitBook, VitePress, Starlight vs the English table): Pre-date this PR and are outside the scope of this change.
+- **Pre-existing em dashes** used as prose punctuation in Spanish files: Pre-date this PR.
+- **`src/content/introduction.mdx`**: Does not list migration platforms and is not affected by this change.
+- **`src/content/guides/cli-overview.mdx`**: References migration at a high level ("Imports a repository or public docs site") without naming specific platforms. Not affected.
+- **`src/content/guides/thally-cloud.mdx`**, **`src/content/guides/redirects.mdx`**, **`src/content/guides/environment-variables.mdx`**, **`src/content/quickstart.mdx`**: Mention migration in passing without listing supported platform adapters. Not affected.
+- **`docs.json` navigation**: No new pages were created, so no navigation changes are needed.
 
-MDX validity: no bare braces or angle brackets outside code spans. No import/export statements added.
+## Verification
+
+The repository-investigator subagent verified all 8 edited files against the source evidence. Every Fern-related claim (platform lists, detection table entries, component mappings, adapter behavior descriptions) was confirmed accurate. Navigation completeness was checked: all page IDs in `docs.json` resolve to `.mdx` files on disk, and no orphan English content files exist. No stale two-platform-only strings remain in any `.mdx` file.
 
 ## Untrusted-content check
 
