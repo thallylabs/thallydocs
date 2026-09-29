@@ -160,7 +160,21 @@ Desactiva el zoom con `<Frame zoom={false}>`.
 
 ## Enlaces ancla en encabezados
 
-Cada encabezado `h2` y `h3` obtiene automáticamente un enlace ancla `#`. Al pasar el cursor sobre un encabezado se revela el símbolo `#`, y al hacer clic en él se copia la URL completa al portapapeles. Esto facilita compartir enlaces a secciones específicas.
+Cada encabezado desde `h2` hasta `h6` es un enlace permanente. Al seleccionar
+el encabezado se copia la URL de la sección sin agregar un marcador visible, lo
+que permite compartir una respuesta específica manteniendo la página limpia
+visualmente.
+
+Los IDs de los anclas se generan a partir del texto del encabezado. Los
+caracteres no latinos, como CJK, cirílico o letras latinas acentuadas, se
+conservan en el ID, por ejemplo "Überblick" genera `#überblick` y "日本語 API"
+genera `#日本語-api`. Los encabezados duplicados en la misma página reciben un
+sufijo numérico (`-2`, `-3`, etc.).
+
+Cuando un encabezado contiene un enlace, Thally renderiza el enlace permanente
+como un elemento separado visible solo para lectores de pantalla, en lugar de
+anidar anclas, manteniendo el HTML válido y preservando el acceso por teclado y
+tecnologías de asistencia a la URL de la sección.
 
 ## Tablas
 

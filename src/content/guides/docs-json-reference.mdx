@@ -98,7 +98,10 @@ Operation keys use `METHOD /path` exactly as written in the specification.
 | `customScripts` | External script `src` plus optional loading `strategy`. |
 
 Navbar links contain `label`, `href`, and optional `type: "github"`. A primary
-action contains `label` and `href`. Footer columns contain a `heading` and an
+action contains `label` and `href`. `navbar.logo` accepts an object with `light`
+(required), `dark`, `showTitle`, and `rightText` fields, or `null` for a
+text-only wordmark that hides the logo image and "Docs" suffix. When omitted,
+the default logo and suffix are shown. Footer columns contain a `heading` and an
 `items` array of `{ "label", "href" }` objects.
 
 ## Redirects and indexing

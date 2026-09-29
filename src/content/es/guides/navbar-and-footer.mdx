@@ -49,6 +49,38 @@ El botón CTA principal — renderizado como una píldora de acento rellena en l
 Cuando `navbar` no está definido en `docs.json`, Thally recurre a detectar automáticamente un enlace de soporte y CTA desde `siteConfig.links` en `src/data/site.ts`. Define `navbar` en `docs.json` cuando quieras un control explícito.
 </Note>
 
+### `navbar.logo`
+
+Controla la imagen del logotipo y la visualización del nombre del sitio en la barra superior.
+
+```json
+"navbar": {
+  "logo": {
+    "light": "/brand/logo-light.svg",
+    "dark": "/brand/logo-dark.svg",
+    "showTitle": true,
+    "rightText": "Docs"
+  }
+}
+```
+
+| Campo | Tipo | Descripción |
+| --- | --- | --- |
+| `light` | `string` | Ruta al recurso del logotipo en modo claro |
+| `dark` | `string` _(opcional)_ | Ruta a una variante en modo oscuro. Si se omite, se usa `light` |
+| `showTitle` | `boolean` _(opcional)_ | Muestra el nombre del sitio junto al logotipo. Por defecto es `true` |
+| `rightText` | `string` _(opcional)_ | Texto secundario que se muestra después del nombre del sitio |
+
+Cuando `logo` se omite por completo, Thally muestra la imagen del logotipo predeterminado y agrega el sufijo "Docs" después del nombre del sitio.
+
+Establece `logo` en `null` para usar solo texto sin logotipo ni sufijo "Docs":
+
+```json
+"navbar": {
+  "logo": null
+}
+```
+
 ---
 
 ## Footer

@@ -50,6 +50,38 @@ The primary CTA button — rendered as a filled accent pill in the top bar. When
 When `navbar` is not defined in `docs.json`, Thally falls back to auto-detecting a support link and CTA from `siteConfig.links` in `src/data/site.ts`. Define `navbar` in `docs.json` when you want explicit control.
 </Note>
 
+### `navbar.logo`
+
+Control the logo image and site name display in the top bar.
+
+```json
+"navbar": {
+  "logo": {
+    "light": "/brand/logo-light.svg",
+    "dark": "/brand/logo-dark.svg",
+    "showTitle": true,
+    "rightText": "Docs"
+  }
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `light` | `string` | Path to the light-mode logo asset |
+| `dark` | `string` _(optional)_ | Path to a dark-mode variant. Falls back to `light` when omitted |
+| `showTitle` | `boolean` _(optional)_ | Show the site name next to the logo. Defaults to `true` |
+| `rightText` | `string` _(optional)_ | Secondary text shown after the site name |
+
+When `logo` is omitted entirely, Thally shows the default logo image and appends a "Docs" suffix after the site name.
+
+Set `logo` to `null` for a text-only wordmark that hides the logo image and the "Docs" suffix:
+
+```json
+"navbar": {
+  "logo": null
+}
+```
+
 ---
 
 ## Footer

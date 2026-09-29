@@ -206,6 +206,13 @@ When a source page exists but its translation is missing, Thally shows the sourc
 
 Both banners appear only on secondary-locale routes. The primary route is never affected.
 
+### Heading anchors in translated pages
+
+Heading anchor IDs preserve non-Latin characters. A translated heading such as
+"Überblick" produces the anchor `#überblick`, and "日本語 API" becomes
+`#日本語-api`. This means section links within translated pages use the
+translated text, not transliterated ASCII.
+
 For a managed site, select **Refresh translations** in **Site settings →
 Languages**. For a local CLI workflow, run the translate command for that page:
 
