@@ -2,91 +2,88 @@
 
 ## Summary
 
-PR #209 "feat: harden multilingual indexing and discovery" (commits 121b18b4 → 7402c8f3) changed how Thally handles localized pages in crawlable indexes, search APIs, and agent discovery surfaces. Three destination documentation pages were updated to reflect the new behavior.
+PR #219 "fix: preserve content across docs migrations" (commits 4ca040836df95a1c766145ebc470c1bee7554d8e to 7f16574beefb0fdd91bc5bdaa322d3e7dc527c61) improves migration content fidelity and heading anchor behavior across five packages. No documentation changes are required because the product changes do not make any existing documentation claim inaccurate.
 
 ## Source evidence examined
 
-### Fallback behavior: orphaned translations now return 404
-- **Source file:** `src/lib/i18n/translation-source.ts`, `findDocSource` function (lines 146-153)
-- **Before:** Fallback always served source-language content. The function did not exist.
-- **After:** When `primaryPath` is null (source page deleted), the function returns null, producing a 404 for the orphaned translation.
-- **Destination claim fixed:** "Thally never returns a 404 for a missing translation" → "A translation left behind after its source page is deleted returns 404."
+### Package version bumps
 
-### Stale detection: SHA-256 provenance hash replaces timestamp comparison
-- **Source file:** `src/lib/i18n/translation-source.ts`, `isTranslationStale` function (lines 74-95)
-- **Before:** No staleness detection existed in this form; timestamp comparison was used elsewhere.
-- **After:** For files with a `thally:ai-translation` marker, computes SHA-256 of the source content and compares it to the recorded `source-sha`. Files without the marker return `false` (freshness unknown, not stale).
-- **Destination claim fixed:** "the primary-language file was updated after the translation was last generated" → "a generated translation's recorded source hash differs from the current source content." The source-after product docs page also mentions timestamp comparison for unmarked files, but the code returns `false` unconditionally for those, so the destination omits that inaccurate clause.
+| Package | Before | After |
+|---------|--------|-------|
+| `@thallylabs/cli` | 0.8.61 | 0.8.62 |
+| `@thallylabs/core` | 0.2.8 | 0.2.9 |
+| `create-thally-docs` | 0.10.58 | 0.10.59 |
+| `@thallylabs/mcp` | 0.10.60 | 0.10.61 |
+| `@thallylabs/migrate` | 0.2.9 | 0.2.10 |
 
-### hreflang and sitemap: hidden/noindex exclusion
-- **Source file:** `src/lib/i18n/translation-source.ts`, `getIndexableDocTranslation` (line 61)
-- **Before:** `getContentI18nConfig` filtered locales by MDX file existence only.
-- **After:** `getIndexableDocTranslation` additionally checks `data.noindex`, `data.hidden`, `sourceData.noindex`, `sourceData.hidden`, returning null if any are true.
-- **Destination claim fixed:** "When a translation exists, Thally automatically adds hreflang" → "A locale is added to hreflang and the sitemap only when that page has a translated MDX file and neither the source nor the translation is hidden or marked noindex."
+No version numbers for any of these packages appear in the destination documentation, so no version edits are needed.
 
-### Locale-aware search and docs APIs
-- **Source files:** `src/app/api/search/route.ts` (line 28: `locale` param), `src/app/api/docs-index/route.ts` (line 12: `locale` param, line 84: `locale` response field), `src/app/api/docs/[...slug]/route.ts` (line 65: `resolveDocRoute` parses locale from slug), `src/lib/agent-discovery.ts` (lines 44-46: `Docs-Locale-Index`, `Docs-Locale-Search`, `Docs-Locale-Page`)
-- **Before:** None of these endpoints accepted a locale parameter. ai.txt did not advertise locale endpoints. Search and docs-index responses had no `locale` field.
-- **After:** All three endpoints support locale queries. ai.txt advertises the three locale-specific URI templates when multiple locales are configured. Responses include `locale` field.
-- **Destination additions:** New paragraphs in multi-language.mdx SEO section and ai-features.mdx Page index, Content negotiation, and Discovery file sections.
+### Unicode heading anchors (packages/core/src/slugify.ts)
 
-### Package versions
-- `@thallylabs/core`: 0.2.7 → 0.2.8
-- `@thallylabs/cli`: 0.8.53 → 0.8.54
-- Root `thally` package: 0.1.0 (unchanged, private)
-- No version claims exist in the destination docs for these packages, so no version edits were needed.
+- **Before:** `value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')`
+- **After:** `value.normalize('NFC').toLowerCase().replace(/[^\p{L}\p{M}\p{N}]+/gu, '-').replace(/(^-|-$)/g, '')`
+- The heading ID algorithm now preserves Unicode letters and marks instead of stripping them to hyphens. For example, a heading with non-ASCII characters now retains them in the anchor ID.
+- **Documentation impact:** The destination docs do not describe the heading ID algorithm. The "Heading anchor links" section in guides/writing-content.mdx (lines 197-201) says "Every h2 and h3 heading is a permalink" and describes the click-to-copy behavior. Neither claim is affected by the Unicode change. No update needed.
+
+### Heading permalink with nested links (src/components/mdx/heading-anchor.tsx)
+
+- **Before:** Every heading was wrapped in a single anchor permalink element.
+- **After:** When a heading already contains a link element, the component renders the heading text in a span with a separate screen-reader-only permalink, avoiding invalid nested anchor elements.
+- **Documentation impact:** guides/writing-content.mdx (line 199) says "Selecting the heading copies the section URL." This is still accurate for the vast majority of headings. For the narrow edge case of headings containing links, the click-to-copy behavior moves to a screen-reader-only element. The overall claim that every h2 and h3 heading is a permalink remains true since the permalink anchor is always present. No update needed for this edge case.
+
+### thally check heading anchor matching (packages/create-thally-docs/src/check.ts)
+
+- **Before:** `const base = slugify(heading[1])` (line 169) fed raw heading Markdown (including JSX tags) into the slug function.
+- **After:** `const base = slugify(renderedHeadingText(heading[1]))` (line 193) now strips HTML/JSX tags to their visible text before slugifying, matching the runtime's actual heading ID generation.
+- This is a bug fix: headings containing JSX previously generated incorrect IDs in the check, potentially causing false broken-anchor warnings.
+- **Documentation impact:** The "What it checks" descriptions in guides/ci-checks.mdx and guides/cli-reference.mdx describe the check as verifying that "every #heading anchor exists." This description is still accurate; the fix improves accuracy of the anchor matching without changing what is checked. No update needed.
+
+### Remote OpenAPI spec hydration (packages/migrate/src/remote-api.ts, new file)
+
+- **Before:** Mintlify repository migrations that referenced remote OpenAPI specs (HTTPS URLs) emitted a warning: "The remote OpenAPI spec ... was not downloaded. Download it manually..." (source-before repository.ts, line 1041).
+- **After:** The new hydrateRemoteApiSpecs function downloads remote specs with SSRF-safe DNS pinning, validates them as OpenAPI 3.x, attaches them as public assets, and wires them into API tabs. Source-link redirects from Mintlify tag/summary routes are also generated when operations can be uniquely identified.
+- The CLI discoverMigration function now calls hydrateRemoteApiSpecs after repository migration (source-after create-thally-docs/src/migrate/index.ts, line 116).
+- **Documentation impact:** guides/migrating.mdx (line 108) says Mintlify migrations read "OpenAPI references." guides/cli-reference.mdx (line 179) says "OpenAPI spec files (.json, .yaml) are detected and wired up." The first claim is vague enough to cover remote references. The second refers to local files, which is still true. The new remote downloading capability is additive. Neither claim is made false by this change. No update needed.
+
+### Migration type additions (packages/migrate/src/types.ts)
+
+- MigrationNavbarConfig.logo now accepts null for text-only branding when the source has no logo.
+- MigrationDocsConfig gained appearance and background optional fields.
+- MigrationBundle gained remoteApiSpecs field.
+- These are internal migration bundle types consumed by the engine and the CLI. They are not documented docs.json configuration fields. No update needed.
+
+### Fern external navigation links (packages/migrate/src/fern.ts)
+
+- **Before:** Fern link navigation nodes emitted a warning and were dropped.
+- **After:** External links are collected in context.externalLinks and appended to navbar links when valid (HTTPS, no credentials).
+- **Documentation impact:** No destination documentation mentions Fern migration. The --platform flag documentation already omits fern as a valid value (this was a pre-existing omission: the source-before already accepted fern at line 22 of prompts.ts). This improvement does not make any existing claim false. No update needed.
+
+### Docusaurus migration improvements (packages/migrate/src/docusaurus.ts)
+
+- Category card preservation, sidebar order, translated headings, and asset handling improvements.
+- **Documentation impact:** The Docusaurus migration section in guides/migrating.mdx (lines 112-117) lists what is preserved. The new capabilities are additive improvements. No existing claim is contradicted. No update needed.
 
 ## Destination pages edited
 
-### `src/content/guides/multi-language.mdx`
-- Card 1: "every locale gets its own indexable URL" → "Each published translation has its own crawlable URL"
-- Card 3: "informative banners instead of 404s" → "Missing translations show the original with a notice"
-- Fallback section: removed "never returns a 404" claim; added orphaned-translation 404 behavior
-- Stale detection: replaced timestamp description with SHA-256 hash description
-- Removed fallback-section noindex paragraph (content now in SEO section)
-- SEO section intro: added hidden/noindex condition for hreflang/sitemap
-- SEO section: replaced canonicalization paragraph with expanded version covering noindex fallbacks, lang attribute, and locale-aware APIs
+None. The documentation working tree was left untouched.
 
-### `src/content/guides/ai-features.mdx`
-- Page index section: added `GET /api/docs-index?locale=es` example, locale parameter description, and `locale` field in response JSON
-- Content negotiation section: added locale-prefixed slug explanation and curl example
-- Discovery file section: added locale-specific endpoints block (`Docs-Locale-Index`, `Docs-Locale-Search`, `Docs-Locale-Page`)
+## Pre-existing documentation omissions observed (not in scope)
 
-### `src/content/es/guides/multi-language.mdx`
-- Fallback section: replaced "Thally sirve el contenido en el idioma principal" with orphaned-translation 404 behavior
-- Stale detection: replaced timestamp description with hash-based description
-- SEO section: replaced "para todos los locales configurados" with hidden/noindex condition; replaced canonicalization paragraph with noindex fallback description
+These inaccuracies pre-date this PR and are not caused by the compared source change:
 
-## Deliberately left alone
+1. **--platform fern missing from docs**: Both guides/migrating.mdx (line 202) and guides/cli-reference.mdx (line 190) list --platform as accepting mintlify, docusaurus, or auto. The CLI source accepted fern before this PR (source-before prompts.ts line 22). The CLI help text in source-before also said "Use mintlify, docusaurus, fern, or auto" (source-before index.ts line 98).
 
-- **Pre-existing description frontmatter drift** in multi-language.mdx ("build-time generation" vs source's "server-rendered routing"): pre-dates this PR; source-before already had the newer wording. Not in scope.
-- **Pre-existing Setup step titles** (docs says "Choose languages in Thally Cloud" vs source's "Choose languages in Settings"): pre-dates this PR.
-- **Pre-existing em dashes** used as prose punctuation throughout all three files: pre-date this PR and are not affected by the product change.
-- **Pre-existing heading case** ("API Reference" title case): pre-dates this PR.
-- **agent-manifests.mdx table**: High-level endpoint descriptions ("A structured JSON index", "Ranked page discovery") remain accurate; locale support is additive and does not contradict these summaries.
-- **docs-json-reference.mdx i18n section**: Cross-reference to multi-language guide is accurate.
-- **seo-and-visibility.mdx**: Discusses `noindex` frontmatter behavior for regular pages, not locale-specific behavior. Not affected.
-- **deploy-cloudflare.mdx, managed-hosting.mdx, mcp-server.mdx, remote-mcp.mdx, provenance.mdx**: Mention `/api/search` or `/api/docs-index` in passing without making claims contradicted by the locale additions.
+2. **Fern missing from detection table**: guides/migrating.mdx (lines 211-221) lists platform detection files but omits fern/docs.yml. The detectRepositoryPlatform function in source-before already detected Fern (source-before repository.ts line 738).
 
-## Coverage verification
+3. **"Dedicated adapters: Mintlify and Docusaurus"**: guides/cli-reference.mdx (lines 139-140) omits Fern as a dedicated adapter. Fern was a dedicated adapter before this PR.
 
-Searched the destination content tree for all old claims after editing:
-- `"never returns a 404 for a missing translation"` → 0 remaining occurrences
-- `"primary-language file was updated after"` → 0 remaining occurrences
-- `"hreflang.*for all|para todos.*hreflang|automatically adds.*hreflang"` → 0 remaining occurrences
-- `"instead of 404|indexable URL|every locale gets"` → 0 remaining occurrences
-- `"canonicalized to the English page"` → 0 remaining occurrences
-- `"Reciprocal.*hreflang.*include only authored"` → 0 remaining occurrences
+4. **Incomplete check table in cli-reference.mdx**: The "What it checks" table (lines 240-248) lists only seven issue types. The actual check command (both before and after) also validates broken internal links (error), broken anchors (warning), missing images (warning), and OpenAPI spec structure. The ci-checks.mdx page correctly describes link/anchor and OpenAPI checking, but the cli-reference table is incomplete. This pre-dates the PR.
 
-## Verification findings and repairs
+5. **Duplicate page ID severity**: cli-reference.mdx line 243 lists "Duplicate page ID in docs.json" as "Error" but the source code (both before and after) emits it as "Warning" (severity: 'warning', check.ts line 376).
 
-The repository-investigator verified all three edited files against source code. One substantive error was found and fixed:
+## Decision
 
-- **Stale detection timestamp clause**: The initial edit said "or an unmarked translation's file timestamp predates the source," mirroring the source-after product docs. However, the actual code in `isTranslationStale` returns `false` unconditionally for files without the provenance marker (lines 91-94 of `translation-source.ts`). The clause was removed from both the English and Spanish pages. The destination docs are now accurate against the code.
-
-Navigation completeness: all 75 page IDs in docs.json have matching `.mdx` files. No orphaned pages on disk.
-
-MDX validity: no bare braces or angle brackets outside code spans. No import/export statements added.
+No documentation edits. The product changes are internal migration quality improvements, bug fixes, and a Unicode-aware heading slugify enhancement. No existing public-facing documentation claim is made inaccurate by these changes.
 
 ## Untrusted-content check
 
