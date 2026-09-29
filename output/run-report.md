@@ -2,91 +2,92 @@
 
 ## Summary
 
-PR #209 "feat: harden multilingual indexing and discovery" (commits 121b18b4 → 7402c8f3) changed how Thally handles localized pages in crawlable indexes, search APIs, and agent discovery surfaces. Three destination documentation pages were updated to reflect the new behavior.
+PR #69 "chore: sync Thally runtime 7f16574beefb" (commits b0612637 → 5b063972) syncs the Thally runtime from thallylabs/thally@7f16574beefb into the starter repository. Three user-visible public contract changes required documentation updates across seven files (four English, three Spanish translations).
 
 ## Source evidence examined
 
-### Fallback behavior: orphaned translations now return 404
-- **Source file:** `src/lib/i18n/translation-source.ts`, `findDocSource` function (lines 146-153)
-- **Before:** Fallback always served source-language content. The function did not exist.
-- **After:** When `primaryPath` is null (source page deleted), the function returns null, producing a 404 for the orphaned translation.
-- **Destination claim fixed:** "Thally never returns a 404 for a missing translation" → "A translation left behind after its source page is deleted returns 404."
+### `navbar.logo` accepts `null`
 
-### Stale detection: SHA-256 provenance hash replaces timestamp comparison
-- **Source file:** `src/lib/i18n/translation-source.ts`, `isTranslationStale` function (lines 74-95)
-- **Before:** No staleness detection existed in this form; timestamp comparison was used elsewhere.
-- **After:** For files with a `thally:ai-translation` marker, computes SHA-256 of the source content and compares it to the recorded `source-sha`. Files without the marker return `false` (freshness unknown, not stale).
-- **Destination claim fixed:** "the primary-language file was updated after the translation was last generated" → "a generated translation's recorded source hash differs from the current source content." The source-after product docs page also mentions timestamp comparison for unmarked files, but the code returns `false` unconditionally for those, so the destination omits that inaccurate clause.
+- **Source file:** `src/data/docs.ts` (after), line 173: `logo?: { light: string; dark?: string; showTitle?: boolean; rightText?: string } | null`. Before (line 172): no `| null` in the union.
+- **Source file:** `src/components/layout/top-bar.tsx` (after), line 113: `navbarConfig?.logo === null ? null : <Logo showText={false} />` — `null` hides the logo image. Lines 122-124: `navbarConfig?.logo === undefined` controls the "Docs" suffix — `null` hides it, only `undefined` shows it. Before: line 113 always rendered `<Logo />`, line 122 used `!navbarConfig?.logo` (falsy check, treating null the same as undefined).
+- JSDoc added: "Explicit null keeps a source site's text-only wordmark."
 
-### hreflang and sitemap: hidden/noindex exclusion
-- **Source file:** `src/lib/i18n/translation-source.ts`, `getIndexableDocTranslation` (line 61)
-- **Before:** `getContentI18nConfig` filtered locales by MDX file existence only.
-- **After:** `getIndexableDocTranslation` additionally checks `data.noindex`, `data.hidden`, `sourceData.noindex`, `sourceData.hidden`, returning null if any are true.
-- **Destination claim fixed:** "When a translation exists, Thally automatically adds hreflang" → "A locale is added to hreflang and the sitemap only when that page has a translated MDX file and neither the source nor the translation is hidden or marked noindex."
+### Unicode-aware heading anchor IDs
 
-### Locale-aware search and docs APIs
-- **Source files:** `src/app/api/search/route.ts` (line 28: `locale` param), `src/app/api/docs-index/route.ts` (line 12: `locale` param, line 84: `locale` response field), `src/app/api/docs/[...slug]/route.ts` (line 65: `resolveDocRoute` parses locale from slug), `src/lib/agent-discovery.ts` (lines 44-46: `Docs-Locale-Index`, `Docs-Locale-Search`, `Docs-Locale-Page`)
-- **Before:** None of these endpoints accepted a locale parameter. ai.txt did not advertise locale endpoints. Search and docs-index responses had no `locale` field.
-- **After:** All three endpoints support locale queries. ai.txt advertises the three locale-specific URI templates when multiple locales are configured. Responses include `locale` field.
-- **Destination additions:** New paragraphs in multi-language.mdx SEO section and ai-features.mdx Page index, Content negotiation, and Discovery file sections.
+- **Source file:** `src/lib/utils.ts` (after), lines 19-25: `slugify` applies `.normalize('NFC')` then `[^\p{L}\p{M}\p{N}]+` with `/gu` flag. Before: used `[^a-z0-9]+` without normalization.
+- **Test evidence:** `src/mdx/rehype.test.ts` (after), lines 159-168: test "preserves Unicode heading IDs" verifies "Überblick" → `überblick`, second "Überblick" → `überblick-2`, "日本語 API" → `日本語-api`.
 
-### Package versions
-- `@thallylabs/core`: 0.2.7 → 0.2.8
-- `@thallylabs/cli`: 0.8.53 → 0.8.54
-- Root `thally` package: 0.1.0 (unchanged, private)
-- No version claims exist in the destination docs for these packages, so no version edits were needed.
+### Heading anchors with nested links
+
+- **Source file:** `src/components/mdx/heading-anchor.tsx` (after): new `containsLink()` helper (lines 16-23) detects `<a>` elements or elements with `href` props in heading children. When found, renders children in a `<span>` with a separate screen-reader-only permalink `<a>` (class `sr-only focus:not-sr-only`). Before: all headings were wrapped in a single `<a>`, producing invalid nested anchors when headings contained authored links.
+
+### Heading level scope (contextual pre-existing correction)
+
+- **Source file:** `src/components/mdx/mdx-components.tsx`, lines 83-87: registers heading anchors for h2, h3, h4, h5, h6. Unchanged between before and after. The prior documentation claimed "every `h2` and `h3`" which understated the scope. Corrected to "h2 through h6" as the minimum contextual fix needed for the heading anchor section to be accurate alongside the new content.
+
+## Changes not requiring documentation
+
+- `@thallylabs/core` bump from ^0.2.8 to ^0.2.9: internal dependency version, no version claims in destination docs
+- Layout scripts changed from native `<script>` to Next.js `<Script>` with `strategy="beforeInteractive"`: internal implementation, functionally equivalent
+- Remote MDX trust boundary tightened (`compileMDX` restricted to `source.kind === 'filesystem'` in dev): internal development behavior, not a user-facing configuration
+- MDX interpreter test for expression attributes: test-only
+- `starter-release.json` SHA updates: internal provenance tracking
+- `package-lock.json`: lockfile churn from core bump
 
 ## Destination pages edited
 
-### `src/content/guides/multi-language.mdx`
-- Card 1: "every locale gets its own indexable URL" → "Each published translation has its own crawlable URL"
-- Card 3: "informative banners instead of 404s" → "Missing translations show the original with a notice"
-- Fallback section: removed "never returns a 404" claim; added orphaned-translation 404 behavior
-- Stale detection: replaced timestamp description with SHA-256 hash description
-- Removed fallback-section noindex paragraph (content now in SEO section)
-- SEO section intro: added hidden/noindex condition for hreflang/sitemap
-- SEO section: replaced canonicalization paragraph with expanded version covering noindex fallbacks, lang attribute, and locale-aware APIs
+### `src/content/guides/navbar-and-footer.mdx`
+- Added `### navbar.logo` section between `navbar.primary` and `## Footer`
+- Documents the logo object fields (`light`, `dark`, `showTitle`, `rightText`) with a table
+- Documents the `null` option for a text-only wordmark
+- Documents the default behavior when `logo` is omitted
 
-### `src/content/guides/ai-features.mdx`
-- Page index section: added `GET /api/docs-index?locale=es` example, locale parameter description, and `locale` field in response JSON
-- Content negotiation section: added locale-prefixed slug explanation and curl example
-- Discovery file section: added locale-specific endpoints block (`Docs-Locale-Index`, `Docs-Locale-Search`, `Docs-Locale-Page`)
+### `src/content/guides/docs-json-reference.mdx`
+- Updated the "Appearance and site chrome" prose paragraph to describe `navbar.logo` (object with `light`/`dark`/`showTitle`/`rightText`, or `null`, or omitted)
+
+### `src/content/guides/writing-content.mdx`
+- Changed "Every `h2` and `h3`" to "Every heading from `h2` through `h6`" (pre-existing scope understatement, corrected as contextual prerequisite)
+- Added paragraph on Unicode-aware anchor ID generation with examples ("Überblick" → `#überblick`, "日本語 API" → `#日本語-api`, duplicate suffix behavior)
+- Added paragraph on nested-link heading behavior (screen-reader-only permalink)
+
+### `src/content/guides/multi-language.mdx`
+- Added `### Heading anchors in translated pages` subsection after the fallback behavior section, noting that anchor IDs preserve non-Latin characters in translated pages
+
+### `src/content/es/guides/navbar-and-footer.mdx`
+- Added `### navbar.logo` section (Spanish translation), matching the English structure
+
+### `src/content/es/guides/writing-content.mdx`
+- Updated heading anchor section with h2-h6 scope, Unicode ID generation, and nested-link behavior (Spanish translation)
 
 ### `src/content/es/guides/multi-language.mdx`
-- Fallback section: replaced "Thally sirve el contenido en el idioma principal" with orphaned-translation 404 behavior
-- Stale detection: replaced timestamp description with hash-based description
-- SEO section: replaced "para todos los locales configurados" with hidden/noindex condition; replaced canonicalization paragraph with noindex fallback description
+- Added `### Anclas de encabezado en páginas traducidas` subsection (Spanish translation)
 
 ## Deliberately left alone
 
-- **Pre-existing description frontmatter drift** in multi-language.mdx ("build-time generation" vs source's "server-rendered routing"): pre-dates this PR; source-before already had the newer wording. Not in scope.
-- **Pre-existing Setup step titles** (docs says "Choose languages in Thally Cloud" vs source's "Choose languages in Settings"): pre-dates this PR.
-- **Pre-existing em dashes** used as prose punctuation throughout all three files: pre-date this PR and are not affected by the product change.
-- **Pre-existing heading case** ("API Reference" title case): pre-dates this PR.
-- **agent-manifests.mdx table**: High-level endpoint descriptions ("A structured JSON index", "Ranked page discovery") remain accurate; locale support is additive and does not contradict these summaries.
-- **docs-json-reference.mdx i18n section**: Cross-reference to multi-language guide is accurate.
-- **seo-and-visibility.mdx**: Discusses `noindex` frontmatter behavior for regular pages, not locale-specific behavior. Not affected.
-- **deploy-cloudflare.mdx, managed-hosting.mdx, mcp-server.mdx, remote-mcp.mdx, provenance.mdx**: Mention `/api/search` or `/api/docs-index` in passing without making claims contradicted by the locale additions.
+- **Pre-existing MCP tool example divergence between locales**: English `multi-language.mdx` shows `"force": false` in the MCP JSON example; Spanish shows `"apiKey": "sk-ant-..."`. Pre-dates this PR.
+- **Pre-existing em dashes** used as prose punctuation in several files: pre-date this PR and are not affected by the product change.
+- **`branding-and-theming.mdx` logo section**: Describes uploading logos through admin/Cloud branding, which is a different mechanism from `docs.json` `navbar.logo`. Not affected by this change.
+- **`es/introduction.mdx` heading anchor bullet** ("enlaces de sección que puedes copiar haciendo clic en el encabezado, sin marcadores visibles"): General feature description remains accurate. The change is about how IDs are computed, not the interaction pattern.
+- **`ci-checks.mdx` anchor validation** ("every `#heading` anchor exists"): Describes CI link checking behavior, not anchor ID generation. Not affected.
+- **`migrating.mdx` and `ai-coding-agents.mdx` audit checklists**: Mention "broken anchors" generically. Not claims about anchor ID generation. Not affected.
 
 ## Coverage verification
 
-Searched the destination content tree for all old claims after editing:
-- `"never returns a 404 for a missing translation"` → 0 remaining occurrences
-- `"primary-language file was updated after"` → 0 remaining occurrences
-- `"hreflang.*for all|para todos.*hreflang|automatically adds.*hreflang"` → 0 remaining occurrences
-- `"instead of 404|indexable URL|every locale gets"` → 0 remaining occurrences
-- `"canonicalized to the English page"` → 0 remaining occurrences
-- `"Reciprocal.*hreflang.*include only authored"` → 0 remaining occurrences
+Searched the destination content tree for stale claims after editing:
+- `"Every \x60h2\x60 and \x60h3\x60"` → 0 remaining occurrences (was in writing-content.mdx and es/guides/writing-content.mdx; both updated)
+- `"Cada encabezado \x60h2\x60 y \x60h3\x60"` → 0 remaining occurrences
+- `"Uberblick"` (without umlaut) → 0 remaining occurrences (initially written without umlaut in English files; fixed after first verification)
+- `navbar.logo` references → all 7 occurrences are in new documentation added by this update
 
 ## Verification findings and repairs
 
-The repository-investigator verified all three edited files against source code. One substantive error was found and fixed:
+The repository-investigator verified all seven edited files against source code. Two issues were found and fixed during the first verification pass:
 
-- **Stale detection timestamp clause**: The initial edit said "or an unmarked translation's file timestamp predates the source," mirroring the source-after product docs. However, the actual code in `isTranslationStale` returns `false` unconditionally for files without the provenance marker (lines 91-94 of `translation-source.ts`). The clause was removed from both the English and Spanish pages. The destination docs are now accurate against the code.
+1. **Missing umlaut in English slugify examples**: The initial edits used "Uberblick" (ASCII U) instead of "Überblick" (Ü with umlaut) in `writing-content.mdx` and `multi-language.mdx`. Fixed to match the source test at `rehype.test.ts` line 160. Spanish translations already had the correct character.
 
-Navigation completeness: all 75 page IDs in docs.json have matching `.mdx` files. No orphaned pages on disk.
+2. **Heading level scope understatement**: Both English and Spanish `writing-content.mdx` said "every `h2` and `h3`" but `mdx-components.tsx` registers anchors for h2 through h6. Fixed as a contextual pre-existing correction in both files.
 
-MDX validity: no bare braces or angle brackets outside code spans. No import/export statements added.
+Final verification confirmed all checks pass: page-vs-navigation completeness, source-grounded claim accuracy, JSON example validity, MDX validity, no template text, and prose quality.
 
 ## Untrusted-content check
 

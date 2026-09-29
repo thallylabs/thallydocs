@@ -196,9 +196,20 @@ For asset organization, alt text, downloads, and review guidance, see
 
 ## Heading anchor links
 
-Every `h2` and `h3` heading is a permalink. Selecting the heading copies the
-section URL without adding a visible marker beside it, so you can share a
-specific answer while keeping the page visually clean.
+Every heading from `h2` through `h6` is a permalink. Selecting the heading
+copies the section URL without adding a visible marker beside it, so you can
+share a specific answer while keeping the page visually clean.
+
+Anchor IDs are generated from the heading text. Non-Latin characters such as
+CJK, Cyrillic, or accented Latin letters are preserved in the ID, so a heading
+like "Überblick" becomes `#überblick` and "日本語 API" becomes `#日本語-api`.
+Duplicate headings on the same page get a numeric suffix (`-2`, `-3`, and so
+on).
+
+When a heading contains an authored link, Thally renders the permalink as a
+separate screen-reader-only element instead of nesting anchors, keeping the HTML
+valid while preserving keyboard and assistive-technology access to the section
+URL.
 
 ## Tables
 
