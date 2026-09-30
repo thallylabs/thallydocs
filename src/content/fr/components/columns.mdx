@@ -1,0 +1,123 @@
+---
+title: "Colonnes"
+description: "Placez le contenu côte à côte dans une mise en page multi-colonnes réactive."
+---
+
+{/* thally:ai-translation locale=fr source-sha=298ba2c10c9bad54ec83e9f70e85626b9e0fd187f9f6187bbddd94e4b77bee69 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`<Columns>` crée une grille CSS avec un nombre de colonnes configurable. Contrairement à `<CardGroup>`, il n'y a pas de bordure de carte — c'est une primitive de mise en page pure qui s'effondre en une seule colonne sur mobile.
+
+## Deux colonnes
+
+<Columns cols={2}>
+  <div>
+    **Colonne de gauche**
+
+    Utilisez ceci pour les tableaux de comparaison, les extraits de code côte à côte ou les diagrammes multi-panneaux. Les deux colonnes s'empilent verticalement sur mobile.
+  </div>
+  <div>
+    **Colonne de droite**
+
+    Chaque colonne peut contenir n'importe quel contenu MDX — paragraphes, listes, blocs de code, appels à l'action ou composants imbriqués.
+  </div>
+</Columns>
+
+```mdx
+<Columns cols={2}>
+  <div>Left content</div>
+  <div>Right content</div>
+</Columns>
+```
+
+## Trois colonnes
+
+<Columns cols={3}>
+  <div>
+    **Configuration**
+
+    Installez le package, ajoutez votre clé API et exécutez `npm run dev`.
+  </div>
+  <div>
+    **Configurer**
+
+    Modifiez `docs.json` pour définir votre navigation, votre marque et vos intégrations.
+  </div>
+  <div>
+    **Déployer**
+
+    Poussez vers GitHub et connectez votre référentiel à Vercel ou à n'importe quel hôte statique.
+  </div>
+</Columns>
+
+```mdx
+<Columns cols={3}>
+  <div>**Setup** — Install and run.</div>
+  <div>**Configure** — Edit docs.json.</div>
+  <div>**Deploy** — Push to GitHub.</div>
+</Columns>
+```
+
+## Quatre colonnes
+
+<Columns cols={4}>
+  <div>
+    **TypeScript**
+
+    SDK fortement typé avec support IntelliSense complet.
+  </div>
+  <div>
+    **Python**
+
+    Client asynchrone compatible avec FastAPI et Django.
+  </div>
+  <div>
+    **Go**
+
+    Module léger sans dépendances pour Go 1.21+.
+  </div>
+  <div>
+    **Ruby**
+
+    Gem idiomatique avec extensions ActiveSupport.
+  </div>
+</Columns>
+
+```mdx
+<Columns cols={4}>
+  <div>**TypeScript**</div>
+  <div>**Python**</div>
+  <div>**Go**</div>
+  <div>**Ruby**</div>
+</Columns>
+```
+
+## Combinaison avec d'autres composants
+
+Les colonnes fonctionnent bien avec `<Frame>` pour les comparaisons d'images côte à côte :
+
+<Columns cols={2}>
+  <Frame caption="Avant">
+    <img src="/images/image1.jpg" alt="Avant" />
+  </Frame>
+  <Frame caption="Après">
+    <img src="/images/image2.jpg" alt="Après" />
+  </Frame>
+</Columns>
+
+```mdx
+<Columns cols={2}>
+  <Frame caption="Before">
+    <img src="/images/before.png" alt="Before" />
+  </Frame>
+  <Frame caption="After">
+    <img src="/images/after.png" alt="After" />
+  </Frame>
+</Columns>
+```
+
+## Props
+
+| Prop | Type | Par défaut | Description |
+|---|---|---|---|
+| `cols` | `1 \| 2 \| 3 \| 4` | `2` | Nombre de colonnes |

@@ -1,0 +1,162 @@
+---
+title: Transformer les modifications de produit en demandes de tirage de documentation
+navTitle: Thally Track
+description: Choisissez quand Thally Track vérifie les référentiels de produits connectés, suivez chaque exécution et examinez les demandes de tirage de documentation qu'il prépare.
+keywords:
+  - thally track
+  - product sources
+  - docs automation
+  - pull request documentation
+  - scheduled documentation updates
+  - keep docs in sync with code
+---
+
+{/* thally:ai-translation locale=fr source-sha=cc802257412f513cdd3d10c4a29ff8a9b4857a6de18167f2a4c873cce28b5b38 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Connectez les référentiels qui décrivent votre produit, puis choisissez quand Thally
+Track doit les vérifier. Track lit la modification de produit exacte, l'examine
+par rapport à votre documentation actuelle, et ouvre une demande de tirage de documentation
+prête à être examinée quand une mise à jour est nécessaire.
+
+Track ne fusionne jamais ses propres demandes de tirage. Vos modifications de documentation ne
+prennent effet qu'après que votre équipe ait examiné la proposition et l'ait fusionnée dans votre
+flux de travail GitHub normal.
+
+Track nécessite un accès Cloud, y compris un essai actif, et utilise les crédits d'IA
+partagés de votre espace de travail. Avant votre première exécution, consultez
+[accès à l'essai et crédits d'IA](/guides/thally-cloud#understand-trial-access-and-ai-credits).
+
+## Connecter des sources de produit
+
+Vous pouvez connecter des sources de produit lors de la création d'un site ou ultérieurement à partir de la
+page Track du site.
+
+<Steps>
+  <Step title="Ouvrir Track">
+    Dans Thally Cloud, ouvrez le site et sélectionnez **Track**. Les propriétaires et les éditeurs peuvent
+    gérer les référentiels connectés à partir de cette page.
+  </Step>
+  <Step title="Autoriser le référentiel">
+    Installez ou mettez à jour l'application GitHub Thally pour le compte qui possède le
+    référentiel de produit.
+  </Step>
+  <Step title="Choisir ce que Track surveille">
+    Sélectionnez le référentiel et la branche de base. Ajoutez des filtres de chemin quand seule une partie d'un
+    monorépô représente la surface de produit que Track doit surveiller.
+  </Step>
+  <Step title="Choisir vos déclencheurs">
+    Décidez si Track doit s'exécuter pour les mises à jour de demande de tirage, les modifications fusionnées,
+    les vérifications planifiées, ou une combinaison de celles-ci. Les nouveaux sites conservent le comportement
+    familier de fusion uniquement jusqu'à ce que vous modifiiez ce paramètre.
+  </Step>
+</Steps>
+
+Chaque source de produit conserve son propre référentiel, branche, filtres de chemin optionnels,
+et état activé. Un site peut connecter plusieurs sources, telles qu'une API, un SDK,
+et une application web, au même référentiel de documentation.
+
+## Connecter des surfaces de connaissance
+
+Si le contenu orienté client réside également dans un site web, un centre d'aide ou un autre
+référentiel, connectez-le à partir de **Paramètres du site → Surfaces de connaissance**. Une surface de connaissance
+est une destination Track, pas une source de produit ou une entrée de connaissance de produit.
+
+Chaque événement source admissible crée une exécution indépendante pour le référentiel de documentation principal
+et chaque surface activée. Confirmez le référentiel de destination, la branche, la racine optionnelle,
+et les chemins exactement autorisés. Track peut ouvrir une demande de tirage prête à être examinée
+par référentiel affecté ; une destination qui est déjà exacte se termine sans en avoir une.
+
+Lisez le [contrat de surface de connaissance](/guides/knowledge-surfaces) pour l'admissibilité des déclencheurs,
+le confinement des chemins, la validation, les limites d'aperçu, et la propriété de publication.
+
+## Choisir quand Track s'exécute
+
+Les paramètres de déclenchement s'appliquent à chaque source de produit activée pour le site.
+
+| Déclencheur                  | Quand Track vérifie                                                                                            | À utiliser quand                                                              |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| **Mises à jour de demande de tirage** | Une demande de tirage fiable, du même référentiel, non brouillon, s'ouvre, devient prête pour examen, ou reçoit un nouveau commit | Vous voulez que la documentation soit prête à être examinée avant la fusion de la modification du produit  |
+| **Modifications fusionnées**       | Une demande de tirage se fusionne dans la branche suivie                                                                | Vous voulez que le travail de documentation commence uniquement après l'arrivée de la modification du produit |
+| **Vérifications planifiées**     | Quotidiennement, hebdomadairement, ou à un intervalle personnalisé entre horaire et hebdomadaire                                             | Vous voulez que Track détecte les modifications selon un calendrier UTC prévisible            |
+
+Les mises à jour de demande de tirage ne s'exécutent pas à partir de forks ou de branches de contributeurs non fiables.
+Track peut évaluer ces modifications après leur fusion dans la branche suivie.
+
+Vous pouvez activer les déclencheurs de tirage et de fusion ensemble. Track les traite comme
+des points d'examen séparés, tandis que les livraisons en double pour la même révision source
+ne créent pas de travail en double.
+
+La première vérification planifiée établit la révision actuelle de la branche. Les vérifications ultérieures
+comparent à partir de ce point. Si la branche n'a pas changé, ou si sa modification complète se situe
+en dehors de vos chemins surveillés, Track se termine sans ouvrir de demande de tirage.
+
+## Suivre une exécution
+
+La page Track garde chaque exécution de destination visible pendant que vous travaillez ailleurs ou
+fermez le navigateur. Une exécution typique progresse à travers ces étapes :
+
+1. **Modification reçue**
+2. **Préparation**
+3. **Rédaction de la documentation**
+4. **Vérification de la mise à jour**
+5. **Ouverture de la demande de tirage**
+
+Si Track a besoin d'une autre tentative, l'activité affiche **Nouvelle tentative en toute sécurité**. Elle affiche également
+le temps écoulé et une cible typique de 15 minutes au lieu d'un pourcentage artificiel. Vous pouvez ouvrir
+les détails de l'exécution pour voir la modification source, la tentative actuelle, et le résultat final.
+
+## Comprendre le résultat
+
+Chaque exécution se termine par l'un de trois résultats orientés client :
+
+| Résultat               | Ce que cela signifie                                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Prête pour examen** | Track a ouvert une demande de tirage GitHub normale. Examinez, modifiez, fusionnez ou fermez-la selon votre flux de travail habituel.    |
+| **Pas de modification de documentation**   | Track a vérifié la révision source et n'a trouvé aucune mise à jour de documentation à proposer. Aucune demande de tirage n'a été ouverte. |
+| **Nécessite attention**  | Track s'est arrêté avant d'ouvrir une demande de tirage. Ouvrez les détails de l'exécution pour l'étape suivante disponible.              |
+
+Track peut mettre à jour des pages existantes, ajouter une page quand le produit introduit un nouveau
+concept documenté, ou ajuster la navigation nécessaire pour le contenu proposé. La
+demande de tirage explique la mise à jour et indique si les vérifications de documentation ont réussi ;
+elle n'inclut pas les journaux de construction bruts.
+
+## Examiner et publier
+
+Pour le référentiel de documentation principal du site, une demande de tirage Track fusionnée
+est publiée par le même chemin que toute autre modification de documentation examinée. La
+mise à jour devient active uniquement après que la version résultante passe la validation.
+
+Les demandes de tirage de surface de connaissance utilisent les vérifications, les aperçus, les examinateurs et le flux de travail de publication
+du référentiel de destination. Thally ne construit ni ne publie ces référentiels. Les URL d'aperçu Thally gérées
+s'appliquent uniquement au référentiel de documentation principal.
+
+Suspendre ou supprimer une source de produit affecte les modifications futures. Les demandes de tirage existantes
+restent disponibles pour que votre équipe les examine ou les ferme.
+
+## À quoi s'attendre
+
+- Track s'exécute uniquement pour les sources de produit et les branches que vous connectez. Les chemins surveillés optionnels
+  décident quelles modifications procèdent à la rédaction de documentation ; une exécution entièrement
+  en dehors de ces chemins se termine comme **Pas de modification de documentation**. Pendant une exécution admise,
+  Track examine la source connectée et le référentiel de documentation actuel.
+- Une modification source sans impact de documentation ne crée aucune demande de tirage.
+- Chaque surface de connaissance activée reçoit sa propre exécution et un résultat indépendant
+  sans modification ou demande de tirage.
+- Une exécution échouée ou arrêtée ne peut pas modifier le site de documentation actif.
+- Track ouvre des demandes de tirage prêtes pour examen et ne les fusionne jamais.
+- Votre référentiel Git reste la source de vérité pour chaque modification publiée.
+
+## Outils de création auto-hébergés
+
+La CLI `thally` publique, l'agent de documentation et le serveur MCP peuvent aussi aider un développeur
+à préparer la documentation localement. Ces outils de création auto-gérés sont distincts
+du flux de travail Cloud Track décrit ici.
+
+## Étapes suivantes
+
+- [Voir comment Thally fonctionne](/architecture) pour le flux de travail de publication et de mise à jour orienté client.
+- [Comprendre le pipeline de modification de produit](/product-change-pipeline).
+- [Utiliser l'agent de documentation localement](/guides/docs-agent).
+- [Connecter un client MCP](/guides/mcp-server).
+- [Examiner la provenance et la fraîcheur](/guides/provenance).

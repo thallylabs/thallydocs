@@ -1,0 +1,85 @@
+---
+title: Medir el uso y recopilar comentarios
+navTitle: Análisis y comentarios
+description: Habilita el análisis de Thally y las calificaciones de página, persiste eventos y utiliza los resultados para mejorar la documentación.
+---
+
+{/* thally:ai-translation locale=es source-sha=1af0b81c99a7009f361bcfa2e93c8afd4ee2af47188ebf3fa07cf10e3f29a12d */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally puede registrar vistas de página, búsquedas, tráfico de agentes y comentarios de página. El servicio de análisis y el panel de control son capacidades de Thally Cloud; el tiempo de ejecución de código abierto mantiene los puntos de integración pero se desactiva de forma segura cuando ningún servicio está conectado.
+
+## Habilita los controles del sitio
+
+Establece los valores predeterminados del archivo en `docs.json`:
+
+```json
+{
+  "analytics": {
+    "enabled": true
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "endpoint": "/api/feedback"
+  }
+}
+```
+
+| Campo | Predeterminado | Propósito |
+| --- | --- | --- |
+| `analytics.enabled` | `true` | Permite la recopilación cuando un servicio de análisis conectado la proporciona. Establece `false` para excluirse. |
+| `feedback.thumbsRating` | `true` | Muestra u oculta el control útil/no útil. |
+| `feedback.endpoint` | `/api/feedback` | Recibe calificaciones de página y seguimientos escritos opcionales. |
+
+El punto de conexión integrado acepta una calificación sin permitir que una falla de análisis interrumpa la solicitud del lector. En un sitio de código abierto sin conectar, no crea un almacén de comentarios duradero. Reemplaza la ruta con tu propia integración si deseas almacenamiento o reenvío autogestionado.
+
+## Conecta el análisis
+
+Conecta la implementación a Thally Cloud, abre el sitio y selecciona **Analytics**. El panel de Cloud separa el tráfico humano y de agentes y muestra señales de participación y descubrimiento para el sitio seleccionado. Cuando el análisis no se incluye en el plan del espacio de trabajo, la página explica el requisito en lugar de presentar datos vacíos como una configuración exitosa.
+
+Para un tiempo de ejecución autohospedado, `/admin/analytics` usa el mismo puente de servicio cuando la implementación tiene una conexión Cloud válida.
+
+No necesitas configurar una base de datos de análisis para un sitio Cloud administrado. Si operates el tiempo de ejecución de código abierto y necesitas que el análisis local del sitio sobreviva a nuevas implementaciones, consulta [Configuración autohospedada](/guides/environment-variables#keep-self-hosted-state-after-a-redeploy).
+
+## Cookies y consentimiento
+
+La recopilación de tráfico nativa de Thally se ejecuta en el servidor. Registra la ruta solicitada, slug de contenido, formato de solicitud, referente y si la solicitud parece provenir de un humano o un agente. **No** crea un ID de visitante persistente ni una cookie de análisis, por lo que un sitio público que usa únicamente análisis nativo de Thally no necesita un banner de cookies para esa característica.
+
+Thally utiliza cookies estrictamente necesarias, `HttpOnly` cuando habilitas características que requieren una sesión:
+
+- contraseña de administrador o inicio de sesión OIDC;
+- documentación protegida con contraseña;
+- el flujo de inicio de sesión OIDC de vida corta.
+
+Esas cookies usan `SameSite=Lax`, están marcadas `Secure` en producción y no se utilizan para publicidad o seguimiento entre sitios. Un banner de sitio descartable almacena su estado descartado en `localStorage`, no en una cookie.
+
+<Warning title="Los scripts de terceros pueden cambiar el requisito">
+Google Analytics, PostHog, píxeles publicitarios, medios incrustados o scripts personalizados pueden establecer cookies o identificadores similares. Si los habilitas, añade controles de consentimiento que coincidan con los proveedores, tu configuración y las regiones que sirves. No muestres un banner de consentimiento genérico que no pueda prevenir que esos scripts se carguen.
+</Warning>
+
+## Revisa señales útiles
+
+Utiliza el panel de control para buscar:
+
+- páginas con alto tráfico con calificaciones negativas;
+- búsquedas repetidas que devuelven resultados débiles;
+- tareas importantes con poco tráfico porque los lectores no pueden encontrarlas;
+- diferencias entre acceso humano y de agentes;
+- brechas de contenido que deberían convertirse en una guía enfocada o página de referencia.
+
+Trata una calificación como un aviso para investigar, no como prueba de que un párrafo causó el problema. Lee la página, reproduce la tarea y actualiza los documentos permanentes.
+
+## Verifica la recopilación
+
+1. Abre una página en el sitio implementado.
+2. Ejecuta una búsqueda.
+3. Envía una calificación positiva y negativa en páginas de prueba.
+4. Confirma que los eventos aparecen en el panel de análisis conectado.
+5. Si no aparecen, inspecciona las solicitudes del navegador a `/api/analytics/collect` y `/api/feedback`, luego revisa los registros del servidor y las variables de almacenamiento.
+
+## Próximos pasos
+
+- [Gestiona sitios con Thally Cloud](/guides/thally-cloud)
+- [Gestiona el administrador de sitio integrado](/guides/admin-dashboard)
+- [Configuración autohospedada](/guides/environment-variables)
+- [Soluciona problemas de una implementación](/guides/troubleshooting)

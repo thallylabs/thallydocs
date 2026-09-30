@@ -1,0 +1,172 @@
+---
+title: Personnalisez votre marque et thème
+navTitle: Marque et thème
+description: Appliquez l'identité de votre produit, les couleurs, les logos et les paramètres de thème au site de documentation.
+---
+
+{/* thally:ai-translation locale=fr source-sha=92a54592dff043201f886a0d78e7103674112d1dfce3e4827df16bae022d5246 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+## Choisissez où définir votre marque
+
+Thally lit la marque à partir de trois surfaces prises en charge :
+
+1. **Thally Cloud → Paramètres → Marque** — définissez les valeurs par défaut visuelles pour un site géré. Les modifications enregistrées sont publiées via le flux de publication géré.
+2. **La page `/admin/branding` intégrée** — appliquez les remplacements d'exécution pris en charge sur un site auto-hébergé. Ces paramètres se superposent aux valeurs par défaut du fichier.
+3. **Fichiers source** (`src/data/site.ts`, `docs.json`) — conservez l'identité du produit et les valeurs par défaut portables sous révision Git. Un nouveau déploiement ou un déploiement non connecté commence à partir de ces valeurs.
+
+<Note type="info" title="Lequel dois-je utiliser ?">
+Utilisez **Thally Cloud** pour un site géré, l'interface d'administration intégrée pour un remplacement d'exécution auto-hébergé, et les **fichiers source** lorsque le paramètre doit rester portable et contrôlé en version. Ne modifiez pas les composants appartenant au framework pour changer la marque.
+</Note>
+
+Le tableau de bord remplace le thème structurel, l'**accent de marque** (et son anneau de focus), le logo et la favicon. Le reste de la palette (arrière-plans, bordures, jetons de la barre latérale) est défini dans les fichiers source décrits ci-dessous.
+
+## Configuration du site
+
+L'identité et les liens du site versionnés se trouvent dans `src/data/site.ts`. Modifiez ce fichier pour définir le nom du produit, la description, l'URL du référentiel et les liens de navigation. Les paramètres Cloud enregistrés d'un site géré peuvent remplacer les champs d'identité pris en charge dans l'exécution publiée.
+
+```ts
+export const siteConfig: SiteConfig = {
+  name: 'Your Product',
+  description: 'Documentation for Your Product.',
+  repoUrl: 'https://github.com/your-org/your-repo',
+  links: [
+    { label: 'Get started', href: '/quickstart' },
+    { label: 'Support', href: 'https://github.com/your-org/your-repo/issues' },
+    { label: 'GitHub', href: 'https://github.com/your-org/your-repo' },
+    { label: 'Changelog', href: '/changelog' },
+  ],
+  // ...brand config
+}
+```
+
+## Présets de marque
+
+Thally est livré avec deux présets de couleurs :
+
+- **`primary`** — accent vert (tons émeraude)
+- **`secondary`** — accent violet (tons violets)
+
+Basculez entre eux en modifiant la variable `brandPreset` :
+
+```ts
+const brandPreset: BrandPresetKey = 'primary'  // or 'secondary'
+```
+
+## Accent de marque (le sélecteur de couleur)
+
+Le chemin géré le plus rapide est **Paramètres → Marque** dans Thally Cloud. Choisissez l'accent pour le mode clair et sombre, consultez l'aperçu et enregistrez. Thally publie la configuration portable mise à jour. Sur un site auto-hébergé, `/admin/branding` fournit le remplacement d'exécution équivalent.
+
+Cela remplace l'accent et l'anneau de focus. Le reste de la palette — arrière-plans, bordures et jetons de la barre latérale — provient des présets des fichiers source ci-dessous. Utilisez le tableau de bord pour un ajustement en direct et les fichiers comme base versionnée.
+
+## Couleurs personnalisées
+
+Pour définir votre propre palette, modifiez l'objet `brandPresets` dans `site.ts`. Chaque preset a des variantes `light` et `dark` avec ces jetons :
+
+| Jeton | Objectif |
+| --- | --- |
+| `background` | Arrière-plan de la page |
+| `card` | Surface de carte élevée d'une étape et popover (facultatif) |
+| `foreground` | Couleur de texte principal |
+| `muted` | États d'arrière-plan subtil et de survol |
+| `mutedForeground` | Couleur de texte secondaire (facultatif) |
+| `border` | Couleur de bordure |
+| `accent` | Couleur de marque principal (liens, états actifs) |
+| `accentForeground` | Texte sur les arrière-plans d'accent |
+| `accent2` | Accent secondaire pour les graphiques et l'emphase retenue (facultatif) |
+| `accent2Foreground` | Texte sur les arrière-plans d'accent secondaire (facultatif) |
+| `input` | Surface de contrôle de formulaire (facultatif) |
+| `sidebar` | Surface de la barre latérale (facultatif) |
+| `ring` | Couleur de l'anneau de focus |
+| `sidebarActiveBg` | Arrière-plan de l'élément de barre latérale actif |
+| `sidebarActiveText` | Texte de l'élément de barre latérale actif |
+
+La plupart des couleurs sont des valeurs hexadécimales (par exemple `#10B981`) qui sont converties automatiquement en HSL. Les jetons facultatifs reviennent à leur surface de base la plus proche, de sorte que les palettes existantes restent valides. Les jetons d'état de la barre latérale (`sidebarActiveBg`, `sidebarActiveText`) peuvent également utiliser des chaînes HSL brutes avec opacité (par exemple `'152 60% 88% / 0.55'`) pour les effets translucides.
+
+## Mode sombre
+
+Le mode sombre est géré automatiquement par `next-themes`. Les utilisateurs le basculent avec le commutateur de thème dans la barre supérieure. Votre palette de marque définit les variantes claires et sombres, de sorte que les deux thèmes restent conformes à la marque.
+
+## Logo et favicon (clair et sombre)
+
+Pour un site géré, téléchargez le logo et la favicon sous **Paramètres → Marque**. Pour un remplacement d'exécution auto-hébergé, utilisez `/admin/branding`. La limite de téléchargement acceptée et les formats sont affichés à côté du contrôle ; validez les aperçus clairs et sombres avant d'enregistrer.
+
+Vous pouvez télécharger des **éléments distincts pour le mode clair et sombre** — à la fois un logo et une favicon par mode. Le site sert la variante qui correspond au thème du spectateur ; si vous ne téléchargez que l'élément en mode clair, le mode sombre revient à celui-ci, de sorte qu'un seul téléchargement fonctionne toujours. C'est ainsi qu'une marque de mots qui se lit sur un en-tête blanc peut être remplacée par une version clair sur sombre la nuit.
+
+Lorsqu'aucun élément téléchargé n'est configuré, l'exécution utilise sa marque intégrée et le nom de `siteConfig`. Gardez les composants de logo appartenant au framework inchangés ; utilisez plutôt les contrôles de marque ou la configuration appartenant à l'utilisateur.
+
+## Polices
+
+Les polices du corps et des titres sont définies à partir d'un bloc `fonts` dans `docs.json` — n'importe quelle police Google, sans modification de code :
+
+```json
+"fonts": {
+  "body": { "family": "Plus Jakarta Sans", "weight": ["400", "500", "600", "700"] },
+  "heading": { "family": "Outfit", "weight": ["600", "700"] }
+}
+```
+
+Les valeurs par défaut sont **Inter** pour le texte du corps et **JetBrains Mono** pour le code. Consultez [Polices personnalisées](/guides/custom-fonts) pour la configuration prise en charge.
+
+## Sélecteur de version
+
+Si votre documentation a plusieurs versions, ajoutez un tableau `versions` à `siteConfig`. Un menu déroulant apparaît automatiquement dans la barre supérieure.
+
+```ts
+export const siteConfig: SiteConfig = {
+  // ...
+  versions: [
+    { label: 'v2.0', href: '/', current: true },
+    { label: 'v1.0', href: 'https://v1.docs.yourproduct.com' },
+  ],
+}
+```
+
+- **`label`** — texte affiché dans le menu déroulant
+- **`href`** — URL pour cette version (`/` pour le site actuel, ou une URL complète pour les versions antérieures)
+- **`current`** — marque la version active (exactement une doit être `true`)
+
+Le sélecteur est masqué lorsque moins de deux versions sont définies.
+
+## Modifier sur GitHub
+
+Lorsque `repoUrl` dans `siteConfig` pointe vers un vrai référentiel GitHub, chaque page de documentation affiche un lien « Modifier cette page sur GitHub » en bas. Cela crée un lien direct vers le fichier source MDX sur la branche `main`.
+
+```ts
+export const siteConfig: SiteConfig = {
+  repoUrl: 'https://github.com/your-org/your-docs',
+  // ...
+}
+```
+
+## Thèmes structurels
+
+Les thèmes structurels contrôlent la forme et la densité de l'interface utilisateur — rayon de bordure, style d'élément actif de la barre latérale et apparence de l'onglet de navigation. Ils sont indépendants des couleurs de marque, donc n'importe quel preset de couleur fonctionne avec n'importe quel thème structurel.
+
+Définissez le thème de base dans `docs.json` (ou basculez-le en direct à partir du tableau de bord sous **Marque → Thème structurel**, sans reconstruction) :
+
+```json
+{
+  "theme": "maple"
+}
+```
+
+| Thème | Caractère | Rayon de bordure | Barre latérale active | Onglets de navigation |
+| --- | --- | --- | --- | --- |
+| `default` | Équilibré | Moyen (1 rem) | Indicateur gauche + arrière-plan teinté | Pilule avec accent de soulignement |
+| `maple` | Chaud, arrondi | Grand (1,25–2 rem) | Pilule de seul arrière-plan teinté | Pilule en largeur complète, pas de soulignement |
+| `sharp` | Technique, précis | Serré (0,25 rem) | Indicateur gauche uniquement, pas d'arrière-plan | Onglets plats, accent de soulignement |
+| `minimal` | Contenu d'abord | Aucun (0) | Changement de couleur de texte uniquement | Onglets de texte, accent de soulignement |
+
+<Note type="info" title="Conseil">
+Les thèmes structurels et les couleurs de marque sont orthogonaux. Vous pouvez utiliser le thème `maple` avec soit le preset de marque `primary` (vert) ou `secondary` (violet).
+</Note>
+
+## Jetons de mise en page
+
+Affinez l'espacement et les largeurs dans `src/config/layout.ts` :
+
+- Largeur de la barre latérale
+- Largeur maximale du contenu
+- Remplissage et écarts
+- Échelle typographique pour le texte meta

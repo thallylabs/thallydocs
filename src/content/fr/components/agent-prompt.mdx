@@ -1,0 +1,53 @@
+---
+title: Invite d'agent
+description: Ajoutez une invite copiable qui donne aux agents de codage IA des instructions précises et spécifiques à la tâche.
+---
+
+{/* thally:ai-translation locale=fr source-sha=6a16c3dc5dbbefd1ef4a7b199d15c5d2f5e8b2c6e0cef25d4bb09a441e56ff7d */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utilisez `<AgentPrompt>` quand un lecteur peut déléguer la tâche documentée à un agent de codage IA. La page affiche une courte étiquette de tâche et un bouton **Copier l'invite** ; les instructions complètes restent masquées jusqu'à ce que le lecteur les copie.
+
+## Exemple
+
+<AgentPrompt
+  title="Copy a prompt to add a page"
+  copyOnly
+>
+
+Ajoutez ou améliorez une page axée sur les tâches dans ce projet Thally sur l'invitation d'un membre d'équipe. Vous avez terminé quand la page est exacte, découvrable dans la navigation, passe la validation Thally et s'affiche correctement dans une version de production.
+
+Avant de modifier, lisez AGENTS.md s'il existe, docs.json, package.json et les pages existantes qui traitent des équipes, des rôles, de l'accès ou des invitations. Préférez mettre à jour la page qui possède déjà cette tâche. Créez un nouveau fichier MDX uniquement si les lecteurs ont besoin d'une URL durable distincte.
+
+Écrivez pour un développeur ou un propriétaire d'espace de travail effectuant la tâche pour la première fois. Énoncez les conditions préalables, expliquez les exigences de permission, donnez des étapes ordonnées avec des libellés d'interface utilisateur ou des commandes exactes, montrez un exemple réaliste, couvrez les états d'échec courants et terminez par une vérification de succès. N'inventez pas le comportement du produit : tracez chaque affirmation vers le référentiel actuel ou identifiez-la pour confirmation humaine.
+
+Maintenez le libellé de la barre latérale court avec navTitle si nécessaire. Réutilisez les composants Thally intégrés uniquement quand ils améliorent le balayage. Exécutez npx --yes @thallylabs/cli@latest check et npm run build, corrigez les problèmes causés par vos modifications et résumez les fichiers modifiés, les faits vérifiés et les questions qui demeurent. Ne validez pas, ne poussez pas, ne déployez pas et ne modifiez pas les fichiers de cadre non liés sauf si je vous le demande.
+
+</AgentPrompt>
+
+```mdx
+<AgentPrompt
+  title="Copy a prompt to add a page"
+  copyOnly
+>
+
+Add or improve a task-focused page in this Thally project about inviting a team member. You are done when the page is accurate, discoverable in navigation, passes Thally validation, and renders correctly in a production build.
+
+Before editing, read AGENTS.md if present, docs.json, package.json, and the existing pages that discuss teams, roles, access, or invitations. Prefer updating the page that already owns this task. Create a new MDX file only if readers need a distinct durable URL.
+
+Write for a developer or workspace owner completing the task for the first time. State prerequisites, explain permission requirements, give ordered steps with exact UI labels or commands, show a realistic example, cover common failure states, and finish with a success check. Do not invent product behavior: trace each claim to the current repository or identify it for human confirmation.
+
+Keep the sidebar label short with navTitle if necessary. Reuse built-in Thally components only when they improve scanning. Run npx --yes @thallylabs/cli@latest check and npm run build, fix issues caused by your changes, and summarize the files changed, facts verified, and questions that remain. Do not commit, push, deploy, or modify unrelated framework files unless I ask.
+
+</AgentPrompt>
+```
+
+## Écrivez une invite fiable
+
+Incluez le résultat, la portée, les fichiers ou outils que l'agent doit inspecter, les commandes de validation et les actions qui nécessitent une approbation séparée. Utilisez des espaces réservés uniquement quand le lecteur sait qu'il doit les remplacer.
+
+| Prop | Type | Par défaut | Objectif |
+| --- | --- | --- | --- |
+| `children` | MDX | Obligatoire | Instructions d'invite et charge utile du presse-papiers. |
+| `copyOnly` | boolean | `true` | Gardez le corps de l'invite masqué tout en rendant les instructions complètes copiables. |
+| `title` | string | Instruction à copier-coller | Contexte court affiché à côté de l'action de copie. |

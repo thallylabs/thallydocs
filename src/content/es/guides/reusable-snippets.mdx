@@ -1,0 +1,77 @@
+---
+title: Reutilizar contenido con snippets
+navTitle: Snippets
+description: Comparte fragmentos MDX mantenidos en varias páginas de Thally sin copiar instrucciones o callouts.
+---
+
+{/* thally:ai-translation locale=es source-sha=0a307a46a167782345358705fd56fef4739a7da63162b79d2877e21c2d6af377 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Usa un snippet cuando la misma instrucción mantenida, advertencia o definición debe
+aparecer en varias páginas. Los snippets viven en el directorio `snippets/`
+a nivel de proyecto.
+
+## Crear un snippet
+
+Crea `snippets/support-note.mdx`:
+
+```mdx
+<Note type="info" title="Need help?">
+  Include the output of `npx --yes @thallylabs/cli@latest check` when you contact support.
+</Note>
+```
+
+Mantén el snippet enfocado. Un lector no debería necesitar contexto de una página específica
+para entenderlo.
+
+## Importarlo en una página
+
+Añade la importación después del frontmatter de la página, luego renderiza el nombre del componente
+derivado del nombre del archivo:
+
+```mdx
+---
+title: Troubleshoot a build
+description: Resolve common documentation build failures.
+---
+
+import { SupportNote } from '/snippets/support-note.mdx'
+
+## Collect the failure details
+
+Run the check locally and copy the complete error.
+
+<SupportNote />
+```
+
+Usa una importación absoluta `/snippets/...` para que el mismo snippet funcione desde páginas en
+diferentes niveles de directorio.
+
+## Decidir cuándo reutilizar contenido
+
+Usa un snippet cuando una fuente debe permanecer idéntica en todas partes. Enlaza a una
+página canónica cuando el material compartido es largo o cuando los lectores necesitan el contexto completo. Evita ensamblar cada página a partir de muchos snippets pequeños; la página debería
+seguir siendo comprensible en su archivo fuente.
+
+## Actualizar y verificar
+
+Después de editar un snippet, busca sus importaciones y revisa cada página afectada:
+
+```bash
+rg "support-note" src/content
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+## Problemas comunes
+
+| Problema | Solución |
+| --- | --- |
+| Importación no encontrada | Confirma que el archivo está bajo `snippets/` y que la importación comienza con `/snippets/`. |
+| El componente no está definido | Usa el nombre del componente en PascalCase derivado del nombre del archivo. |
+| El contenido solo funciona en una página | Elimina las suposiciones específicas de la página o reemplaza el snippet con un enlace. |
+
+## Próximos pasos
+
+- [Crear y editar páginas](/guides/writing-content)
+- [Ampliar Thally con componentes personalizados](/guides/extending)

@@ -1,0 +1,105 @@
+---
+title: Comment fonctionne Thally
+navTitle: Comment fonctionne Thally
+description: Comprendre le flux de travail client pour publier de la documentation et la maintenir alignée avec les modifications du produit.
+keywords:
+  - Thally workflow
+  - documentation publishing
+  - product knowledge
+  - Thally Track
+---
+
+{/* thally:ai-translation locale=fr source-sha=d2d0d25b58718e4a2b959cba82ac5c12fb0da10866333c9484a59815de818ee4 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally garde votre documentation dans Git, publie les modifications examinées et aide
+votre équipe à trouver les pages qui pourraient nécessiter une mise à jour lorsque le produit change.
+
+Vous pouvez utiliser le site de documentation open source par lui-même ou le connecter à
+Thally Cloud pour la publication gérée, la connaissance produit et Track.
+
+## Publier à partir d'une seule source
+
+Vos pages MDX, votre navigation, vos ressources et votre configuration restent dans votre référentiel Git.
+Ce référentiel reste la source que votre équipe examine et possède.
+
+<Steps>
+  <Step title="Créer ou connecter un référentiel de documentation">
+    Commencez par un nouveau projet Thally ou connectez un projet existant compatible.
+  </Step>
+  <Step title="Examiner les modifications dans GitHub">
+    Les auteurs et l'automatisation utilisent le même flux de travail de branches et de demandes de fusion. Une
+    mise à jour générée ne s'approuve ni ne se fusionne jamais d'elle-même.
+  </Step>
+  <Step title="Valider avant de publier">
+    Thally vérifie la documentation avant qu'une publication gérée ne devienne en direct. Si une
+    publication échoue, la version en direct actuelle reste disponible.
+  </Step>
+  <Step title="Servir les personnes et les agents à partir du même contenu">
+    La source examinée alimente le site Web, la recherche, Markdown, les points de terminaison structurés
+    et les fichiers de découverte des agents.
+  </Step>
+</Steps>
+
+L'hébergement géré fournit également un aperçu pour chaque demande de fusion de documentation. Les propriétaires
+et les éditeurs peuvent restaurer une publication précédemment réussie à partir de l'historique de déploiement
+sans réécrire l'historique Git.
+
+## Maintenir la documentation alignée avec le produit
+
+Track ajoute un flux de travail d'examen optionnel pour les équipes qui connectent des référentiels de produits.
+Les propriétaires de sites peuvent l'exécuter pour les mises à jour de demandes de fusion approuvées, du même référentiel, non brouillon,
+les modifications fusionnées, les planifications UTC, ou une combinaison de ces déclencheurs.
+
+```text
+configured product change
+      ↓
+independent primary-docs and connected-surface runs
+      ↓
+ready-for-review pull request or no change per destination
+      ↓
+human review and merge
+      ↓
+each repository's publishing workflow
+```
+
+Track lit la révision de source exacte et démarre une exécution séparée pour le référentiel de documentation principal
+et chaque surface Knowledge activée. Chaque exécution utilise ses branches, racines et étendues de chemins enregistrées,
+prépare la mise à jour client qu'elle juge nécessaire et vérifie le résultat proposé. Si une destination n'a besoin
+d'aucune modification, son exécution se termine sans ouvrir de demande de fusion.
+
+Quand Track propose une mise à jour, il ouvre une demande de fusion normale prête pour examen
+dans cette destination. Votre équipe peut la corriger, la fusionner ou la fermer. Track ne fusionne jamais
+la proposition elle-même. Seul le référentiel de documentation principal reçoit les aperçus et les versions
+gérés par Thally ; les destinations connectées conservent leurs propres flux de travail d'aperçu et de publication.
+Voir le [contrat de surface Knowledge](/guides/knowledge-surfaces).
+
+## Connaître la limite de propriété
+
+| Vous possédez                             | Thally fournit                                   |
+| ----------------------------------------- | ------------------------------------------------ |
+| Contenu de documentation et historique Git | Le site de documentation open source            |
+| Référentiels de produits et décisions d'examen | Validation, aperçus et publication gérée       |
+| Hébergement quand vous choisissez de l'auto-héberger | Flux de travail optionnels Product Knowledge et Track |
+| Si une mise à jour proposée est publiée | Evidence et une proposition de documentation vérifiable |
+
+Connecter Thally Cloud ne transfère pas la propriété de votre documentation hors de
+Git. Vous pouvez continuer à auto-héberger le site, et déconnecter un service
+optionnel ne supprime pas votre contenu auteur ni l'historique.
+
+## Garanties côté client
+
+- Product Knowledge n'exécute pas le code d'un référentiel de produit connecté.
+- Track propose des modifications via des demandes de fusion et ne fusionne jamais son propre travail.
+- Les aperçus de demande de fusion ne peuvent pas être publiés en production.
+- Une publication gérée échouée laisse le site actuel en ligne.
+- L'accès au référentiel est limité aux référentiels que vous sélectionnez via l'installation
+  de l'application GitHub.
+
+## Choisir votre tâche suivante
+
+- [Publiez votre premier site](/quickstart)
+- [Gérer les sites avec Thally Cloud](/guides/thally-cloud)
+- [Examiner Product Knowledge](/guides/product-knowledge)
+- [Configurer Thally Track](/guides/thally-track)
+- [Exploiter l'hébergement géré](/guides/managed-hosting)

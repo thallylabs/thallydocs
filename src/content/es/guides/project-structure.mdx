@@ -1,0 +1,76 @@
+---
+title: Comprender la estructura del proyecto
+navTitle: Estructura del proyecto
+description: Aprende qué archivos te pertenecen en un proyecto de Thally y dónde pertenecen el contenido, navegación, identidad, recursos y especificaciones de API.
+---
+
+{/* thally:ai-translation locale=es source-sha=05b2aeb757c2f0dda9add42daae0aa97feb1998e498a39dffc6d4ddee3155892 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Un proyecto de Thally separa los archivos que escribes del marco que los
+renderiza. La mayoría del trabajo de documentación ocurre en cuatro lugares.
+
+```text
+my-docs/
+├── docs.json
+├── public/
+├── snippets/
+└── src/
+    ├── content/
+    ├── data/site.ts
+    └── mdx/custom-components.tsx
+```
+
+## Archivos que editas regularmente
+
+| Ruta | Propósito |
+| --- | --- |
+| `src/content/` | Páginas MDX. La ruta del archivo se convierte en la URL de la página. |
+| `docs.json` | Navegación, tema, fuente de API, redirecciones y características de sitio opcionales. |
+| `src/data/site.ts` | Identidad del producto, descripción, enlaces, versiones y valores predeterminados de marca. |
+| `public/` | Imágenes, logotipos, favicons, archivos descargables y otros recursos públicos. |
+| `snippets/` | Fragmentos MDX reutilizables compartidos por múltiples páginas. |
+| `openapi.yaml` | Una especificación de API opcional que puedes agregar y referenciar desde `docs.json`. |
+| `src/mdx/custom-components.tsx` | Tu punto de extensión explícito para componentes MDX personalizados. |
+
+## Cómo las rutas se convierten en URLs
+
+La ruta coincide con la ruta del archivo bajo `src/content/`, sin `.mdx`:
+
+| Archivo de contenido | URL |
+| --- | --- |
+| `src/content/quickstart.mdx` | `/quickstart` |
+| `src/content/guides/install.mdx` | `/guides/install` |
+| `src/content/api/authentication.mdx` | `/api/authentication` |
+
+La página de inicio es la página cuyo ID es `introduction`. Una página puede
+existir sin aparecer en la barra lateral, pero `thally check` reporta contenido
+huérfano para que puedas tomar esa decisión intencionalmente.
+
+## Archivos propiedad del marco
+
+Puedes ver rutas de Next.js, componentes de renderización, índices de contenido
+generado y configuración de compilación en otros lugares del repositorio. Son
+parte del tiempo de ejecución de Thally. Prefiere configuraciones documentadas
+en `docs.json`, `site.ts`, o variables de entorno `THALLY_*` en lugar de editar
+las partes internas del marco.
+
+Usa `src/mdx/custom-components.tsx` cuando los componentes integrados no cubran
+una necesidad de contenido. Consulta [Extender Thally](/guides/extending) antes
+de cambiar el tiempo de ejecución.
+
+## Verifica tu proyecto
+
+Ejecuta:
+
+```bash
+npx --yes @thallylabs/cli@latest check
+```
+
+El verificador valida contenido, navegación, enlaces y contratos de documentación relacionados.
+
+## Próximos pasos
+
+- [Crear y editar páginas](/guides/writing-content)
+- [Configurar navegación](/guides/configuring-navigation)
+- [Personalizar marca y tema](/guides/branding-and-theming)

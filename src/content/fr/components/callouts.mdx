@@ -1,0 +1,59 @@
+---
+title: "Légendes"
+description: "Mettez en évidence les informations importantes avec des blocs de légende stylisés."
+---
+
+{/* thally:ai-translation locale=fr source-sha=f029f74c0e3eb69a7a1018fcd596067065349e90d40ded59fdcac371faa3e055 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utiliser `<Note>`, `<Tip>`, `<Warning>`, et `<Info>` pour attirer l'attention sur le contenu important. Chacun correspond à un style visuel qui signale une intention.
+
+## Types
+
+<Note>
+  Ceci est une **Remarque** — information générale dont le lecteur devrait être conscient.
+</Note>
+
+<Tip>
+  Ceci est un **Conseil** — une suggestion utile ou une bonne pratique.
+</Tip>
+
+<Warning>
+  Ceci est un **Avertissement** — quelque chose qui pourrait causer des problèmes s'il est ignoré.
+</Warning>
+
+<Info>
+  Ceci est une **Info** légende — contenu informatif neutre.
+</Info>
+
+```mdx
+<Note>
+  Standard note callout.
+</Note>
+
+<Tip>
+  A helpful tip.
+</Tip>
+
+<Warning>
+  Be careful about this.
+</Warning>
+
+<Info>
+  Additional context.
+</Info>
+```
+
+## Générique `<Callout>`
+
+Le contenu migré d'autres plates-formes peut utiliser la `<Callout type="...">` forme générique — celle-ci est prise en charge en tant qu'alias :
+
+```mdx
+<Callout type="warning">
+  This maps to a Warning callout.
+</Callout>
+```
+
+## Props
+
+Tous les composants de légende acceptent des enfants MDX arbitraires, y compris le code en ligne, les liens et les listes. Aucun prop supplémentaire n'est requis.

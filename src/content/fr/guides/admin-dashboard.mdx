@@ -1,0 +1,152 @@
+---
+title: Gérer l'admin de site intégré
+navTitle: Admin de site
+description: Configurez et sécurisez la zone `/admin` incluse dans le runtime Thally open-source.
+keywords:
+  - Admin Thally
+  - documentation auto-hébergée
+  - OIDC
+  - rôles d'équipe
+---
+
+{/* thally:ai-translation locale=fr source-sha=fdd34cbedfc90b1335293a381b42b05835c3d51f67d61e77f28a135ab820e3b7 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Chaque site Thally inclut une zone `/admin` pour les diagnostics de runtime et
+l'exploitation auto-hébergée. Elle est différente de l'espace de travail
+Thally Cloud authentifié sur `app.thally.io`.
+
+Utilisez [Thally Cloud](/guides/thally-cloud) pour les sites gérés, les
+déploiements, les domaines, la Connaissance Produit, Track hébergé, la
+facturation et les membres de l'espace de travail. Utilisez la zone `/admin`
+intégrée quand vous exploitez le runtime open-source directement ou avez besoin
+de contrôles locaux au site.
+
+## Ce que l'admin intégré inclut
+
+| Page | Objectif |
+| --- | --- |
+| **Accueil** | Résumé du site, disponibilité et état du service disponible. |
+| **Analytique** | Trafic humain et agent, pages les plus consultées, termes de recherche, commentaires et lacunes de contenu quand le pont d'analytique Cloud est disponible. |
+| **Préparation Agent** | Le score de préparation actuel, les vérifications et les pages corrigeables. |
+| **Tâches docs** | Demandes de tirage de documentation et dépôts suivis configurés localement quand Track est disponible. |
+| **Serveur MCP** | Le point de terminaison MCP en lecture seule déployé, les outils, la limite de débit et le contrôle marche/arrêt. |
+| **Équipe** | Le roster OIDC engagé sur Git et les rôles effectifs. |
+| **Marque** | Remplacements de marque du runtime pour le site. |
+| **Paramètres** | Accès, analytique, chat IA, localisation et contrôles côté agent. |
+
+Les panneaux soutenus par un service payant affichent un état clairement
+verrouillé ou indisponible quand le site n'a pas d'entitlement Thally Cloud
+valide.
+
+## Sécuriser `/admin`
+
+Ne publiez pas une zone admin non protégée. Choisissez une ou les deux
+méthodes de connexion prises en charge.
+
+### Mot de passe de secours
+
+Définissez un secret fort dans votre fournisseur d'hébergement :
+
+```bash
+THALLY_ADMIN_PASSWORD=a-long-random-admin-password
+```
+
+C'est la configuration la plus courte et un chemin de récupération utile. Ne
+validez pas la valeur au dépôt et ne la placez pas dans une variable
+d'environnement publique.
+
+### OIDC pour une équipe
+
+Configurez un fournisseur OpenID Connect comme Google Workspace ou Microsoft
+Entra :
+
+```bash
+THALLY_OIDC_ISSUER=https://accounts.google.com
+THALLY_OIDC_CLIENT_ID=your-client-id
+THALLY_OIDC_CLIENT_SECRET=your-client-secret
+THALLY_AUTH_SECRET=a-long-random-session-secret
+```
+
+Thally utilise la découverte OIDC, la protection PKCE et les portées
+`openid email profile`. Le fournisseur d'identité doit autoriser cet URI de
+redirection exact :
+
+```text
+https://docs.example.com/api/admin/auth/callback
+```
+
+<Note type="info" title="Vous pouvez conserver les deux méthodes de connexion">
+  Quand OIDC et un mot de passe sont configurés, les membres de l'équipe
+  peuvent utiliser leur identité professionnelle tandis que le mot de passe
+  reste disponible pour la récupération.
+</Note>
+
+## Assigner des rôles locaux au site
+
+L'admin intégré lit son roster depuis le bloc `team` dans `docs.json` :
+
+```json
+{
+  "team": {
+    "members": [
+      { "email": "owner@example.com", "role": "owner" },
+      { "email": "writer@example.com", "role": "editor" }
+    ],
+    "domains": [
+      { "domain": "example.com", "role": "viewer" }
+    ]
+  }
+}
+```
+
+Une entrée de membre explicite prend précédence sur une valeur par défaut de
+domaine. Une personne connectée qui ne correspond à aucun des deux n'obtient pas
+d'accès. Le roster est vérifié à chaque requête de page admin, donc une
+suppression ou un changement de rôle engagé prend effet sans attendre
+l'expiration de la session existante.
+
+| Capacité | Lecteur | Éditeur | Propriétaire |
+| --- | :---: | :---: | :---: |
+| Voir l'analytique et la préparation | Oui | Oui | Oui |
+| Gérer les tâches docs et les contrôles de site pris en charge | Non | Oui | Oui |
+| Gérer l'accès des lecteurs | Non | Oui | Oui |
+| Modifier l'identité, la marque et le roster d'équipe | Non | Non | Oui |
+
+Ces rôles appartiennent à la zone admin du site déployé. Les rôles de l'espace
+de travail Thally Cloud sont stockés et autorisés séparément.
+
+## Stourer l'état local du site durablement
+
+Le développement local écrit l'état admin et analytique pris en charge sous
+`.data/`. Un système de fichiers serverless éphémère ne préserve pas ces
+fichiers entre les déploiements. Configurez le stockage libSQL distant avant
+de dépendre de l'état local du site :
+
+```bash
+THALLY_DATABASE_URL=libsql://your-database.turso.io
+THALLY_DATABASE_TOKEN=your-token
+```
+
+Agent Readiness note le contenu publié directement et ne dépend pas de cette
+base de données. L'analytique Cloud gérée est stockée par le service Cloud
+plutôt que par l'adaptateur local du site.
+
+## Protéger les lecteurs séparément
+
+L'authentification admin contrôle qui peut ouvrir `/admin`. Les contrôles
+d'accès des lecteurs contrôlent qui peut ouvrir la documentation elle-même.
+Définissez `THALLY_ACCESS_PASSWORD` pour une barrière visiteur auto-hébergée,
+ou configurez **Paramètres → Accès des lecteurs** pour un site géré. Voir
+[Protéger la documentation privée](/guides/private-docs).
+
+## Vérifier la configuration
+
+1. Ouvrez `/admin` dans une fenêtre de navigateur privée.
+2. Confirmez que le mot de passe configuré ou la connexion OIDC est requise.
+3. Connectez-vous en tant que chaque rôle que vous utilisez et vérifiez les
+   pages et contrôles autorisés.
+4. Supprimez le cookie de session, puis confirmez que la zone admin est à
+   nouveau protégée.
+5. Testez la documentation publique séparément ; l'accès admin ne doit pas
+   accorder ou impliquer l'accès des lecteurs.

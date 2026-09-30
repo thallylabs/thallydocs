@@ -1,0 +1,74 @@
+---
+title: Comprendre la structure du projet
+navTitle: Structure du projet
+description: Découvrez les fichiers que vous possédez dans un projet Thally et où appartiennent le contenu, la navigation, l'identité, les assets et les spécifications API.
+---
+
+{/* thally:ai-translation locale=fr source-sha=05b2aeb757c2f0dda9add42daae0aa97feb1998e498a39dffc6d4ddee3155892 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Un projet Thally sépare les fichiers que vous créez du framework qui les rend.
+La plupart du travail de documentation se fait en quatre endroits.
+
+```text
+my-docs/
+├── docs.json
+├── public/
+├── snippets/
+└── src/
+    ├── content/
+    ├── data/site.ts
+    └── mdx/custom-components.tsx
+```
+
+## Fichiers que vous modifiez régulièrement
+
+| Chemin | Objectif |
+| --- | --- |
+| `src/content/` | Pages MDX. Le chemin du fichier devient l'URL de la page. |
+| `docs.json` | Navigation, thème, source API, redirections et fonctionnalités de site optionnelles. |
+| `src/data/site.ts` | Identité du produit, description, liens, versions et paramètres de marque par défaut. |
+| `public/` | Images, logos, favicons, fichiers téléchargeables et autres assets publics. |
+| `snippets/` | Fragments MDX réutilisables partagés par plusieurs pages. |
+| `openapi.yaml` | Une spécification API optionnelle que vous pouvez ajouter et référencer depuis `docs.json`. |
+| `src/mdx/custom-components.tsx` | Votre point d'extension explicite pour les composants MDX personnalisés. |
+
+## Comment les chemins deviennent des URL
+
+La route correspond au chemin du fichier sous `src/content/`, sans `.mdx` :
+
+| Fichier de contenu | URL |
+| --- | --- |
+| `src/content/quickstart.mdx` | `/quickstart` |
+| `src/content/guides/install.mdx` | `/guides/install` |
+| `src/content/api/authentication.mdx` | `/api/authentication` |
+
+La page d'accueil est la page dont l'ID est `introduction`. Une page peut exister sans
+apparaître dans la barre latérale, mais `thally check` signale le contenu orphelin pour que vous puissiez
+faire ce choix intentionnellement.
+
+## Fichiers appartenant au framework
+
+Vous pouvez voir des routes Next.js, des composants de rendu, des index de contenu générés
+et une configuration de build ailleurs dans le référentiel. Ils font partie du
+runtime Thally. Préférez les paramètres documentés dans `docs.json`, `site.ts` ou
+les variables d'environnement `THALLY_*` à la modification des internals du framework.
+
+Utilisez `src/mdx/custom-components.tsx` lorsque les composants intégrés ne couvrent pas
+un besoin de contenu. Voir [Étendre Thally](/guides/extending) avant de modifier le runtime.
+
+## Vérifier votre projet
+
+Exécutez :
+
+```bash
+npx --yes @thallylabs/cli@latest check
+```
+
+Le vérificateur valide le contenu, la navigation, les liens et les contrats de documentation connexes.
+
+## Étapes suivantes
+
+- [Créer et éditer des pages](/guides/writing-content)
+- [Configurer la navigation](/guides/configuring-navigation)
+- [Personnaliser la marque et le thème](/guides/branding-and-theming)

@@ -1,0 +1,114 @@
+---
+title: Cómo funciona Thally
+navTitle: Cómo funciona Thally
+description: Entiende el flujo de trabajo orientado al cliente para publicar documentación y mantenerla alineada con los cambios del producto.
+keywords:
+  - Flujo de trabajo de Thally
+  - publicación de documentación
+  - conocimiento del producto
+  - Thally Track
+---
+
+{/* thally:ai-translation locale=es source-sha=d2d0d25b58718e4a2b959cba82ac5c12fb0da10866333c9484a59815de818ee4 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally mantiene tu documentación en Git, publica cambios revisados y ayuda a
+tu equipo a encontrar páginas que podrían necesitar una actualización cuando
+el producto cambia.
+
+Puedes usar el sitio de documentación de código abierto por sí solo o conectarlo
+a Thally Cloud para publicación administrada, Conocimiento del Producto y Track.
+
+## Publica desde una única fuente
+
+Tus páginas MDX, navegación, recursos y configuración permanecen en tu
+repositorio de Git. Ese repositorio sigue siendo la fuente que tu equipo
+revisa y controla.
+
+<Steps>
+  <Step title="Crea o conecta un repositorio de documentación">
+    Comienza con un nuevo proyecto de Thally o conecta un proyecto compatible existente.
+  </Step>
+  <Step title="Revisa cambios en GitHub">
+    Los autores y la automatización utilizan el mismo flujo de trabajo de ramas y
+    solicitudes de extracción. Una actualización generada nunca se aprueba ni se
+    fusiona a sí misma.
+  </Step>
+  <Step title="Valida antes de publicar">
+    Thally verifica la documentación antes de que una publicación administrada se
+    publique. Si una publicación falla, la versión en vivo actual permanece disponible.
+  </Step>
+  <Step title="Sirve personas y agentes desde el mismo contenido">
+    La fuente revisada alimenta el sitio web, búsqueda, Markdown, puntos finales
+    estructurados y archivos de descubrimiento de agentes.
+  </Step>
+</Steps>
+
+El alojamiento administrado también proporciona una vista previa a cada solicitud
+de extracción de documentación. Los propietarios y editores pueden restaurar una
+publicación anterior exitosa desde el historial de implementación sin reescribir
+el historial de Git.
+
+## Mantén la documentación alineada con el producto
+
+Track añade un flujo de trabajo de revisión opcional para equipos que conectan
+repositorios de productos. Los propietarios del sitio pueden ejecutarlo para
+actualizaciones de solicitudes de extracción no borrador, cambios fusionados,
+horarios UTC o una combinación de esos desencadenantes en repositorios de
+confianza y del mismo repositorio.
+
+```text
+configured product change
+      ↓
+independent primary-docs and connected-surface runs
+      ↓
+ready-for-review pull request or no change per destination
+      ↓
+human review and merge
+      ↓
+each repository's publishing workflow
+```
+
+Track lee la revisión exacta de la fuente e inicia una ejecución separada para el
+repositorio de documentación principal y todas las superficies de Conocimiento habilitadas.
+Cada ejecución utiliza sus ámbitos de rama, raíz y ruta guardados, prepara la
+actualización orientada al cliente que considera necesaria y verifica el resultado
+propuesto. Si un destino no necesita cambios, su ejecución finaliza sin abrir una
+solicitud de extracción.
+
+Cuando Track propone una actualización, abre una solicitud de extracción normal lista
+para revisión en ese destino. Tu equipo puede corregirla, fusionarla o cerrarla. Track
+nunca fusiona la propuesta en sí. Solo el repositorio de documentación principal recibe
+vistas previas y lanzamientos administrados por Thally; los destinos conectados mantienen
+sus propios flujos de trabajo de vista previa y publicación. Consulta el
+[contrato de superficie de conocimiento](/guides/knowledge-surfaces).
+
+## Conoce el límite de propiedad
+
+| Tú tienes                                 | Thally proporciona                               |
+| ----------------------------------------- | ------------------------------------------------ |
+| Contenido de documentación e historial de Git | El sitio de documentación de código abierto     |
+| Repositorios de productos y decisiones de revisión | Validación, vistas previas y publicación administrada |
+| Alojamiento cuando eliges alojar por tu cuenta | Flujos de trabajo opcionales de Conocimiento del Producto y Track |
+| Si una actualización propuesta se publica | Evidencia y una propuesta de documentación revisable |
+
+Conectar Thally Cloud no traslada la propiedad de tu documentación fuera de
+Git. Puedes continuar alojando el sitio por tu cuenta, y desconectar un servicio
+opcional no elimina tu contenido creado ni tu historial.
+
+## Salvaguardas orientadas al cliente
+
+- Conocimiento del Producto no ejecuta código del repositorio de productos conectado.
+- Track propone cambios a través de solicitudes de extracción y nunca fusiona su propio trabajo.
+- Las vistas previas de solicitudes de extracción no pueden publicarse en producción.
+- Una publicación administrada fallida deja el sitio actual en línea.
+- El acceso al repositorio se limita a los repositorios que seleccionas mediante la
+  instalación de la aplicación de GitHub.
+
+## Elige tu siguiente tarea
+
+- [Publica tu primer sitio](/quickstart)
+- [Administra sitios con Thally Cloud](/guides/thally-cloud)
+- [Revisa Conocimiento del Producto](/guides/product-knowledge)
+- [Configura Thally Track](/guides/thally-track)
+- [Opera alojamiento administrado](/guides/managed-hosting)

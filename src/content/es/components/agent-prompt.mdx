@@ -1,0 +1,53 @@
+---
+title: Indicación de agente
+description: Añade una indicación copiable que proporciona a los agentes de codificación de IA instrucciones precisas y específicas de la tarea.
+---
+
+{/* thally:ai-translation locale=es source-sha=6a16c3dc5dbbefd1ef4a7b199d15c5d2f5e8b2c6e0cef25d4bb09a441e56ff7d */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Usa `<AgentPrompt>` cuando un lector pueda delegar la tarea documentada a un agente de codificación de IA. La página muestra una etiqueta de tarea breve y un botón **Copiar indicación**; las instrucciones completas permanecen ocultas hasta que el lector las copia.
+
+## Ejemplo
+
+<AgentPrompt
+  title="Copiar una indicación para añadir una página"
+  copyOnly
+>
+
+Añade o mejora una página enfocada en tareas en este proyecto de Thally sobre invitar a un miembro del equipo. Habrás terminado cuando la página sea precisa, sea detectable en la navegación, pase la validación de Thally y se represente correctamente en una compilación de producción.
+
+Antes de editar, lee AGENTS.md si está presente, docs.json, package.json y las páginas existentes que hablen de equipos, roles, acceso o invitaciones. Prefiere actualizar la página que ya posee esta tarea. Crea un nuevo archivo MDX solo si los lectores necesitan una URL duradera distinta.
+
+Escribe para un desarrollador o propietario del espacio de trabajo que complete la tarea por primera vez. Establece requisitos previos, explica los requisitos de permisos, proporciona pasos ordenados con etiquetas de interfaz de usuario exactas o comandos, muestra un ejemplo realista, cubre estados de fallo comunes y termina con una comprobación de éxito. No inventes comportamiento del producto: rastrea cada afirmación hasta el repositorio actual o identifícala para confirmación humana.
+
+Mantén la etiqueta de la barra lateral corta con navTitle si es necesario. Reutiliza componentes incorporados de Thally solo cuando mejoren el escaneo. Ejecuta npx --yes @thallylabs/cli@latest check y npm run build, corrige los problemas causados por tus cambios y resume los archivos cambiados, los hechos verificados y las preguntas que quedan pendientes. No hagas commit, no hagas push, no despliegues ni modifiques archivos de marco no relacionados a menos que me lo pidas.
+
+</AgentPrompt>
+
+```mdx
+<AgentPrompt
+  title="Copy a prompt to add a page"
+  copyOnly
+>
+
+Add or improve a task-focused page in this Thally project about inviting a team member. You are done when the page is accurate, discoverable in navigation, passes Thally validation, and renders correctly in a production build.
+
+Before editing, read AGENTS.md if present, docs.json, package.json, and the existing pages that discuss teams, roles, access, or invitations. Prefer updating the page that already owns this task. Create a new MDX file only if readers need a distinct durable URL.
+
+Write for a developer or workspace owner completing the task for the first time. State prerequisites, explain permission requirements, give ordered steps with exact UI labels or commands, show a realistic example, cover common failure states, and finish with a success check. Do not invent product behavior: trace each claim to the current repository or identify it for human confirmation.
+
+Keep the sidebar label short with navTitle if necessary. Reuse built-in Thally components only when they improve scanning. Run npx --yes @thallylabs/cli@latest check and npm run build, fix issues caused by your changes, and summarize the files changed, facts verified, and questions that remain. Do not commit, push, deploy, or modify unrelated framework files unless I ask.
+
+</AgentPrompt>
+```
+
+## Escribe una indicación confiable
+
+Incluye el resultado, el alcance, los archivos o herramientas que el agente debe inspeccionar, los comandos de validación y las acciones que requieren aprobación separada. Usa marcadores de posición solo cuando el lector sepa que debe reemplazarlos.
+
+| Prop | Tipo | Por defecto | Propósito |
+| --- | --- | --- | --- |
+| `children` | MDX | Obligatorio | Instrucciones de indicación y carga útil del portapapeles. |
+| `copyOnly` | boolean | `true` | Mantén el cuerpo de la indicación oculto mientras haces que las instrucciones completas sean copiables. |
+| `title` | string | Instrucción de copiar y pegar | Contexto breve mostrado junto a la acción de copiar. |

@@ -1,0 +1,81 @@
+---
+title: Configurez l'API playground
+navTitle: API playground
+description: Ajoutez des serveurs OpenAPI et des espaces réservés d'authentification, testez les requêtes générées, et comprenez comment Thally envoie les requêtes Try It.
+---
+
+{/* thally:ai-translation locale=fr source-sha=0e0247345c03d4fef300ea87a5a7eb5757d4634816fdfaa0bdb5edc55cfa6274 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Chaque page d'opération générée inclut un panneau **Try It**. Il lit les serveurs,
+les paramètres, les corps de requête et les schémas de sécurité de votre document OpenAPI.
+
+## Avant de commencer
+
+Complétez [Générer une référence API](/guides/api-reference-setup) et confirmez qu'une
+page d'opération apparaît dans votre aperçu local.
+
+## Ajouter un serveur API
+
+Le playground a besoin d'au moins une URL dans le tableau OpenAPI `servers` :
+
+```yaml
+servers:
+  - url: https://api.example.com/v1
+    description: Production
+```
+
+Le premier serveur est sélectionné initialement. Les lecteurs peuvent le modifier dans le panneau
+avant d'envoyer une requête.
+
+## Décrire l'authentification
+
+Définissez un schéma de sécurité et appliquez-le à l'API ou à l'opération :
+
+```yaml
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+security:
+  - bearerAuth: []
+```
+
+Thally prend en charge les préremplissages du playground pour les schémas HTTP bearer, HTTP basic et header API key. Sans une valeur configurée, le champ utilise un espace réservé visible
+tel que `YOUR_API_KEY`.
+
+Pour modifier cet espace réservé, utilisez le nom exact du schéma de sécurité dans `docs.json` :
+
+```json
+{
+  "apiPlayground": {
+    "credentials": {
+      "bearerAuth": "YOUR_API_KEY"
+    }
+  }
+}
+```
+
+<Note type="warning" title="Ne mettez pas de secrets dans docs.json">
+  Cette configuration fait partie du site de documentation déployé. Utilisez uniquement des identifiants d'exemple ou de sandbox publics. Les lecteurs doivent entrer leur propre secret dans le playground quand ils font une requête.
+</Note>
+
+## Envoyer et vérifier une requête
+
+1. Ouvrez une page d'opération générée.
+2. Sélectionnez **Try It**.
+3. Remplissez chaque champ de chemin, de requête, d'en-tête et de corps requis.
+4. Vérifiez l'URL générée et la commande cURL.
+5. Envoyez la requête et confirmez le statut, les en-têtes et le corps de la réponse.
+
+Thally envoie la requête via `/api/try-it` sur le serveur de documentation pour
+éviter les restrictions CORS du navigateur. Le site doit s'exécuter sur un hôte capable de serveur ;
+le playground ne peut pas exécuter les requêtes à partir d'une exportation entièrement statique.
+
+## Prochaines étapes
+
+- [Dépannez une référence API](/guides/api-troubleshooting)
+- [Déployez votre documentation](/guides/deploying)
+- [Configuration de la référence API](/guides/docs-json-reference#api-reference)

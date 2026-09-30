@@ -1,0 +1,50 @@
+---
+title: Valider la documentation dans CI
+navTitle: Vérifications CI
+description: Détectez les liens cassés, les spécifications OpenAPI invalides et les problèmes de contenu avant leur déploiement.
+keywords:
+  - ci
+  - thally check
+  - broken links
+  - openapi validation
+  - github actions
+---
+
+{/* thally:ai-translation locale=fr source-sha=922951056e089b868063ccdfea5e3254597460cd823af48332e3879962eb1374 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`thally check` valide votre documentation et, avec `--ci`, fait échouer une demande de fusion lorsque quelque chose est cassé, afin que CI puisse arrêter la modification avant qu'elle ne soit déployée en production.
+
+## Ce qu'il vérifie
+
+- **Contenu** — pages orphelines (non présentes dans `docs.json`), `title`/`description` manquants, pages trop courtes, pages dans la navigation sans fichier.
+- **Liens internes et ancres** — chaque lien `/page` résout vers une vraie page, et chaque ancre `#heading` existe. Les liens à l'intérieur des blocs de code sont ignorés (ce sont des exemples).
+- **OpenAPI** — votre spécification API s'analyse et a la structure requise (version `openapi`, `info`, chemins `paths` valides).
+
+<Note type="info">
+Les liens externes sont ignorés par défaut pour une CI déterministe et sans réseau. Passez `--external` pour aussi les vérifier.
+</Note>
+
+## L'exécuter
+
+```bash
+npx --yes @thallylabs/cli@latest check           # human-readable report
+npx --yes @thallylabs/cli@latest check --fix     # auto-add orphan pages to navigation
+npx --yes @thallylabs/cli@latest check --ci .    # GitHub annotations + non-zero exit on errors
+```
+
+Le nom du package délimité est obligatoire car le package `thally` sans délimiteur n'est pas publié. `npx` télécharge le CLI actuel lorsque le projet n'a pas de copie locale.
+
+## Dans GitHub Actions
+
+Les nouveaux projets incluent un vérificateur épinglé sous `.github/thally-tooling` et l'exécutent sur chaque demande de fusion. Le chemin CI épinglé évite de télécharger un package mutable dans un flux de travail porteur de credentials :
+
+```yaml
+- name: Install pinned content tooling
+  run: npm ci --ignore-scripts --prefix .github/thally-tooling
+
+- name: thally check
+  run: .github/thally-tooling/node_modules/.bin/thally check --ci .
+```
+
+Les avertissements (orphelins, pages courtes) sont signalés mais ne font pas échouer la construction ; les **erreurs** (liens cassés, pages manquantes, OpenAPI invalide) le font.

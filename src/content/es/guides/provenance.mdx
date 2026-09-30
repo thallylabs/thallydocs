@@ -1,0 +1,85 @@
+---
+title: Rastrear procedencia y vigencia
+navTitle: Procedencia y vigencia
+description: Fechas machine-legible last_updated / last_verified que generan confianza en los agentes, más thally check --drift para detectar páginas obsoletas contra el código que documentan.
+keywords:
+  - provenance
+  - freshness
+  - last_verified
+  - drift
+  - documentation freshness
+---
+
+{/* thally:ai-translation locale=es source-sha=7b38c14a28ea41eb2c1a8c45d65febc276e35d791eef22c16c4db738f6c2b0c6 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Los agentes (y las personas) confían más en la documentación cuando pueden determinar *cuán actualizada* está una página. Thally expone una **señal de vigencia machine-legible** en cada proyección, y te proporciona una forma determinística de detectar páginas que se han alejado del código que documentan.
+
+Hay dos capas, con dos audiencias diferentes.
+
+## Público: fechas de vigencia
+
+Añade cualquiera de estas fechas al frontmatter de una página y aparecerá en cada proyección pública — los metadatos de la página, `?format=json`, el espejo `.md`, y `/api/docs-index`:
+
+```yaml
+---
+title: Swap tokens
+lastUpdated: 2026-06-30      # the bytes last changed
+lastVerified: 2026-07-01     # a human last confirmed it's still accurate
+verifiedVersion: "2.3.0"     # optional: the product version it was verified against
+---
+```
+
+<Note>
+`lastUpdated` y `lastVerified` significan cosas diferentes. **Updated** es cuando
+la página cambió; **verified** es cuando alguien confirmó por última vez que aún
+coincide con el producto. Una página puede ser verificada sin ser editada.
+</Note>
+
+## Metadatos de verificación privada
+
+El mecanismo detrás de `lastVerified` es un conjunto de **sources** — el código que documenta una página — y el commit contra el cual fue verificada por última vez. Estos residen en el frontmatter pero **nunca se publican**: un agente consumidor no puede interpretar una ruta de archivo de un repositorio que no puede ver, así que Thally los elimina de cada proyección pública.
+
+```yaml
+---
+title: Swap tokens
+lastVerified: 2026-07-01
+# Read only by `thally check --drift`; never served publicly:
+sources:
+  - src/networks.ts
+  - "openapi.yaml#/paths/~1swap"
+verifiedCommit: 9f2c1a7
+---
+```
+
+Referencia archivos en el mismo repositorio directamente (`src/networks.ts`). Un `#fragment` (p. ej. una ruta de OpenAPI) estrecha *qué* documenta — la vigencia aún se evalúa contra el archivo completo.
+
+## `thally check --drift`
+
+Ejecuta la verificación de vigencia para marcar cualquier página cuyas `sources` hayan cambiado desde su `verifiedCommit`:
+
+```bash
+thally check --drift
+```
+
+La verificación utiliza el historial de git en lugar de un modelo de IA. Una página se marca como **stale** cuando un archivo source tiene nuevos commits desde que la página fue verificada. Combínala con `--ci` para anotaciones de GitHub:
+
+```bash
+thally check --drift --ci
+```
+
+<Warning>
+`--drift` necesita el **historial de git completo**. GitHub Actions hace checkout con `fetch-depth: 1` por defecto, así que los `verifiedCommit`s antiguos no estarán presentes — establece `fetch-depth: 0`:
+
+```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+```
+
+Si un `verifiedCommit` no está en el historial, la verificación lo reporta como **indeterminate** ("no se puede verificar la vigencia") en lugar de pasar silenciosamente — un "vigente" falso es la dirección peligrosa.
+</Warning>
+
+## El flujo de verificación
+
+Cuando hayas confirmado que una página sigue siendo precisa, sella ambas capas juntas — establece `lastVerified` a la fecha de hoy y `verifiedCommit` al commit actual (`git rev-parse HEAD`). La fecha pública avanza y el baseline de vigencia se reinicia. Programar `thally check --drift` en un cron la convierte en una red de seguridad: vigencia detectada → una tarea de docs → una pull request revisada.

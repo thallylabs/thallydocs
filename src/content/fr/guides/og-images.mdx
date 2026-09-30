@@ -1,0 +1,135 @@
+---
+title: Personnaliser les aperçus de liens
+navTitle: Aperçus de liens
+description: Configurez des images Open Graph dynamiques pour les aperçus de liens sur les réseaux sociaux.
+---
+
+{/* thally:ai-translation locale=fr source-sha=34ba6437f3ab4cbae415f9854f20d3400eb8fdca71ee8d0338aaba39b4585045 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally génère des images OG dynamiques pour chaque page afin que vos documents s'affichent de manière professionnelle lorsqu'ils sont partagés sur Twitter, Slack, Discord et autres plateformes. Chaque image inclut le titre de la page, la description, l'étiquette du groupe et l'image de marque de votre site.
+
+## Fonctionnement
+
+Chaque page de documentation obtient automatiquement une URL d'image OG dans ses métadonnées :
+
+```
+/api/og?title=Quickstart&description=Get+started+in+five+minutes&group=Getting+Started
+```
+
+La route `/api/og` affiche un PNG de 1200×630 à l'aide de [Satori](https://github.com/vercel/satori).
+Elle lit les couleurs de marque dans `src/data/site.ts` pour que l'image corresponde à votre thème.
+
+## Comportement par défaut
+
+Par défaut, Thally va :
+
+- Utiliser votre palette de marque du **thème sombre** pour l'arrière-plan de l'image, la barre d'accent et les couleurs de texte
+- Afficher le **nom du site** et le **domaine** (depuis `THALLY_SITE_URL`) dans la barre inférieure
+- Récupérer la police **Inter** depuis Google Fonts au poids 700
+- Injecter les balises meta `og:image` et `twitter:image` sur chaque page de documentation
+
+## Personnaliser l'image OG
+
+Ajoutez un objet `ogImage` à votre configuration de site dans `src/data/site.ts`. Tous les champs sont facultatifs — tout ce que vous ne spécifiez pas revient à votre palette de marque.
+
+```ts
+export const siteConfig: SiteConfig = {
+  name: 'My Product',
+  // ...
+  ogImage: {
+    accent: '#FF6B00',
+    domain: 'docs.myproduct.com',
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+  },
+}
+```
+
+## Référence de configuration
+
+| Option | Description | Défaut |
+| --- | --- | --- |
+| `backgroundStart` | Couleur de début du dégradé (hex) | Arrière-plan sombre de la marque |
+| `backgroundEnd` | Couleur de fin du dégradé (hex) | Marque muted sombre |
+| `accent` | Couleur de la barre supérieure et de l'orbe (hex) | Accent sombre de la marque |
+| `titleColor` | Couleur du texte du titre (hex) | Premier plan sombre de la marque |
+| `descriptionColor` | Couleur du texte de description (hex) | Premier plan à 60 % d'opacité |
+| `groupColor` | Couleur de l'étiquette de groupe (hex) | Identique à l'accent |
+| `domain` | Domaine affiché dans la barre inférieure | Nom d'hôte depuis `THALLY_SITE_URL` |
+| `logoText` | Texte du logo dans la barre inférieure | Nom du site |
+| `fontFamily` | Famille de police Google Font | `Inter` |
+| `fontWeight` | Poids de la police Google Font | `700` |
+
+## Définir l'URL du site
+
+<Note type="warning" title="Important pour la production">
+Définissez `THALLY_SITE_URL` dans votre environnement d'hébergement. Sans cela, les robots d'exploration résolvent l'URL relative `/api/og?...` par rapport à `localhost`, ce qui est inaccessible.
+</Note>
+
+<Steps>
+
+<Step title="Ajouter la variable d'environnement">
+
+Dans votre tableau de bord d'hébergement ou dans `.env.local` pour les tests locaux :
+
+```bash
+THALLY_SITE_URL=https://docs.myproduct.com
+```
+
+</Step>
+
+<Step title="Reconstruire et déployer">
+
+```bash
+npm run build
+```
+
+La `metadataBase` dans la mise en page racine utilise cette URL pour résoudre tous les chemins d'images OG relatifs en URL absolues que les robots d'exploration peuvent récupérer.
+
+</Step>
+
+</Steps>
+
+## Tests locaux
+
+Démarrez le serveur de développement et visitez directement le point de terminaison OG dans votre navigateur :
+
+```
+http://localhost:3040/api/og?title=My+Page&description=A+test+page&group=Guides
+```
+
+Vous verrez le PNG rendu. Vous pouvez également utiliser des outils comme le [Validateur de carte Twitter](https://cards-dev.twitter.com/validator) ou [OpenGraph.xyz](https://www.opengraph.xyz/) pour vérifier vos aperçus déployés.
+
+## Exemples de personnalisation
+
+### Correspondre à une marque violette
+
+```ts
+ogImage: {
+  accent: '#8B5CF6',
+  backgroundStart: '#0F0B2E',
+  backgroundEnd: '#1A1145',
+}
+```
+
+### Utiliser une police personnalisée et un domaine
+
+```ts
+ogImage: {
+  fontFamily: 'Space Grotesk',
+  fontWeight: '700',
+  domain: 'developer.example.com',
+  logoText: 'Example Docs',
+}
+```
+
+### Remplacer toutes les couleurs de texte
+
+```ts
+ogImage: {
+  titleColor: '#FFFFFF',
+  descriptionColor: '#94A3B8',
+  groupColor: '#F59E0B',
+}
+```

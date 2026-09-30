@@ -1,0 +1,140 @@
+---
+title: Générer une référence API
+navTitle: Référence API
+description: Connectez une spécification OpenAPI et personnalisez les pages de points de terminaison interactifs que Thally génère.
+---
+
+{/* thally:ai-translation locale=fr source-sha=2f03cb9715b164518db75887c0997739824e5a4edf4311e3db537d9ecd312822 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+À la fin de ce guide, votre site Thally aura une page consultable pour chaque
+opération dans un document OpenAPI 3.x. Vous avez besoin d'une spécification
+YAML ou JSON valide et d'un projet Thally local.
+
+<AgentPrompt
+  title="Copier une invite complète pour connecter une spécification OpenAPI"
+  copyOnly
+>
+
+Connectez la spécification OpenAPI à SPEC_PATH à ce projet de documentation Thally. Vous avez terminé lorsque Thally valide la spécification, la navigation des points de terminaison générés reflète la source avec précision, les opérations représentatives s'affichent correctement, et le projet réussit sa vérification de documentation et sa génération de production.
+
+Avant de modifier, lisez AGENTS.md s'il est présent, docs.json, package.json, les guides API existants, et la spécification complète. Préservez la navigation non liée et toutes les pages créées déjà associées aux opérations. Confirmez que SPEC_PATH se résout à partir de la racine du projet, s'analyse comme OpenAPI 3.x, et ne contient pas de références locales non résolues.
+
+Ajoutez ou mettez à jour l'onglet Référence API dans docs.json. Utilisez le chemin source exact. Dérivez tagsOrder à partir des balises qui existent réellement, conservez l'ordre existant délibéré lorsqu'il reste valide, et choisissez defaultGroup uniquement pour les opérations véritablement sans balise. Préservez exactement les identifiants d'opération, les chemins, les méthodes, les serveurs, les schémas de sécurité, les schémas, les exemples et les descriptions tels que la source les définit. N'inventez pas d'authentification, d'identifiants, d'URL de base, de corps de réponse ou de signification métier. Ne placez jamais un secret de production dans docs.json ou un exemple.
+
+Exécutez npx --yes @thallylabs/cli@latest check et npm run build. Démarrez le site local et inspectez au moins une opération de lecture et une opération d'écriture lorsque les deux existent. Vérifiez le groupement de la navigation, le chemin et la méthode, les paramètres, le corps de la requête, les schémas de réponse, les exemples, les champs d'authentification, le cURL généré, le débordement et le contraste de la syntaxe en mode sombre. N'envoyez pas de requête en direct à moins que la spécification pointe vers un serveur de test sûr et que j'approuve explicitement.
+
+Signalez les erreurs de spécification séparément des erreurs de configuration de Thally. Incluez les fichiers exacts modifiés, les commandes exécutées, les opérations inspectées, les faits source préservés, et tout ce que le propriétaire de l'API doit corriger. Ne validez pas, ne poussez pas, ne déployez pas, ne modifiez pas la spécification elle-même, ou ne modifiez pas les fichiers de framework non liés à moins que vous me le demandiez.
+
+</AgentPrompt>
+
+## Ajouter votre spécification
+
+Placez votre fichier de spécification OpenAPI 3.x à la racine du projet comme `openapi.yaml` (ou `openapi.json`). Configurez-le ensuite dans `docs.json` :
+
+```json
+{
+  "tab": "API Reference",
+  "api": {
+    "source": "openapi.yaml",
+    "tagsOrder": ["Users", "Orders", "Products"],
+    "defaultGroup": "General"
+  }
+}
+```
+
+L'onglet Référence API générera automatiquement une page pour chaque opération dans votre spécification.
+
+## Options de configuration
+
+| Champ | Obligatoire | Description |
+| --- | --- | --- |
+| `source` | Oui | Chemin vers votre fichier de spécification OpenAPI, relatif à la racine du projet. |
+| `navigation` | Non | Définissez sur `false` lorsque les pages MDX créées fournissent la navigation API. Par défaut à `true`. |
+| `tagsOrder` | Non | Contrôle l'ordre d'apparition des balises dans la barre latérale. Les balises non répertoriées apparaissent après. |
+| `defaultGroup` | Non | Nom du groupe pour les opérations sans balises. Par défaut à `"Endpoints"`. |
+| `webhookGroup` | Non | Nom du groupe pour les opérations de webhook OpenAPI. Par défaut à `"Webhooks"`. |
+| `overrides` | Non | Personnalisations par opération (voir ci-dessous). |
+
+## Remplacements d'opération
+
+Vous pouvez personnaliser l'apparition des opérations individuelles dans la barre latérale et les documents :
+
+```json
+{
+  "api": {
+    "source": "openapi.yaml",
+    "overrides": {
+      "GET /users": {
+        "title": "List users",
+        "description": "Fetch all users with pagination.",
+        "badge": "Stable"
+      },
+      "DELETE /users/{id}": {
+        "title": "Delete user",
+        "badge": "Destructive"
+      }
+    }
+  }
+}
+```
+
+Le format de clé est `METHOD /path` — correspondant à la `method` et `path` de votre spécification OpenAPI.
+
+Champs de remplacement disponibles :
+
+- **`title`** — titre personnalisé de la barre latérale et de la page
+- **`description`** — description personnalisée affichée sous le titre
+- **`badge`** — un libellé affiché à côté du titre de l'opération
+- **`group`** — déplacer l'opération vers un groupe de barre latérale différent
+- **`slug`** — remplacer les segments d'URL générés par un tableau de chaînes
+- **`hidden`** — garder l'opération hors de la navigation générée
+
+## Ordre des balises
+
+Par défaut, les opérations sont groupées par leurs `tags` OpenAPI. Le tableau `tagsOrder` contrôle l'ordre de la barre latérale :
+
+```json
+"tagsOrder": ["Authentication", "Users", "Orders"]
+```
+
+Les balises non répertoriées dans `tagsOrder` apparaissent après les balises répertoriées, dans l'ordre où elles apparaissent pour la première fois dans la spécification.
+
+## Panneau Essayer
+
+Chaque page d'opération API inclut un bouton **Essayer** qui ouvre un panneau de requête interactif. Il :
+
+- Remplit d'avance les paramètres à partir du schéma OpenAPI
+- Envoie les requêtes via un proxy côté serveur pour éviter les problèmes CORS
+- Affiche la réponse avec le code d'état, les en-têtes et le corps
+- Génère une commande cURL que vous pouvez copier
+
+Essayer est prêt lorsque la spécification fournit au moins une URL de serveur. Ajoutez
+des espaces réservés d'authentification uniquement lorsque votre API l'exige ; les lecteurs peuvent
+entrer leurs propres identifiants avant d'envoyer une requête.
+
+## Remplacer la spécification d'exemple
+
+Le modèle est fourni avec une spécification JSONPlaceholder pour que vous puissiez tester les
+pages générées sans identifiants. Pour utiliser votre propre API :
+
+1. Remplacez `openapi.yaml` par votre spécification
+2. Mettez à jour le `tagsOrder` dans `docs.json` pour correspondre à vos balises
+3. Ajoutez tous les `overrides` que vous souhaitez
+4. Exécutez `npm run dev` pour voir le résultat
+
+## Vérifier la référence générée
+
+Confirmez que les balises et opérations attendues apparaissent, ouvrez au moins un point de terminaison,
+et comparez ses paramètres et schémas avec la spécification source. Ensuite, exécutez :
+
+```bash
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+## Prochaines étapes
+
+- [Configurer le terrain de jeu API](/guides/api-playground)
+- [Dépanner une référence API](/guides/api-troubleshooting)
+- [Référence des paramètres API](/guides/docs-json-reference#api-reference)

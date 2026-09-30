@@ -1,0 +1,119 @@
+---
+title: Dépanner votre site de documentation
+navTitle: Dépannage
+description: Diagnostiquez les défaillances de contenu, navigation, build, déploiement, recherche et fonctionnalités runtime dans un projet Thally.
+---
+
+{/* thally:ai-translation locale=fr source-sha=a5c90398239487cfad07d7ce498654e8402a9b29a7acf5ff5d241dc9505b58cb */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Reproduisez la défaillance localement, exécutez les vérifications et isolez si
+le problème provient du contenu, de la configuration, du build de production ou
+du runtime déployé.
+
+## Collecter les informations de base
+
+Depuis la racine du projet, exécutez :
+
+```bash
+node --version
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+Enregistrez l'URL défaillante, la commande exacte, l'erreur complète, l'hôte et
+si le même comportement se produit dans `npm run dev`.
+
+## Une page est manquante ou retourne 404
+
+- Confirmez que le fichier existe sous `src/content/` et se termine par `.mdx`.
+- Dérivez l'URL du chemin du fichier sans `src/content/` ou `.mdx`.
+- Ajoutez l'ID de page à un groupe dans `docs.json` s'il doit apparaître dans
+  la navigation.
+- Vérifiez que la page et le groupe n'ont pas `hidden: true`.
+- Exécutez `npx --yes @thallylabs/cli@latest check` pour détecter les IDs de
+  page orphelins ou manquants.
+
+## Le build échoue sur MDX
+
+Vérifiez les délimiteurs frontmatter, les balises JSX non fermées et les
+clôtures de code imbriquées. Lorsqu'un exemple de code contient un bloc
+clôturé, enveloppez l'exemple externe dans une clôture plus longue. Réduisez
+temporairement la page à la section défaillante la plus petite pour identifier
+le composant ou la syntaxe invalide.
+
+## La navigation est incorrecte
+
+Validez `docs.json` avec :
+
+```bash
+jq empty docs.json
+```
+
+Les IDs de page utilisent des barres obliques et omettent l'extension. Un
+groupe imbriqué doit se trouver à l'intérieur du tableau `pages` d'un autre
+groupe. Consultez [Configurer la navigation](/guides/configuring-navigation).
+
+## Les liens de production utilisent localhost ou le mauvais domaine
+
+Définissez `THALLY_SITE_URL` sur l'origine publique dans le fournisseur
+d'hébergement et redéployez. Vérifiez les balises canoniques, `/sitemap.xml`
+et `/llms.txt` après le nouveau build.
+
+## Une fonctionnalité serveur fonctionne localement mais pas après le déploiement
+
+- Confirmez que l'hôte exécute le runtime serveur plutôt qu'une exportation
+  statique.
+- Ajoutez les variables d'environnement requises par la fonctionnalité à
+  l'environnement correct.
+- Sur les hôtes sans serveur, configurez le stockage distant si l'état doit
+  persister.
+- Vérifiez les journaux des fonctions pour la requête `/api/...` défaillante.
+- Redéployez après modification des variables d'environnement.
+
+## Le fournisseur rapporte un succès mais chaque route retourne 404
+
+Un message de déploiement terminé prouve que le fournisseur a accepté un
+artefact. Cela ne prouve pas que l'artefact contient une application Thally
+exécutable.
+
+1. Exécutez les [vérifications smoke HTTP post-déploiement](/guides/deploying#verify-the-live-site).
+2. Confirmez que le déploiement a utilisé une [cible et une commande prises en charge](/guides/deploying#choose-a-supported-deployment-path).
+3. Inspectez le journal de build du fournisseur, la détection du framework et
+   l'artefact publié. Le téléchargement de la racine du référentiel ou la
+   fourniture de `.next/` comme répertoire statique simple retourne 404 même
+   lorsque le téléchargement réussit.
+4. Redéployez avec l'adaptateur Vercel, le script Cloudflare/OpenNext inclus
+   ou la recette de serveur Docker documentée. Testez l'artefact du
+   fournisseur généré avant de modifier les routes de contenu.
+
+Un scaffold Thally inchangé n'inclut pas de contrat de build Netlify. Si
+`netlify deploy --build --prod` a rapporté un succès et chaque route est 404,
+cessez de réessayer le même téléchargement. Utilisez une cible prise en
+charge ou ajoutez et maintenez une intégration Next.js spécifique à Netlify
+testée comme infrastructure que votre équipe possède.
+
+## La recherche ne trouve pas une page
+
+Confirmez que la page est navigable ou autorisée par le mode d'indexation SEO
+configuré. Ajoutez une description claire et des mots-clés frontmatter utiles,
+puis reconstruisez pour que l'index de contenu inclue la modification.
+
+## Obtenir un rapport utile
+
+Quand vous demandez de l'aide, incluez :
+
+- les versions Thally et Node ;
+- la sortie de `npx --yes @thallylabs/cli@latest check` ;
+- le plus petit fragment de page ou de `docs.json` qui reproduit le problème ;
+- si le développement et la production diffèrent ;
+- les journaux d'hôte pertinents avec les identifiants supprimés.
+
+Ne collez jamais les mots de passe d'accès, les clés API, les tokens, les
+cookies ou les valeurs de clés privées.
+
+## Dépannage connexe
+
+- [Dépannage de la référence API](/guides/api-troubleshooting)
+- [Prévisualiser localement](/guides/preview-locally)
+- [Déployer votre documentation](/guides/deploying)

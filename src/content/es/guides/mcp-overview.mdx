@@ -1,0 +1,165 @@
+---
+title: Entiende los servidores MCP de Thally
+navTitle: Descripción general de MCP
+description: Elige entre el servidor de autoría local de Thally y el punto de conexión MCP de solo lectura publicado por cada sitio implementado.
+---
+
+{/* thally:ai-translation locale=es source-sha=a64c129c4a04c77823d0402662ec05f9c6ca6c4806d996e7dca0756a63146ea3 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally proporciona dos servidores del Protocolo de Contexto de Modelo. El **servidor local** ayuda a un agente de codificación de IA a trabajar en un repositorio. El **servidor remoto** ayuda a un agente a investigar la documentación ya publicada por un sitio.
+
+## MCP local y remoto
+
+| | Servidor de autoría local | Servidor de sitio implementado |
+| --- | --- | --- |
+| Punto de conexión | `npx -y @thallylabs/mcp` o `npx --yes @thallylabs/cli@latest mcp` | `https://docs.example.com/api/mcp` |
+| Transporte | stdio | HTTP transmisible |
+| Acceso | Tu máquina y permisos del sistema de archivos | Público por defecto; de solo lectura y con límite de velocidad |
+| Herramientas | 15 herramientas de proyecto y sitio | 4 herramientas de sitio |
+| Úsalo para | Crear, editar, migrar, traducir y validar documentos | Buscar, leer, listar páginas y verificar disponibilidad |
+
+## Conecta el servidor local
+
+<Tabs>
+
+<Tab title="Codex">
+
+```bash
+codex mcp add thally -- npx -y @thallylabs/mcp
+```
+
+</Tab>
+
+<Tab title="Claude Code">
+
+```bash
+claude mcp add thally -- npx -y @thallylabs/mcp
+```
+
+</Tab>
+
+<Tab title="Cursor">
+
+```json
+{
+  "mcpServers": {
+    "thally": {
+      "command": "npx",
+      "args": ["-y", "@thallylabs/mcp"]
+    }
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+Reinicia o recarga el cliente después de agregar la configuración.
+
+## Lo que expone el servidor local
+
+El paquete local registra 15 herramientas desde un registro compartido:
+
+- **Crear y organizar:** `create_project`, `add_page`, `update_page`,
+  `add_tab`, `list_pages`
+- **Leer y buscar:** `read_page`, `search_docs`, `get_context`
+- **Migrar y traducir:** `migrate_docs`, `import_docs`, `translate_docs`
+- **Validar e inspeccionar:** `lint_project`, `semantic_search`,
+  `agent_readiness`
+- **Automatizar cambios de producto:** `sync_from_repo`
+
+La mayoría de las herramientas actúan en un `projectDir` local. `semantic_search` y
+`agent_readiness` consultan un `siteUrl` implementado. El servidor devuelve errores estructurados cuando faltan rutas o valores requeridos, para que tu agente pueda corregir la llamada en lugar de inferir un resultado.
+
+<AgentPrompt
+  title="Copia un mensaje completo para auditar un proyecto de Thally"
+  copyOnly
+>
+
+Usa el servidor MCP local de Thally conectado para auditar el proyecto de documentación en ABSOLUTE_PROJECT_PATH. Habrás terminado cuando tengas un audit respaldado por evidencia ordenado por impacto en el lector, con IDs de página exactos o archivos para cada hallazgo y sin ediciones no aprobadas.
+
+Confirma que ABSOLUTE_PROJECT_PATH es el proyecto de Thally previsto y que contiene docs.json y package.json. Lee AGENTS.md o las instrucciones del repositorio equivalentes si están presentes. Registra el estado actual de git y no alteres trabajos no relacionados.
+
+Llama a list_pages primero. Usa search_docs para probar el lenguaje que usaría un nuevo lector para configuración, tareas comunes, documentación de API, implementación, solución de problemas, CLI, MCP y flujos de trabajo de agentes. Usa read_page en los resultados más relevantes y en páginas que parezcan duplicadas, escasas, huérfanas o mal colocadas. Llama a get_context cuando necesites configuración a nivel de proyecto en lugar de adivinar. Ejecuta lint_project con correcciones deshabilitadas.
+
+Evalúa la documentación contra el proyecto real, no contra convenciones de documentación genéricas. Rastrea reclamaciones de capacidades importantes hasta configuración del repositorio, implementación, salida de CLI, pruebas o una dependencia externa claramente etiquetada. Distingue hechos, recomendaciones editoriales razonables y preguntas que requieren un dueño de producto.
+
+Reporta:
+
+- navegación rota o páginas faltantes;
+- páginas huérfanas, frontentera inválida o faltante, y enlaces locales rotos;
+- guía duplicada, contradictoria, genérica o no soportada;
+- tareas que carecen de requisitos previos, resultados esperados, solución de problemas o un paso siguiente claro;
+- etiquetas de barra lateral que oscurecen el escaneo o se envuelven innecesariamente;
+- ejemplos de código con idiomas faltantes, marcadores de posición inseguros o comandos que el repositorio no admite;
+- mensajes de agente que carecen de contexto, validación, permisos o criterios de éxito;
+- las cinco mejoras de mayor impacto, cada una con la página afectada, consecuencia para el lector, evidencia y corrección recomendada.
+
+No modifiques archivos, ejecutes modo de corrección, instales paquetes, realices commits, hagas push o implementes. Muéstrame el audit primero y espera aprobación de un conjunto de cambios específico.
+
+</AgentPrompt>
+
+## Conecta un sitio implementado
+
+Reemplaza la URL de ejemplo con el origen del sitio de documentación.
+
+<Tabs>
+
+<Tab title="Codex">
+
+```bash
+codex mcp add product-docs --url https://docs.example.com/api/mcp
+```
+
+</Tab>
+
+<Tab title="Claude Code">
+
+```bash
+claude mcp add --transport http product-docs https://docs.example.com/api/mcp
+```
+
+</Tab>
+
+<Tab title="Cursor">
+
+```json
+{
+  "mcpServers": {
+    "product-docs": {
+      "type": "http",
+      "url": "https://docs.example.com/api/mcp"
+    }
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+El punto de conexión implementado expone `search_docs`, `read_page`, `list_pages` y
+`agent_readiness`. No puede editar el sitio. Los propietarios del sitio pueden deshabilitarlo desde el panel de administración, y las llamadas a herramientas públicas por defecto tienen un límite de 60 por minuto por IP.
+
+<AgentPrompt
+  title="Copia un mensaje completo para investigar documentación implementada"
+  copyOnly
+>
+
+Usa el servidor MCP de solo lectura de Thally conectado para PRODUCT_DOCS_URL para responder esta pregunta: QUESTION. Habrás terminado cuando la respuesta sea concisa, respaldada por la documentación implementada, vinculada a las páginas de origen exactas y explícita sobre lo que el sitio no establece.
+
+Confirma que el servidor MCP pertenece a PRODUCT_DOCS_URL. Comienza con list_pages cuando la arquitectura de información no te es familiar, luego usa search_docs con el lenguaje del lector, terminología del producto y sinónimos probables. Lee las páginas más relevantes en su totalidad antes de responder. Sigue enlaces de requisitos previos y referencias cuando una afirmación depende de ellos, pero no navegues secciones no relacionadas para fabricar certeza.
+
+Para cada afirmación material, cita la URL exacta de la página devuelta por las herramientas. Separa hechos de documentación directa de tu inferencia y etiqueta la inferencia. Cuando las páginas entren en conflicto, reporta ambas, prefiere la fuente más específica o recientemente actualizada solo cuando los metadatos lo respaldan, e identifica la contradicción. Si la documentación no responde parte de la pregunta, declara qué falta y sugiere la página o dueño de producto que podría resolverlo.
+
+No modifiques el sitio, invokes herramientas de autoría local, envíes formularios, realices solicitudes de API en vivo o uses conocimiento general sin citar como si viniera de la documentación del producto. Termina con una respuesta breve, fuentes de apoyo, suposiciones y brechas sin resolver.
+
+</AgentPrompt>
+
+## Comportamiento de escritura segura
+
+El punto de conexión remoto público siempre es de solo lectura. Las herramientas MCP locales heredan los permisos del proceso que las inició, así que revisa cualquier solicitud que escriba archivos. `migrate_docs` requiere un destino nuevo o vacío; `import_docs` modifica un proyecto existente y solo debe usarse cuando una fusión en el lugar es intencional.
+
+Continúa hacia la [referencia de herramientas MCP local](/guides/mcp-server) o la [guía MCP remota](/guides/remote-mcp) para cada herramienta y opción.

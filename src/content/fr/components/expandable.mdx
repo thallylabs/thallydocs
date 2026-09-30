@@ -1,0 +1,52 @@
+---
+title: "Expandable"
+description: "Une section inline réductible pour les propriétés API imbriquées."
+---
+
+{/* thally:ai-translation locale=fr source-sha=76570766ae03c0cd38d75910a264fc3ca1434fa5e25e3237cadf025b68a40af4 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`<Expandable>` affiche un bouton bascule inline utilisé dans `<ResponseField>` ou `<ParamField>` pour révéler les propriétés imbriquées à la demande. Il garde le schéma de haut niveau propre tout en gardant les détails imbriqués accessibles.
+
+## Exemple
+
+<ResponseField name="address" type="object">
+  L'adresse de livraison de l'utilisateur.
+
+  <Expandable title="address properties">
+    <ResponseField name="line1" type="string" required>
+      Ligne d'adresse 1.
+    </ResponseField>
+    <ResponseField name="line2" type="string">
+      Ligne d'adresse 2 (appartement, suite, etc.).
+    </ResponseField>
+    <ResponseField name="city" type="string" required>
+      Nom de la ville.
+    </ResponseField>
+    <ResponseField name="postal_code" type="string" required>
+      Code postal ou ZIP.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+```mdx
+<ResponseField name="address" type="object">
+  Shipping address.
+
+  <Expandable title="address properties">
+    <ResponseField name="line1" type="string" required>
+      Street address line 1.
+    </ResponseField>
+    <ResponseField name="city" type="string" required>
+      City name.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `string` | `"Show child attributes"` | Étiquette affichée sur le bouton bascule |
+| `defaultOpen` | `boolean` | `false` | Indique si la section commence développée |

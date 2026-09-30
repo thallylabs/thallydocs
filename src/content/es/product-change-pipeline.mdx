@@ -1,0 +1,99 @@
+---
+title: La canalización de cambios de producto
+navTitle: Canalización de cambios de producto
+description: Cómo Thally convierte los cambios de producto configurados en actualizaciones de documentación revisables mientras mantiene a las personas responsables de lo que se publica.
+keywords:
+  - product change pipeline
+  - product changes
+  - documentation automation
+  - documentation pull requests
+  - human review
+---
+
+{/* thally:ai-translation locale=es source-sha=905228dbf5d9a3f129116b4c601a7cffc510378c6b5d9baccfeb819a5cb3e124 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Los cambios de producto pueden afectar la documentación, referencias de API y SDK, tutoriales,
+notas de lanzamiento, ejemplos y contexto de IA. Thally conecta un cambio exacto de GitHub
+con la documentación que usan tus clientes y prepara una solicitud de cambios para que las personas revisen.
+
+## Cómo funciona hoy
+
+<Steps>
+  <Step title="Un evento configurado inicia la verificación">
+    Tú eliges si Track se ejecuta para actualizaciones de solicitudes de cambios de confianza, del mismo repositorio, no borrador, cambios fusionados, una programación UTC, o una combinación de esos activadores. Track mantiene la revisión de fuente exacta que inició cada ejecución.
+  </Step>
+  <Step title="Track distribuye el cambio a los destinos de revisión">
+    Track lee la fuente de Producto conectada e inicia una ejecución independiente para
+    el repositorio de documentación principal y cada superficie de Conocimiento habilitada
+    para el sitio cuando llega el evento.
+  </Step>
+  <Step title="Cada destino prepara y verifica su resultado">
+    Cada ejecución utiliza el repositorio guardado, rama, raíz y ámbitos de ruta exacta.
+    Un destino que no necesita actualización termina sin abrir una solicitud de cambios;
+    otros destinos continúan de forma independiente.
+  </Step>
+  <Step title="Una persona decide qué se publica">
+    Cuando se necesita una actualización, Track abre una solicitud de cambios de GitHub
+    lista para revisar en ese destino. Los revisores pueden aceptarla, corregirla o rechazarla; Track
+    nunca fusiona su propio trabajo.
+  </Step>
+  <Step title="Una fuente revisada alimenta cada salida">
+    Después de la aprobación y publicación, la misma fuente estructurada alimenta HTML,
+    Markdown, JSON, JSON-LD, búsqueda, incrustaciones y contexto de agente.
+  </Step>
+</Steps>
+
+## El contrato de confianza
+
+<Columns cols={2}>
+  <Card title="Tú eliges el punto de partida" icon="code-simple">
+    Configura verificaciones de solicitud de cambios, fusión y programadas para la forma en que tu equipo
+    envía cambios de producto.
+  </Card>
+  <Card title="El cambio exacto permanece adjunto" icon="link-simple">
+    Cada ejecución mantiene la fuente de Producto y la revisión que los revisores necesitan para
+    entender por qué existe la propuesta de documentación.
+  </Card>
+  <Card title="Sin cambio es un resultado válido" icon="book-open">
+    Track puede terminar sin una solicitud de cambios cuando la revisión de fuente no
+    requiere una actualización de documentación orientada al cliente.
+  </Card>
+  <Card title="Los humanos aprueban la comunicación" icon="message">
+    La automatización elimina el trabajo de descubrimiento y redacción, no la responsabilidad de lo que
+    leen los clientes.
+  </Card>
+</Columns>
+
+## Qué maneja Thally hoy
+
+| Área            | Comportamiento actual                                                                                                     |
+| --------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Fuentes de producto | Repositorios de GitHub conectados, ramas y rutas vigiladas opcionales                                                  |
+| Activadores        | Actualizaciones de solicitudes de cambios de confianza, del mismo repositorio, no borrador; cambios fusionados; y programas UTC diarios, semanales o personalizados |
+| Progreso        | Actividad persistente desde la recepción del cambio hasta la preparación, escritura, verificación y creación de solicitud de cambios            |
+| Salida          | Una solicitud de cambios lista para revisar, decisión sin cambio o resultado necesita atención independientes para cada destino  |
+| Aprobación        | Tus flujos de trabajo de revisión e implementación de GitHub existentes                                                                 |
+
+<Note type="info" title="Tu repositorio sigue siendo la fuente de verdad">
+  Track prepara propuestas. Los docs principales se publican a través de la ruta
+  de lanzamiento administrada después de la revisión. Las superficies conectadas utilizan sus propias comprobaciones de repositorio,
+  vistas previas, revisores y flujos de trabajo de publicación.
+</Note>
+
+Para el contrato completo de activador, confinamiento, validación, vista previa y publicación,
+lee [Extender Track a superficies de Conocimiento](/guides/knowledge-surfaces).
+
+## Pon la canalización en funcionamiento
+
+- [Ve cómo funciona Thally](/architecture) para el flujo de trabajo de publicación y
+  actualización orientado al cliente.
+- [Configura Thally Track](/guides/thally-track) para conectar una fuente de Producto y
+  elegir sus activadores.
+- [Conecta superficies de Conocimiento](/guides/knowledge-surfaces) para contenido orientado al cliente
+  fuera del repositorio de documentación principal.
+- [Usa el agente de docs](/guides/docs-agent) para tareas de autoría autogestionadas.
+- [Añade procedencia](/guides/provenance) para que las personas y agentes puedan ver cuándo se actualizaron las páginas
+  y se verificaron por última vez.
+- Ejecuta [`thally check`](/guides/cli-reference) en CI para validar la fuente revisada
+  antes de que se publique.

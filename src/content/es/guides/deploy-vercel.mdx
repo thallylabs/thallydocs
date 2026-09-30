@@ -1,0 +1,60 @@
+---
+title: Implementar en Vercel
+navTitle: Vercel
+description: Importa un repositorio de Thally en Vercel, configura las variables de producción y verifica el sitio implementado.
+---
+
+{/* thally:ai-translation locale=es source-sha=e2a7fe12e04c1df45b5a68f1f25aad09168cf57040d36f344c80ae6c7b16b2fa */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Vercel detecta el runtime de Next.js y puede implementar directamente desde tu repositorio de Git o a través de la CLI de Thally.
+
+## Implementar desde un repositorio
+
+1. Envía el proyecto de documentación a GitHub, GitLab o Bitbucket.
+2. En Vercel, crea un nuevo proyecto e importa el repositorio.
+3. Mantén el framework detectado y la configuración de compilación.
+4. Añade `THALLY_SITE_URL` con el origen final de la documentación.
+5. Añade solo los secretos opcionales requeridos por las características habilitadas.
+6. Implementa el proyecto.
+
+Vercel crea implementaciones de vista previa para ramas y solicitudes de extracción conectadas al proyecto. Mantén `THALLY_SITE_URL` establecido en el dominio de producción a menos que tengas una estrategia de URL deliberada por entorno.
+
+## Implementar con la CLI
+
+Desde la raíz del proyecto, ejecuta:
+
+```bash
+npx --yes @thallylabs/cli@latest deploy
+```
+
+Usa `--prod` para una implementación de producción:
+
+```bash
+npx --yes @thallylabs/cli@latest deploy --prod
+```
+
+El comando compila el sitio, ejecuta la verificación de preparación del agente cuando el proyecto la proporciona e invoca la implementación en Vercel.
+
+## Persistir datos en runtime
+
+Los sistemas de archivos de Vercel son efímeros. Configura almacenamiento remoto de libSQL si necesitas que análisis, configuración de administrador, estado de tareas o contadores de límite de velocidad persistan:
+
+```bash
+THALLY_ANALYTICS_DB_URL=libsql://your-database.turso.io
+THALLY_ANALYTICS_DB_TOKEN=your-token
+THALLY_DATABASE_URL=libsql://your-database.turso.io
+THALLY_DATABASE_TOKEN=your-token
+```
+
+La misma base de datos puede respaldar ambos pares. Thally crea las tablas requeridas en el primer uso.
+
+## Verificar la implementación
+
+Abre el dominio de producción y prueba las rutas y características habilitadas listadas en [Implementa tu sitio de documentación](/guides/deploying#verify-the-live-site). Ejecuta los comandos HTTP smoke de página principal, página anidada y `/llms.txt` de esa sección. Confirma que el registro de compilación de Vercel no contiene errores de `thally check` o MDX.
+
+## Próximos pasos
+
+- [Variables de entorno](/guides/environment-variables)
+- [Análisis y retroalimentación](/guides/analytics-and-feedback)
+- [Proteger documentación privada](/guides/private-docs)

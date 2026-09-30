@@ -1,0 +1,82 @@
+---
+title: Dépanner une référence API
+navTitle: Dépannage API
+description: Diagnostiquez les opérations manquantes, les groupes incorrects, les schémas non résolus et les demandes Try It échouées dans la documentation API Thally générée.
+---
+
+{/* thally:ai-translation locale=fr source-sha=c6323b56206f42c3771e9c511e1b8d79fcc29e438f2d0dc79f97328db2959347 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Commencez par le document OpenAPI, puis vérifiez `docs.json`, la page générée,
+et l'API cible dans cet ordre.
+
+## Exécuter les vérifications locales
+
+```bash
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+Corrigez les erreurs de syntaxe et de configuration avant de déboguer dans le navigateur.
+
+## Une opération est manquante
+
+- Confirmez que l'opération a une méthode HTTP sous une entrée `paths` valide.
+- Confirmez que `docs.json` pointe vers la spécification locale ou distante prévue.
+- Si `api.navigation` est `false`, ajoutez une page MDX créée avec une valeur de frontmatter `openapi` pour l'opération.
+- Vérifiez qu'une override d'opération ne définit pas `hidden: true`.
+
+## Une opération est dans le mauvais groupe
+
+Les pages générées utilisent le premier tag OpenAPI correspondant. Contrôlez l'ordre avec
+`api.tagsOrder`, définissez `api.defaultGroup` pour les opérations non étiquetées, ou appliquez une
+override `group` par opération.
+
+Les clés d'override doivent utiliser la méthode en majuscules exacte et le chemin :
+
+```json
+{
+  "overrides": {
+    "GET /users/{id}": {
+      "group": "Users"
+    }
+  }
+}
+```
+
+## Un schéma ou un exemple est incomplet
+
+Confirmez que le `$ref` se résout dans la spécification chargée et que les types de média de demande
+et de réponse incluent un schéma. Ajoutez des valeurs OpenAPI `example` quand un
+exemple généré réaliste aiderait le lecteur.
+
+Si la spec utilise une fonctionnalité que l'analyseur ne peut pas représenter, rédigez une page
+MDX créée et utilisez les composants de référence API pour l'explication manquante.
+
+## Try It dit qu'aucune URL de serveur n'est disponible
+
+Ajoutez un tableau `servers` au niveau racine ou au niveau opération au document OpenAPI :
+
+```yaml
+servers:
+  - url: https://api.example.com/v1
+```
+
+## Try It retourne une erreur
+
+Vérifiez la commande cURL générée indépendamment. Les causes courantes sont :
+
+- une URL de serveur inaccessible ou incorrecte ;
+- une valeur de chemin, de requête ou d'en-tête requise qui est vide ;
+- des identifiants expirés ou des espaces réservés ;
+- l'API rejette le corps de la demande ou le type de média ;
+- l'hôte de la documentation ne peut pas atteindre un réseau API privé ;
+- une exportation statique n'a pas de route serveur `/api/try-it`.
+
+Ne mettez pas de secret de production dans `docs.json` pour faire passer un exemple.
+
+## Étapes suivantes
+
+- [Configurer le terrain de jeu API](/guides/api-playground)
+- [Configuration OpenAPI](/guides/api-reference-setup)
+- [Dépannage général](/guides/troubleshooting)

@@ -1,0 +1,54 @@
+---
+title: Proteger documentación privada
+navTitle: Documentos privados
+description: Requerir una contraseña compartida de visitante para páginas de Thally y verificar qué endpoints de máquina permanecen accesibles públicamente.
+---
+
+{/* thally:ai-translation locale=es source-sha=d0943ba9ba780e30988d6ffaa1424f0d72a929764267af608968389dd0fd4774 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Establece una contraseña de visitante cuando las páginas de documentación no deben ser legibles sin acceso compartido. Esto es independiente de la autenticación del panel `/admin`.
+
+## Habilitar la puerta de visitante
+
+Establece `THALLY_ACCESS_PASSWORD` en el proveedor de alojamiento:
+
+```bash
+THALLY_ACCESS_PASSWORD=a-long-random-visitor-password
+```
+
+Redespliega el sitio. Un visitante que abre una página protegida es redirigido a `/access`, y luego devuelto a la página solicitada después de ingresar la contraseña. El acceso se almacena en una cookie segura, solo HTTP, durante siete días.
+
+No confirmes esta contraseña en `.env`, `docs.json` o el repositorio. Utiliza la configuración de secretos cifrados del host.
+
+## Administrar la contraseña desde Thally Cloud
+
+En un sitio administrado de Thally Cloud, un Editor u Propietario puede establecer una contraseña de visitante hasheada en **Settings → Reader access**. La configuración administrada se publica con la configuración en tiempo de ejecución del sitio y tiene prioridad cuando está presente.
+
+Para un sitio autohospedado, mantén `THALLY_ACCESS_PASSWORD` establecido porque el middleware usa su presencia para habilitar la puerta perimetral.
+
+## Entender el límite
+
+La puerta de visitante protege las páginas de documentación y sus rutas de contenido protegido. Algunos endpoints de máquina e servicio permanecen intencionalmente accesibles para que sistemas externos puedan descubrir requisitos de autenticación o entregar eventos firmados. Estos incluyen documentos de control de rastreador y descubrimiento de agentes, autenticación de administrador, ingesta de análisis, el apretón de manos de Cloud, y webhooks de Thally Track.
+
+Revisa `/robots.txt`, `/llms.txt`, y `/.well-known/` en el sitio desplegado. No coloques prosa confidencial en metadatos de descubrimiento público, identidad del sitio, o descripciones de endpoints simplemente porque el acceso a la página está restringido.
+
+## Verificar acceso
+
+1. Abre una página de documentación en una ventana de navegador privado.
+2. Confirma que se redirige a `/access`.
+3. Intenta una contraseña incorrecta y confirma que se deniega el acceso.
+4. Ingresa la contraseña correcta y confirma que la página original se abre.
+5. Cierra la sesión privada y verifica que la página está protegida nuevamente.
+
+También prueba el inicio de sesión del administrador por separado. `THALLY_ACCESS_PASSWORD` no asegura `/admin`; configura los métodos en [Manage the built-in site admin](/guides/admin-dashboard).
+
+## Deshabilitar protección
+
+Elimina `THALLY_ACCESS_PASSWORD` del host y borra la configuración de acceso administrado, luego redespliega. Verifica en una ventana de navegador privado que las páginas son públicas.
+
+## Próximos pasos
+
+- [Environment variables](/guides/environment-variables)
+- [Deploy your documentation](/guides/deploying)
+- [Built-in site admin and team access](/guides/admin-dashboard)

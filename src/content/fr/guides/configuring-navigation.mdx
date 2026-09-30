@@ -1,0 +1,193 @@
+---
+title: Organiser votre navigation
+navTitle: Navigation
+description: Structurez les onglets et les groupes de barre latérale autour des tâches que vos lecteurs doivent accomplir.
+---
+
+{/* thally:ai-translation locale=fr source-sha=93ab5e4eb9e50aecdcaa42e3025b3a466860545f1ec767630c6a1e3206d1b2a4 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utilisez la navigation pour refléter les objectifs des lecteurs et l'ordre dans lequel ils les accomplissent. Commencez par un petit ensemble de groupes basés sur les tâches ; n'ajoutez un onglet que lorsqu'une section a un public ou un objectif distinct.
+
+## Le fichier docs.json
+
+Toute la navigation est contrôlée par un seul fichier à la racine du projet : `docs.json`. Il définit les onglets de la barre supérieure, les groupes de barre latérale dans chaque onglet et l'ordre des pages.
+
+## Structure
+
+```json
+{
+  "tabs": [
+    {
+      "tab": "Tab Label",
+      "groups": [
+        {
+          "group": "Section Title",
+          "pages": ["page-one", "page-two"]
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Onglets
+
+Chaque entrée du tableau `tabs` crée un onglet de navigation de premier niveau. Il existe trois types :
+
+### Onglet de contenu
+
+Un onglet avec des groupes de barre latérale et des pages :
+
+```json
+{
+  "tab": "Overview",
+  "groups": [
+    { "group": "Getting Started", "pages": ["introduction", "quickstart"] },
+    { "group": "Core Concepts", "pages": ["authentication"] }
+  ]
+}
+```
+
+### Onglet Référence API
+
+Un onglet qui génère automatiquement des pages à partir d'une spécification OpenAPI :
+
+```json
+{
+  "tab": "API Reference",
+  "api": {
+    "source": "openapi.yaml",
+    "tagsOrder": ["Pets", "Store"],
+    "defaultGroup": "General"
+  }
+}
+```
+
+### Onglet de lien
+
+Un onglet qui établit un lien vers une route interne ou une URL externe :
+
+```json
+{
+  "tab": "Changelog",
+  "href": "/changelog"
+}
+```
+
+## Groupes
+
+Les groupes créent des sections étiquetées dans la barre latérale. Chaque groupe a :
+
+- **`group`** — l'en-tête de section affiché dans la barre latérale
+- **`pages`** — un tableau ordonné d'ID de page
+
+Les ID de page correspondent aux chemins de fichiers sous `src/content/`. Par exemple :
+
+| ID de page | Chemin du fichier |
+| --- | --- |
+| `"introduction"` | `src/content/introduction.mdx` |
+| `"guides/getting-started"` | `src/content/guides/getting-started.mdx` |
+| `"api/reference"` | `src/content/api/reference.mdx` |
+
+## Ajouter une nouvelle section
+
+Pour ajouter une nouvelle section de barre latérale, ajoutez un objet de groupe à l'onglet approprié :
+
+```json
+{
+  "tab": "Overview",
+  "groups": [
+    { "group": "Getting Started", "pages": ["introduction", "quickstart"] },
+    { "group": "Advanced", "pages": ["webhooks", "pagination"] },
+    { "group": "New Section", "pages": ["my-new-page"] }
+  ]
+}
+```
+
+## Réorganisation
+
+Les pages apparaissent dans la barre latérale exactement dans l'ordre listé du tableau `pages`. Les groupes apparaissent dans l'ordre dans lequel ils sont définis du tableau `groups`. Les onglets apparaissent de gauche à droite dans l'ordre défini du tableau `tabs`.
+
+## Icônes de groupe
+
+Ajoutez un champ `icon` à n'importe quel groupe pour afficher une icône à côté de l'en-tête de groupe dans la barre latérale :
+
+```json
+{
+  "group": "Getting Started",
+  "icon": "book-open",
+  "pages": ["introduction", "quickstart"]
+}
+```
+
+Noms d'icônes disponibles :
+
+| Nom | Icône |
+| --- | --- |
+| `book-open` | Livre / documentation |
+| `code-simple` | Crochets de code |
+| `grid-round` | Grille / aperçu |
+| `link-simple` | Lien / URL |
+| `wrench` | Outils / paramètres |
+| `party-horn` | Fonctionnalités / célébration |
+| `telegram` | Envoyer / messagerie |
+| `envelope` | E-mail |
+| `x-twitter` | X / Twitter |
+| `message` | Chat / message |
+
+## Masquer les groupes et les onglets
+
+Définissez `hidden: true` sur un groupe ou un onglet pour l'exclure de la barre latérale tout en gardant ses pages accessibles par URL :
+
+```json
+{
+  "group": "Internal",
+  "hidden": true,
+  "pages": ["internal/roadmap", "internal/notes"]
+}
+```
+
+```json
+{
+  "tab": "Staff Only",
+  "hidden": true,
+  "groups": [...]
+}
+```
+
+Les pages masquées restent accessibles par URL directe, mais elles n'apparaissent pas dans la navigation ou les plans de site. Consultez [Contrôler la visibilité des pages et de la recherche](/guides/seo-and-visibility) pour obtenir plus de contrôles d'indexation.
+
+## Groupes imbriqués
+
+Placez un objet de groupe dans le tableau `pages` d'un autre groupe lorsqu'une section a besoin d'un niveau supplémentaire :
+
+```json
+{
+  "group": "Deploy",
+  "pages": [
+    "guides/deploying",
+    {
+      "group": "Platforms",
+      "pages": ["guides/deploy-vercel", "guides/deploy-cloudflare"]
+    }
+  ]
+}
+```
+
+Évitez les structures plus profondes. Si les lecteurs doivent développer plusieurs niveaux pour trouver une page, divisez le matériel en onglets plus clairs ou réduisez le nombre de catégories.
+
+## Vérifier la navigation
+
+Exécutez l'aperçu local et suivez chaque nouvelle entrée. Confirmez que la barre de navigation et les liens précédent/suivant correspondent à la progression prévue, puis exécutez :
+
+```bash
+jq empty docs.json
+npx --yes @thallylabs/cli@latest check
+```
+
+## Étapes suivantes
+
+- [Référence docs.json](/guides/docs-json-reference)
+- [Configurer le référencement et la visibilité](/guides/seo-and-visibility)
+- [Ajouter des redirections](/guides/redirects)

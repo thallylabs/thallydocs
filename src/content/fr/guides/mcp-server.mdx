@@ -1,0 +1,354 @@
+---
+title: Référence des outils MCP
+navTitle: Outils MCP
+description: Consultez les outils d'édition locaux et de sites déployés disponibles via les serveurs MCP de Thally.
+---
+
+{/* thally:ai-translation locale=fr source-sha=ac0bde450460b2799532f68b8cf63aad158fc5606c3f83af88238dfd9c05c70e */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`@thallylabs/mcp` est un serveur [Model Context Protocol](https://modelcontextprotocol.io) qui permet aux outils IA — Claude Code, Claude Desktop, Cursor, Windsurf — de créer, lire, mettre à jour et migrer des projets de documentation Thally par langage naturel.
+
+## Configuration
+
+Ajoutez `@thallylabs/mcp` à votre agent de codage ou client de bureau :
+
+<Tabs>
+
+<Tab title="Codex">
+
+```bash
+codex mcp add thally -- npx -y @thallylabs/mcp
+```
+
+</Tab>
+
+<Tab title="Claude Code">
+
+```bash
+claude mcp add thally -- npx -y @thallylabs/mcp
+```
+
+</Tab>
+
+<Tab title="Claude Desktop">
+
+Ajoutez à `claude_desktop_config.json` :
+
+```json
+{
+  "mcpServers": {
+    "thally": {
+      "command": "npx",
+      "args": ["-y", "@thallylabs/mcp"]
+    }
+  }
+}
+```
+
+</Tab>
+
+<Tab title="Cursor / Windsurf">
+
+Ajoutez à vos paramètres MCP :
+
+```json
+{
+  "mcpServers": {
+    "thally": {
+      "command": "npx",
+      "args": ["-y", "@thallylabs/mcp"]
+    }
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+Une fois connecté, vous pouvez discuter avec votre documentation comme avec un collaborateur : *« Ajouter une page sur les webhooks à l'onglet Guides »* ou *« Migrer la documentation Stripe vers un nouveau projet »*.
+
+---
+
+## Outils
+
+### Gestion de projet
+
+#### `create_project`
+
+Génère un projet à partir de la version de démarrage immuable actuelle. La version
+épingle exactement une révision d'exécution publique et est partagée par l'interface de ligne de commande, l'MCP, la migration
+et les flux de création Thally Cloud.
+
+```
+Create a new Thally project at ~/dev/my-docs with the name "Acme Docs"
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `projectDir` | Oui | Chemin du nouveau projet |
+| `projectName` | Non | Affiché dans l'en-tête et les métadonnées |
+| `description` | Non | Utilisé pour le SEO et OpenGraph |
+| `brandPreset` | Non | `primary` ou `secondary` |
+| `repoUrl` | Non | URL GitHub pour les liens « Éditer sur GitHub » |
+| `install` | Non | Exécuter `npm install` après la génération (par défaut : `true`) |
+
+---
+
+#### `add_page`
+
+Crée une nouvelle page MDX et l'enregistre dans `docs.json`.
+
+```
+Add a page called "Authentication" to the Guides tab under a "Security" group
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `projectDir` | Oui | Chemin du projet Thally |
+| `pageId` | Oui | Par exemple `guides/private-docs` — sans extension `.mdx` |
+| `title` | Oui | Titre de la page (frontmatter) |
+| `description` | Non | Description de la page (frontmatter) |
+| `content` | Non | Corps MDX (espace réservé utilisé si omis) |
+| `tab` | Non | Nom de l'onglet (par défaut : premier onglet) |
+| `group` | Non | Nom du groupe (par défaut : premier groupe) |
+| `position` | Non | `start` ou `end` (par défaut : `end`) |
+
+---
+
+#### `add_tab`
+
+Ajoute un nouvel onglet de niveau supérieur à la navigation.
+
+```
+Add a "SDK Reference" tab to the project
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `projectDir` | Oui | Chemin du projet Thally |
+| `tabName` | Oui | Libellé de l'onglet |
+| `href` | Non | S'il est défini, crée un onglet de lien de redirection (par exemple `/changelog`) |
+| `position` | Non | `start` ou `end` (par défaut : `end`) |
+
+---
+
+#### `update_page`
+
+Met à jour le frontmatter ou le corps d'une page existante.
+
+```
+Update the "Getting Started" page to mention the new --yes flag
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `projectDir` | Oui | Chemin du projet Thally |
+| `pageId` | Oui | Page à mettre à jour |
+| `title` | Non | Nouveau titre |
+| `description` | Non | Nouvelle description |
+| `content` | Non | Remplace le corps existant |
+| `mergeFrontmatter` | Non | Champs de frontmatter supplémentaires à fusionner |
+
+---
+
+#### `list_pages`
+
+Liste toutes les pages d'un projet, organisées par onglet et groupe.
+
+```
+Show me all the pages in my docs project
+```
+
+---
+
+### Migration
+
+#### `migrate_docs`
+
+Crée un nouveau projet Thally à partir du modèle canonique actuel, puis importe un site de documentation public ou un référentiel de documentation GitHub. Le répertoire cible doit être nouveau ou vide ; l'outil ne réutilise jamais l'exécution d'un site existant.
+
+```
+Migrate https://github.com/example/docs into a new Thally project at /tmp/example-docs
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `sourceUrl` | Oui | URL de documentation publique ou URL de référentiel GitHub |
+| `projectDir` | Oui | Répertoire cible nouveau ou vide |
+| `branch` | Non | Branche Git à cloner (détection automatique par défaut) |
+| `docsDir` | Non | Sous-répertoire de documentation dans le référentiel (détection automatique) |
+| `platform` | Non | `mintlify` ou `docusaurus` ; omettez pour la détection automatique |
+| `maxPages` | Non | Nombre maximum de pages de site en direct à importer (`1`–`1000`) |
+| `apiKey` | Non | Clé API Anthropic pour la conversion non-Markdown |
+
+#### `import_docs`
+
+Importe la documentation dans un projet Thally existant sans remplacer son exécution. Utilisez cet outil uniquement lorsque vous souhaitez intentionnellement fusionner le contenu et la navigation sur place.
+
+```
+Import https://github.com/example/api-docs into the existing Thally project at /workspace/docs
+```
+
+Les options source correspondent à `migrate_docs` ; `projectDir` doit pointer vers un projet Thally existant.
+
+---
+
+### Lecture et recherche
+
+Ces outils permettent aux agents IA d'interroger votre documentation comme contexte — utile pour construire des fonctionnalités IA sur votre documentation.
+
+#### `search_docs`
+
+Recherche toutes les pages par mot-clé et retourne les résultats classés.
+
+```
+Search the docs for anything about rate limiting
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `projectDir` | Oui | Chemin du projet Thally |
+| `query` | Oui | Requête de recherche |
+| `limit` | Non | Nombre maximum de résultats à retourner (par défaut : `5`) |
+
+---
+
+#### `read_page`
+
+Lit le contenu complet d'une seule page par ID.
+
+```
+Read the "guides/private-docs" page
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `projectDir` | Oui | Chemin du projet Thally |
+| `pageId` | Oui | Par exemple `guides/private-docs` |
+
+---
+
+#### `get_context`
+
+Retourne le contenu de documentation le plus pertinent pour un sujet, dans une limite de jetons. Idéal pour fonder les réponses IA dans votre documentation.
+
+```
+Get context about the authentication flow for up to 4000 tokens
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `projectDir` | Oui | Chemin du projet Thally |
+| `topic` | Oui | Sujet ou question |
+| `maxTokens` | Non | Budget de jetons (par défaut : `4000`) |
+
+---
+
+### Interroger un site déployé
+
+Ces outils interrogent un site Thally **déployé** via HTTP — ils utilisent les mêmes index et rapports qui alimentent le site en direct, afin qu'un agent puisse raisonner sur la documentation qu'il n'a pas générée.
+
+#### `semantic_search`
+
+Exécute une recherche hybride (texte complet + vecteur) contre `/api/search` d'un site déployé — le même index Orama que la palette de commandes dans l'application.
+
+```
+Semantic-search https://docs.example.com for "rotating API keys"
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `siteUrl` | Oui | URL de base du site Thally déployé |
+| `query` | Oui | Requête de recherche en langage naturel |
+| `limit` | Non | Nombre maximum de résultats (par défaut : `8`) |
+| `mode` | Non | `hybrid` (par défaut) ou `fulltext` |
+
+---
+
+#### `agent_readiness`
+
+Récupère le score de préparation de l'agent (0–100) pour un site déployé — le même rapport que `/api/agent-readiness` et `thally check`, incluant les scores partiels par signal et les pages spécifiques qui font baisser le score.
+
+```
+What's the agent readiness score for https://docs.example.com?
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `siteUrl` | Oui | URL de base du site Thally déployé |
+| `minScore` | Non | Seuil (0–100) ; indique succès/échec dans le résumé |
+
+---
+
+### Qualité
+
+#### `lint_project`
+
+Vérifie un projet pour les erreurs et avertissements : références de navigation rompues, fichiers orphelins, frontmatter manquant.
+
+```
+Check my docs project for any issues
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `projectDir` | Oui | Chemin du projet Thally |
+| `fix` | Non | Ajouter automatiquement les pages orphelines à la navigation (par défaut : `false`) |
+
+---
+
+### Internationalisation
+
+#### `translate_docs`
+
+Traduit les pages de documentation vers une locale secondaire en utilisant Claude IA. Nécessite un bloc `i18n` dans le `docs.json` du projet. Les fichiers MDX traduits sont écrits dans `src/content/{locale}/` pour que vous les examiniez et validiez.
+
+```
+Translate my docs to Spanish
+```
+
+```
+Translate only the introduction and quickstart pages to French
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `projectDir` | Oui | Chemin du projet Thally |
+| `locale` | Oui | Code de locale cible, par exemple `"es"`, `"fr"` |
+| `pages` | Non | Tableau des IDs de pages à traduire (omettez pour toutes les pages) |
+| `force` | Non | Remplacer les fichiers de traduction existants (par défaut : `false`) |
+| `apiKey` | Non | Clé API Anthropic (retour à `ANTHROPIC_API_KEY`) |
+| `model` | Non | Modèle Claude à utiliser (par défaut : `claude-sonnet-4-6`) |
+
+Consultez [Support multilingue](/guides/multi-language) pour les instructions de configuration complètes.
+
+---
+
+### Modifications de produit (flux auto-géré)
+
+#### `sync_from_repo`
+
+Analyse une demande de tirage fusionnée en utilisant la configuration de suivi du `docs.json` du projet local.
+Il prévisualise la tâche de documentation par défaut, ou la distribue
+au référentiel de documentation afin que l'agent de documentation contrôlé par révision puisse brouillonner une demande de tirage.
+
+Pour Cloud Track, connectez les sources Produit et les surfaces Connaissance dans Thally
+Cloud. Le pipeline géré utilise l'admission GitHub durable, l'impact
+Connaissance produit et l'accès au référentiel limité ; il ne dépend pas de cet outil MCP.
+
+```
+Preview the docs task for pull request 482 in acme/widget
+```
+
+| Paramètre | Requis | Description |
+|-----------|--------|-------------|
+| `projectDir` | Oui | Projet Thally contenant la configuration de suivi. |
+| `repo` | Parfois | Référentiel produit comme `owner/repo` ; optionnel lorsqu'exactement un référentiel est suivi. |
+| `pr` | Non | Numéro de demande de tirage fusionnée ; par défaut la fusion la plus récente sur la branche suivi. |
+| `dryRun` | Non | Prévisualiser sans distribuer. Par défaut `true`. |
+| `docsRepo` | Pour la distribution | Référentiel de documentation comme `owner/repo` ; requis lorsque `dryRun` est `false`. |
+
+La distribution nécessite `THALLY_GITHUB_TOKEN` ou une application GitHub connectée avec accès
+au référentiel de documentation. L'outil ne fusionne jamais la demande de tirage de documentation générée.

@@ -1,0 +1,76 @@
+---
+title: Ajouter des polices personnalisées
+navTitle: Polices
+description: Choisissez des polices Google pour le corps du texte et les titres sans modifier le runtime de l'application.
+---
+
+{/* thally:ai-translation locale=fr source-sha=b82311eb9b9658476f6e5560d9d07d3835b7d26e5edda8e1d71e6b728cd9cba6 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally est fourni avec **Inter** pour le corps du texte et **JetBrains Mono** pour le code. Vous
+pouvez définir les familles de corps et de titres avec un bloc `fonts` dans `docs.json`
+sans modifier le runtime de l'application.
+
+## Configuration
+
+```json
+"fonts": {
+  "body": { "family": "Plus Jakarta Sans", "weight": ["400", "500", "600", "700"] },
+  "heading": { "family": "Outfit", "weight": ["600", "700"] }
+}
+```
+
+Thally lit la configuration, récupère la police sur Google Fonts et remplace les variables CSS qui contrôlent la typographie sur l'ensemble du site.
+
+## Champs
+
+### `fonts.body`
+
+S'applique à tout le corps du texte, aux étiquettes de l'interface utilisateur, à la navigation et à la barre latérale.
+
+| Champ | Type | Par défaut | Description |
+| --- | --- | --- | --- |
+| `family` | `string` | `"Inter"` | Nom exact de la famille Google Font (orthographe exacte, par exemple `"DM Sans"`) |
+| `weight` | `string[]` | `["400","500","600","700"]` | Poids des polices à charger |
+
+### `fonts.heading`
+
+S'applique aux titres h1–h6 dans le contenu de la page. S'il est omis, les titres utilisent la même police que le corps.
+
+| Champ | Type | Par défaut | Description |
+| --- | --- | --- | --- |
+| `family` | `string` | Identique au corps | Nom de la famille Google Font |
+| `weight` | `string[]` | `["600","700"]` | Poids des polices à charger |
+
+## Combinaisons populaires
+
+| Corps | Titre | Caractère |
+| --- | --- | --- |
+| `Plus Jakarta Sans` | `Outfit` | Moderne, géométrique, orienté produit |
+| `DM Sans` | `DM Sans` | Propre, minimal, neutre |
+| `IBM Plex Sans` | `IBM Plex Sans` | Technique, adjacent aux espaces fixes |
+| `Lato` | `Lato` | Humaniste, convivial, accessible |
+| `Figtree` | `Figtree` | Arrondi, contemporain |
+| `Inter` | `Sora` | Corps net + titres expressifs |
+| `Source Sans 3` | `Playfair Display` | Éditorial, axé sur le contenu |
+
+## Comment ça fonctionne
+
+Lorsque Thally détecte une police personnalisée dans `docs.json`, il :
+
+1. Génère une URL CSS Google Fonts pour chaque famille configurée
+2. Injecte les balises `<link rel="preconnect">` et `<link rel="stylesheet">` dans l'en-tête du document
+3. Remplace les variables CSS `--font-sans` et `--font-heading` afin que Tailwind et la typographie en prose récupèrent la nouvelle police
+
+La police Inter par défaut (chargée via `next/font`) reste comme secours — ainsi, si la demande Google Fonts échoue, la page s'affiche toujours correctement avec Inter.
+
+## Police de code
+
+La configuration de police accessible à l'utilisateur couvre actuellement le corps et le texte des titres.
+Le code utilise la valeur par défaut JetBrains Mono du runtime. Ne modifiez pas
+`src/app/layout.tsx` ; c'est un fichier appartenant au framework et remplacé par les
+mises à jour du runtime supportées.
+
+<Note type="info" title="Ce site utilise des polices personnalisées">
+Cette documentation utilise **Plus Jakarta Sans** pour le corps du texte et **Outfit** pour les titres, configurés dans `docs.json` — exactement comme décrit ci-dessus.
+</Note>

@@ -1,0 +1,98 @@
+---
+title: Examiner les connaissances produit
+navTitle: Connaissances produit
+description: Découvrez comment Thally transforme les révisions de produit exactes en modifications basées sur des preuves et en correspondances de documentation que vous pouvez examiner.
+keywords:
+  - product knowledge graph
+  - documentation impact
+  - product changes
+  - evidence-backed documentation
+---
+
+{/* thally:ai-translation locale=fr source-sha=28511b195cfb19f996f888bcbdf56fedc3690f41ef673205c29c602e5d8bcfff */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Product Knowledge montre ce qui a changé dans les référentiels de produits connectés et
+les pages de documentation qui pourraient nécessiter une attention. Chaque correspondance conservée renvoie à des
+preuves inspectables ; la similarité de recherche seule n'est pas considérée comme une preuve.
+
+Le graphe sous-jacent est un ensemble versionné de faits sur les produits et les relations
+entre eux. Chaque fait pointe vers le fichier et le commit qui le soutient.
+
+Product Knowledge est une fonctionnalité de Thally Cloud. Ouvrez un site, puis sélectionnez
+**Knowledge**.
+
+## Ce que Thally lit
+
+Chaque tâche d'ingestion est épinglée à un référentiel, une branche ou une demande de fusion, et un commit
+exact. Le lecteur extrait actuellement les faits supportés de :
+
+- Fichiers OpenAPI JSON ou YAML, y compris les fichiers nommés avec `openapi` ou
+  `swagger` ;
+- Documentation MDX ; et
+- Fichiers sources TypeScript.
+
+Le lecteur n'installe pas les dépendances, n'exécute pas les scripts du projet, n'exécute pas les
+plugins et n'exécute pas le code client. Il ignore les dossiers de dépendances, la sortie de compilation,
+les fixtures, les fichiers d'environnement, les clés et les chemins de secrets courants. Les travaux de taille excessive
+sont rejetés au lieu d'être partiellement approuvés.
+
+## Comment un changement de produit atteint la file d'attente d'examen
+
+<Steps>
+  <Step title="Thally enregistre les preuves">
+    Chaque fait pointe vers le fichier et le commit exacts qui le soutiennent. Les fichiers
+    inchangés peuvent réutiliser les preuves antérieures ; les fichiers modifiés créent une nouvelle révision.
+  </Step>
+  <Step title="Thally compare les versions de connaissances complètes">
+    Une nouvelle version devient actuelle uniquement lorsque son instantané de source complet est
+    prêt. Les vues de demande de fusion restent séparées du graphe de production.
+  </Step>
+  <Step title="L'analyse d'impact trouve les pages possibles">
+    Les liens directs, les relations de fait court, les termes exacts, la recherche textuelle et
+    la recherche basée sur le sens produisent des candidats. Un candidat conservé a toujours besoin d'une
+    relation supportée et de preuves de fichier.
+  </Step>
+  <Step title="Vous confirmez le résultat">
+    Les propriétaires et les éditeurs peuvent marquer une page comme **Affected**, **Not affected**, **False
+    match**, ou **Review later**. Les lecteurs peuvent inspecter les preuves mais ne peuvent pas
+    soumettre une décision.
+  </Step>
+</Steps>
+
+## Lire l'écran Knowledge
+
+| Section | Ce qu'elle vous dit |
+| --- | --- |
+| **Documentation updates** | Pages en attente d'examen et statut des mises à jour proposées ou publiées. |
+| **Product changes** | Changements structurés récents détectés dans les sources connectées. |
+| **Explore what Thally knows** | Concepts destinés aux clients et leurs preuves dans les sources produit. |
+| Détail d'impact | Ce qui a changé, les valeurs avant et après, le chemin de relation le plus fort, les signaux de confiance et les preuves de fichier de soutien. |
+
+La confiance aide à commander la file d'attente d'examen. Elle ne remplace pas les preuves ou votre
+décision. Si deux sources ne sont pas d'accord, Thally conserve les deux déclarations et crée un
+élément d'examen au lieu de choisir silencieusement l'une ou l'autre.
+
+## Connecter Product Knowledge à Track
+
+Track utilise la même révision immuable, les changements de produit significatifs, les preuves et
+le résultat de page affectée. Il envoie uniquement un ensemble délimité de pages et de faits supportés
+à l'agent de documentation. Si aucune page n'a d'impact soutenu par les preuves, l'exécution se termine
+sans créer de demande de fusion.
+
+Lorsque Track crée une demande de fusion, vous l'examinez dans GitHub. L'agent ne
+fusionne jamais son propre travail. Après qu'une personne fusionne la demande de fusion de documentation, le
+flux de déploiement géré normal publie la source examinée.
+
+## Examiner un changement
+
+1. Ouvrez **Knowledge** et sélectionnez une page qui nécessite un examen.
+2. Lisez **What changed** et comparez les valeurs avant et après.
+3. Suivez le chemin de relation et ouvrez les références de fichier de soutien.
+4. Marquez la correspondance avec la décision la plus précise. Utilisez **Review later** uniquement
+   lorsque vous avez toujours besoin du contexte du produit.
+5. Ouvrez **Track** pour suivre toute demande de fusion de documentation créée pour le
+   changement de produit.
+
+Vos décisions améliorent la correspondance ultérieure, mais elles ne permettent pas à un modèle d'IA de
+marquer les preuves non supportées comme vérifiées.

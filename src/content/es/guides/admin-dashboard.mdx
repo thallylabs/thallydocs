@@ -1,0 +1,143 @@
+---
+title: Gestionar el administrador del sitio integrado
+navTitle: Administrador del sitio
+description: Configure y asegure el área `/admin` incluida con el runtime de Thally de código abierto.
+keywords:
+  - Thally admin
+  - self-hosted documentation
+  - OIDC
+  - team roles
+---
+
+{/* thally:ai-translation locale=es source-sha=fdd34cbedfc90b1335293a381b42b05835c3d51f67d61e77f28a135ab820e3b7 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Cada sitio de Thally incluye un área `/admin` para diagnósticos de runtime y
+operación autohospedada. Es diferente del área de trabajo autenticada de Thally Cloud
+en `app.thally.io`.
+
+Utilice [Thally Cloud](/guides/thally-cloud) para sitios administrados, implementaciones,
+dominios, Product Knowledge, Track hospedado, facturación y miembros del área de trabajo. Utilice
+el área `/admin` integrada cuando opera el runtime de código abierto directamente o
+necesita controles locales del sitio.
+
+## Qué incluye el administrador integrado
+
+| Página | Propósito |
+| --- | --- |
+| **Home** | Resumen del sitio, disponibilidad y estado del servicio disponible. |
+| **Analytics** | Tráfico humano y de agentes, páginas principales, términos de búsqueda, comentarios y brechas de contenido cuando el puente de análisis en la nube está disponible. |
+| **Agent Readiness** | La puntuación de disponibilidad actual, comprobaciones y páginas reparables. |
+| **Docs tasks** | Solicitudes de extracción de documentación y repositorios rastreados configurados localmente cuando Track está disponible. |
+| **MCP server** | El endpoint MCP de solo lectura implementado, herramientas, límite de velocidad y control de encendido/apagado. |
+| **Team** | El registro OIDC confirmado en Git y los roles efectivos. |
+| **Branding** | Anulaciones de marca de runtime para el sitio. |
+| **Settings** | Acceso, análisis, chat de IA, localización y controles orientados al agente. |
+
+Los paneles respaldados por un servicio de pago muestran un estado claramente
+bloqueado o no disponible cuando el sitio no tiene un derecho válido de Thally Cloud.
+
+## Asegurar `/admin`
+
+No publique un área de administración desprotegida. Elija uno o ambos métodos
+de inicio de sesión admitidos.
+
+### Contraseña de emergencia
+
+Configure un secreto seguro en su proveedor de alojamiento:
+
+```bash
+THALLY_ADMIN_PASSWORD=a-long-random-admin-password
+```
+
+Esta es la configuración más corta y una ruta de recuperación útil. No confirme el valor
+en el repositorio ni lo coloque en una variable de entorno pública.
+
+### OIDC para un equipo
+
+Configure un proveedor de OpenID Connect como Google Workspace o Microsoft
+Entra:
+
+```bash
+THALLY_OIDC_ISSUER=https://accounts.google.com
+THALLY_OIDC_CLIENT_ID=your-client-id
+THALLY_OIDC_CLIENT_SECRET=your-client-secret
+THALLY_AUTH_SECRET=a-long-random-session-secret
+```
+
+Thally utiliza descubrimiento OIDC, protección PKCE y los ámbitos
+`openid email profile`. El proveedor de identidades debe permitir este URI de redirección exacto:
+
+```text
+https://docs.example.com/api/admin/auth/callback
+```
+
+<Note type="info" title="Puede mantener ambos métodos de inicio de sesión">
+  Cuando se configuran OIDC y una contraseña, los miembros del equipo pueden usar su
+  identidad de trabajo mientras la contraseña permanece disponible para recuperación.
+</Note>
+
+## Asignar roles locales del sitio
+
+El administrador integrado lee su lista del bloque `team` en `docs.json`:
+
+```json
+{
+  "team": {
+    "members": [
+      { "email": "owner@example.com", "role": "owner" },
+      { "email": "writer@example.com", "role": "editor" }
+    ],
+    "domains": [
+      { "domain": "example.com", "role": "viewer" }
+    ]
+  }
+}
+```
+
+Una entrada de miembro explícita tiene precedencia sobre un valor predeterminado de dominio. Una
+persona que inició sesión y que no coincide con ninguno no recibe acceso. La lista se verifica en cada
+solicitud de página de administración, por lo que una eliminación confirmada o cambio de rol tiene efecto sin
+esperar a que la sesión existente expire.
+
+| Capacidad | Visor | Editor | Propietario |
+| --- | :---: | :---: | :---: |
+| Ver análisis y disponibilidad | Sí | Sí | Sí |
+| Gestionar tareas de documentación y controles de sitio admitidos | No | Sí | Sí |
+| Gestionar acceso del lector | No | Sí | Sí |
+| Cambiar identidad, marca y la lista de equipo | No | No | Sí |
+
+Estos roles pertenecen al área de administración del sitio implementado. Los roles del área de trabajo
+de Thally Cloud se almacenan y autorizan por separado.
+
+## Almacenar estado local del sitio de forma duradera
+
+El desarrollo local escribe el estado de administración y análisis admitidos en `.data/`.
+Un sistema de archivos sin servidor efímero no preserva esos archivos en
+implementaciones. Configure el almacenamiento remoto de libSQL antes de depender del
+estado local del sitio:
+
+```bash
+THALLY_DATABASE_URL=libsql://your-database.turso.io
+THALLY_DATABASE_TOKEN=your-token
+```
+
+Agent Readiness califica el contenido publicado directamente y no depende de
+esta base de datos. El análisis de Cloud administrado se almacena por el servicio en la nube en lugar de
+por el adaptador local del sitio.
+
+## Proteger lectores por separado
+
+La autenticación de administrador controla quién puede abrir `/admin`. Los controles de acceso del lector
+controlan quién puede abrir la documentación en sí. Configure `THALLY_ACCESS_PASSWORD` para una
+puerta de visitante autohospedada, o configure **Settings → Reader access** para un
+sitio administrado. Consulte [Proteger documentación privada](/guides/private-docs).
+
+## Verificar la configuración
+
+1. Abra `/admin` en una ventana del navegador privado.
+2. Confirme que el inicio de sesión OIDC o contraseña configurada sea obligatorio.
+3. Inicie sesión como cada rol que utiliza y verifique las páginas y controles permitidos.
+4. Elimine la cookie de sesión y confirme que el área de administración está protegida nuevamente.
+5. Pruebe la documentación pública por separado; el acceso de administrador no debe otorgar ni
+   implicar acceso del lector.

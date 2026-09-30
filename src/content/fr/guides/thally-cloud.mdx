@@ -1,0 +1,187 @@
+---
+title: Gérer les sites avec Thally Cloud
+navTitle: Thally Cloud
+description: Créer, publier, surveiller et améliorer les sites de documentation à partir de l'espace de travail Thally Cloud.
+keywords:
+  - Thally Cloud
+  - documentation gérée
+  - plateforme de documentation
+  - tableau de bord du site
+---
+
+{/* thally:ai-translation locale=fr source-sha=65a0373fa793b3a89b3f805ba00a6c1c3fe8b08971f426336cf01208ff0714a4 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally Cloud est l'espace de travail hébergé pour vos sites de documentation. Utilisez-le
+pour connecter GitHub, publier des sites gérés, examiner les connaissances produit, exécuter Track
+et gérer les paramètres accessibles aux lecteurs sans céder la propriété de votre source.
+Vos fichiers MDX, configuration, demandes de fusion et historique des commits restent dans votre
+référentiel GitHub.
+
+## Choisir la bonne surface Thally
+
+| Surface                         | À utiliser pour                                                                                                                | Source de vérité                                      |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
+| Thally Cloud sur `app.thally.io` | Espaces de travail, sites, déploiements gérés, domaines, Track, Knowledge, analyses, questions des lecteurs, facturation et membres | Vos enregistrements d'espace de travail et référentiels Git connectés |
+| Votre référentiel de documentation   | Pages, navigation, extraits, fichiers OpenAPI et paramètres de site versionnés                                              | Git                                                   |
+| Zone `/admin` intégrée d'un site | Paramètres d'exécution et diagnostics auto-hébergés                                                                         | Le site déployé et son stockage configuré          |
+| CLI Thally et MCP              | Création locale, migration, validation, automatisation et auto-hébergement                                                 | Fichiers dans votre extraction locale                          |
+
+<Note type="info" title="Les paramètres Cloud ne remplacent pas Git">
+  Thally Cloud peut publier les paramètres pris en charge avec une version gérée. Il ne
+  transforme pas sa base de données en une deuxième copie de vos pages de documentation.
+</Note>
+
+## Planifier la capacité des sites gérés
+
+| Plan | Allocation active de site géré |
+| --- | --- |
+| Gratuit | Un site |
+| Cloud | Trois sites inclus ; la capacité supplémentaire est un module complémentaire de site récurrent |
+| Enterprise | Capacité spécifique au contrat |
+
+Certains espaces de travail payants ont également une allocation héritière persistante qui
+préserve les sites non supprimés qu'ils avaient au moment du lancement de la tarification des sites mesurés.
+Pour Cloud, la limite effective est la plus grande entre l'allocation spécifique à cet espace de travail
+et les trois sites inclus plus ses modules complémentaires récurrents. Cela signifie
+que deux espaces de travail Cloud peuvent avoir des limites numériques différentes ; ne traitez pas l'allocation
+d'un ancien espace de travail comme le plafond Cloud standard.
+
+Si la création de site signale que l'espace de travail a atteint son allocation de site actif,
+utilisez l'une de ces solutions de récupération :
+
+1. **Ajouter de la capacité.** À partir de **Sites**, choisissez **Mettre à niveau pour plus de sites**, ou ouvrez
+   **Paramètres de l'espace de travail → Facturation**. Un propriétaire peut mettre à niveau à partir de Gratuit ou choisir
+   **Gérer l'abonnement** pour ajouter de la capacité de site récurrente. Les espaces de travail Enterprise
+   peuvent contacter la facturation pour modifier la limite de contrat.
+2. **Supprimer un site Cloud.** Un propriétaire peut ouvrir un site existant, aller à
+   **Paramètres**, et choisir **Supprimer le site**. Une fois la suppression terminée, le site
+   ne compte plus vers l'allocation de site actif. Thally le supprime de
+   l'espace de travail Cloud mais ne modifie ni ne supprime son référentiel GitHub ou
+   ses fichiers de documentation.
+
+Après la modification de l'allocation, retournez à **Créer un site** et réessayez la publication.
+
+## Comprendre l'accès aux essais et les crédits IA
+
+Un espace de travail sans abonnement antérieur peut démarrer un essai Cloud
+unique de 14 jours sans carte de paiement. L'assistant de site prévisualise les capacités d'essai,
+y compris Track, les surfaces Knowledge disponibles et trois sites gérés actifs.
+L'ouverture de l'assistant ou l'inspection des chemins de référentiel ne démarre pas l'essai.
+
+Une soumission **Publier le site** autorisée démarre l'essai avant que la création et le déploiement
+de site en arrière-plan ne se terminent. Un échec de publication ultérieur ne réinitialise pas
+l'horloge d'essai, et une nouvelle tentative ne l'étend pas. Un espace de travail avec un abonnement existant
+ne peut pas démarrer un autre essai. Une fois qu'un essai expire, l'espace de travail
+utilise les capacités Gratuit sauf s'il a un abonnement payant valide.
+
+L'allocation initiale par défaut est 10 000 crédits IA partagés par espace de travail.
+Les flux de travail Cloud IA, y compris la traduction gérée et Track, utilisent ce solde
+d'espace de travail plutôt qu'une allocation séparée pour chaque site ou référentiel.
+Les clés API du fournisseur de modèle fournies par le client ne font pas partie de l'offre publique de Thally Cloud.
+Vérifiez le solde de crédit IA de votre espace de travail avant d'exécuter Track ou
+de générer des traductions.
+Les crédits et l'accès aux fonctionnalités sont séparés : un solde restant ne maintient pas
+les fonctionnalités payantes déverrouillées après l'expiration de l'essai.
+
+## Créer ou connecter un site
+
+À partir de la page d'accueil de l'espace de travail, sélectionnez **Créer un site**. Le flux de création demande
+les informations nécessaires pour publier un site géré :
+
+<Steps>
+  <Step title="Choisir l'identité du site">
+    Entrez un nom de site, une description optionnelle et une adresse `thally.app`
+    disponible.
+  </Step>
+  <Step title="Choisir la source de documentation">
+    Créer un référentiel client à partir du modèle de démarrage maintenu, ou connecter
+    un référentiel existant qui a déjà un projet Thally compatible.
+  </Step>
+  <Step title="Choisir les sources de produit">
+    Ajouter les référentiels dont les modifications de produit que Track doit surveiller. Vous pouvez ignorer
+    cette étape et les connecter ultérieurement à partir de **Track**.
+  </Step>
+  <Step title="Choisir les surfaces Knowledge">
+    Si cette étape est disponible, ajouter des contenus Markdown, MDX ou React pris en charge
+    accessibles aux clients en tant que destinations Track indépendantes. Chaque
+    événement Track qualifiant crée une exécution pour les documents principaux et une pour
+    chaque surface activée. Une destination peut ouvrir sa propre demande de fusion
+    délimitée par chemin, prête à être examinée quand elle a besoin d'une mise à jour. Vous pouvez gérer ces
+    cibles ultérieurement à partir de **Paramètres du site → Surfaces Knowledge**.
+  </Step>
+  <Step title="Examiner et publier">
+    Confirmez le référentiel, la branche de production, l'adresse du site et les
+    sources de produit et surfaces Knowledge optionnels. Thally sauvegarde le site avant
+    qu'il ne commence la configuration en arrière-plan, donc une nouvelle tentative sûre reprend le même site au lieu de
+    créer un doublon.
+  </Step>
+</Steps>
+
+Le référentiel de documentation ne peut pas également être sa propre source de produit. Cela
+empêche une demande de fusion de documentation de déclencher une autre exécution Track.
+
+## Choisir un hébergement géré ou externe
+
+| Mode d'hébergement | Thally Cloud gère                                            | Votre équipe gère                                       |
+| ------------ | --------------------------------------------------------------- | ------------------------------------------------------- |
+| Géré      | Les constructions, aperçus, versions, routage, certificats et restauration | Source de documentation et examen dans GitHub               |
+| Externe     | Les services cloud et la connexion signée du site                 | Les constructions, hébergement, historique de déploiement et routage public |
+
+Un site externe reçoit une credential `thally_site_*` une seule fois. Stockez-la en tant que
+`THALLY_CLOUD_SITE_TOKEN` sur le serveur ; ne l'exposez jamais via une
+variable `NEXT_PUBLIC_`. **Paramètres → Connexion** permet à un membre autorisé de
+faire pivoter ou révoquer la credential. Thally Cloud ne stocke que son hachage et ne peut pas
+afficher la valeur à nouveau après la fermeture de la boîte de dialogue.
+
+## Travailler à partir du tableau de bord du site
+
+Après avoir choisi un site, le tableau de bord regroupe le travail par résultat :
+
+| Zone                 | Ce que vous pouvez faire                                                                                                                                                                   |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Accueil**             | Voir le site en direct, la progression de la configuration et l'action utile suivante.                                                                                                                    |
+| **Analyses**        | Comparer le trafic humain et agent, l'engagement et les chemins de découverte quand l'analyse est incluse dans votre plan.                                                                         |
+| **Questions des lecteurs** | Examiner ce que les lecteurs demandent via des réponses IA et utiliser ces questions pour trouver des lacunes de documentation.                                                                                    |
+| **Disponibilité**        | Voir le rapport de disponibilité de l'agent publié et ouvrir les corrections prises en charge.                                                                                                                |
+| **Knowledge**        | Examiner les modifications de produit, les preuves, les correspondances de pages affectées et les concepts que Thally a appris.                                                                                     |
+| **Track**            | Connecter les sources de produit, choisir les déclencheurs de demande de fusion, fusion ou planifiés, et suivre chaque exécution de documents principaux ou de surface Knowledge vers une demande de fusion vérifiable ou un résultat sans modification. |
+| **Déploiements**      | Inspecter les publications de production et d'aperçu, filtrer l'historique, redéployer, réparer les défaillances prises en charge et restaurer.                                                                     |
+| **Paramètres**         | Gérer l'identité, les langues, la source Git, la version d'exécution, la marque, les domaines, l'accès des lecteurs, les retours, l'analyse, les surfaces Knowledge, les credentials de site externe et la suppression de site. |
+
+Certaines zones sont limitées au plan. La page vous indique quand une capacité n'est pas
+incluse au lieu de présenter des contrôles qui ne peuvent pas fonctionner.
+
+## Comprendre les rôles
+
+Thally Cloud résout chaque demande par rapport à l'espace de travail et au site actifs.
+Connaître un ID de site n'accorde pas l'accès.
+
+| Rôle   | Responsabilité typique                                                                           |
+| ------ | ------------------------------------------------------------------------------------------------ |
+| Lecteur | Suivre le site, le déploiement, les analyses, la disponibilité et l'activité de connaissance.                           |
+| Éditeur | Créer et exploiter des sites, examiner les correspondances de connaissance et gérer les paramètres quotidiens.              |
+| Propriétaire  | Gérer l'espace de travail, la facturation, les membres et les actions de site destructives en plus du travail d'éditeur. |
+
+La suppression d'un site le supprime de Thally Cloud mais laisse son référentiel GitHub
+et ses fichiers de documentation inchangés.
+
+Les membres de l'espace de travail et les invitations non expirées comptent dans la facturation. Le plan
+Cloud inclut cinq membres ; les membres supplémentaires sont facturés séparément.
+
+## Savoir ce que les plans déverrouillent
+
+Le runtime open-source, CLI, serveur MCP et chemin d'auto-hébergement restent
+disponibles sans abonnement Cloud. Un plan Cloud ou un essai actif déverrouille
+la couche de service hébergée, y compris l'hébergement géré, la synchronisation des paramètres,
+les domaines personnalisés, la protection par mot de passe, les réponses IA, Track, Product Knowledge,
+les flux de travail Agent Readiness, les analyses et les équipes. Enterprise ajoute SAML SSO,
+la configuration SCIM et l'accès aux journaux d'audit.
+
+## Continuer avec une opération
+
+- [Publier et exploiter les versions gérées](/guides/managed-hosting)
+- [Examiner Product Knowledge](/guides/product-knowledge)
+- [Transformer les modifications de produit en demandes de fusion de documentation](/guides/thally-track)
+- [Étendre Track aux surfaces Knowledge](/guides/knowledge-surfaces)
+- [Gérer le tableau de bord intégré d'un site auto-hébergé](/guides/admin-dashboard)

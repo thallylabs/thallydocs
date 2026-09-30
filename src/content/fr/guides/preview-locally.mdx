@@ -1,0 +1,71 @@
+---
+title: Prévisualiser votre documentation localement
+navTitle: Prévisualisation locale
+description: Exécutez le serveur de développement, examinez les modifications au fur et à mesure que vous écrivez, et validez un site Thally avant de le publier.
+---
+
+{/* thally:ai-translation locale=fr source-sha=fd24bbb8242879e7000d0ad1237c1350adcd0f822ef1ed8a66d0dc55cc877f73 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utilisez la prévisualisation locale pour chaque modification de contenu et de configuration. Elle se recharge
+lorsque vous enregistrez une page, `docs.json`, ou `src/data/site.ts`.
+
+## Avant de commencer
+
+Installez les dépendances du projet avec `npm install`. Si vous n'avez pas encore créé de
+site, complétez d'abord le [Quickstart](/quickstart).
+
+## Démarrer la prévisualisation
+
+À partir de la racine du projet, exécutez :
+
+```bash
+npm run dev
+```
+
+Ouvrez l'URL affichée dans le terminal. Thally démarre à
+[http://localhost:3040](http://localhost:3040) et utilise le prochain port disponible
+lorsque le port 3040 est occupé.
+
+## Examiner une modification
+
+1. Modifiez une page sous `src/content/` et enregistrez-la.
+2. Confirmez que le corps de la page et la table des matières se mettent à jour dans le navigateur.
+3. Si vous avez modifié `docs.json`, confirmez que l'onglet, le groupe, l'ordre et le titre de la page dans
+   la barre latérale ont changé.
+4. Testez les liens internes et les composants interactifs.
+5. Vérifiez le mode clair et le mode sombre, et réduisez le navigateur pour examiner la
+   navigation mobile.
+
+## Valider avant de publier
+
+Exécutez le vérificateur de contenu dans un deuxième terminal :
+
+```bash
+npx --yes @thallylabs/cli@latest check
+```
+
+Créez ensuite la même version de production optimisée que votre hôte exécutera :
+
+```bash
+npm run build
+```
+
+Une page qui semble correcte en développement peut toujours échouer une version de production
+en raison d'un MDX invalide, d'une importation manquante, ou d'une erreur de configuration. Traitez les deux
+commandes comme faisant partie de l'examen.
+
+## Problèmes courants
+
+| Problème | Ce qu'il faut vérifier |
+| --- | --- |
+| Le serveur démarre sur un autre port | Un autre processus utilise le port 3040 ; ouvrez l'URL affichée par la commande. |
+| Une page retourne 404 | Ajoutez son ID de page à `docs.json`, ou ouvrez l'URL qui correspond à son chemin sous `src/content/`. |
+| La barre latérale n'a pas changé | Confirmez que le JSON est valide et que l'ID de la page omet `src/content/` et `.mdx`. |
+| La compilation MDX échoue | Vérifiez les balises JSX non fermées, le frontmatter malformé, et les délimiteurs imbriqués à l'intérieur des exemples de composants. |
+
+## Étapes suivantes
+
+- [Créer et modifier des pages](/guides/writing-content)
+- [Organisez votre navigation](/guides/configuring-navigation)
+- [Valider la documentation dans CI](/guides/ci-checks)

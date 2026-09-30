@@ -1,0 +1,82 @@
+---
+title: Solucionar problemas de una referencia de API
+navTitle: Solución de problemas de API
+description: Diagnostica operaciones faltantes, grupos incorrectos, esquemas sin resolver y solicitudes Try It fallidas en la documentación de API de Thally generada.
+---
+
+{/* thally:ai-translation locale=es source-sha=c6323b56206f42c3771e9c511e1b8d79fcc29e438f2d0dc79f97328db2959347 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Comienza con el documento OpenAPI, luego revisa `docs.json`, la página generada
+y la API de destino en ese orden.
+
+## Ejecuta las comprobaciones locales
+
+```bash
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+Corrige los errores de sintaxis y configuración antes de depurar en el navegador.
+
+## Falta una operación
+
+- Confirma que la operación tiene un método HTTP bajo una entrada `paths` válida.
+- Confirma que `docs.json` apunta a la especificación local o remota prevista.
+- Si `api.navigation` es `false`, añade una página MDX redactada con un valor de frontera `openapi` para la operación.
+- Comprueba si una anulación de operación establece `hidden: true`.
+
+## Una operación está en el grupo equivocado
+
+Las páginas generadas utilizan la primera etiqueta OpenAPI coincidente. Controla el orden con
+`api.tagsOrder`, establece `api.defaultGroup` para operaciones sin etiquetar, o aplica una
+anulación de `group` por operación.
+
+Las claves de anulación deben utilizar el método exacto en mayúsculas y la ruta:
+
+```json
+{
+  "overrides": {
+    "GET /users/{id}": {
+      "group": "Users"
+    }
+  }
+}
+```
+
+## Un esquema o ejemplo está incompleto
+
+Confirma que el `$ref` se resuelve dentro de la especificación cargada y que los tipos de medios de solicitud
+y respuesta incluyen un esquema. Añade valores de `example` de OpenAPI cuando una
+muestra generada realista ayudaría al lector.
+
+Si la especificación utiliza una característica que el analizador no puede representar, escribe una
+página MDX redactada y utiliza los componentes de referencia de API para la explicación faltante.
+
+## Try It dice que no hay URL de servidor disponible
+
+Añade un array `servers` de nivel raíz u operación a los documentos OpenAPI:
+
+```yaml
+servers:
+  - url: https://api.example.com/v1
+```
+
+## Try It devuelve un error
+
+Comprueba el comando cURL generado de forma independiente. Las causas comunes son:
+
+- una URL de servidor inaccesible o incorrecta;
+- un valor de ruta, consulta o encabezado requerido está vacío;
+- credenciales expiradas o de marcador de posición;
+- la API rechaza el cuerpo de la solicitud o el tipo de medio;
+- el host de documentación no puede alcanzar una red API privada;
+- una exportación estática no tiene una ruta de servidor `/api/try-it`.
+
+No pongas un secreto de producción en `docs.json` para hacer que un ejemplo funcione.
+
+## Próximos pasos
+
+- [Configura el área de pruebas de API](/guides/api-playground)
+- [Configuración de OpenAPI](/guides/api-reference-setup)
+- [Solución de problemas general](/guides/troubleshooting)

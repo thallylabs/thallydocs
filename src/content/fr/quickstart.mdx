@@ -1,0 +1,222 @@
+---
+title: Démarrage rapide
+description: Publiez votre premier site de documentation avec Thally Cloud et vérifiez que le site en direct est prêt à partager.
+---
+
+{/* thally:ai-translation locale=fr source-sha=5dbf38a2cf196740e3997cda46f4c3c072d2f78ef6eb1e16b6e152e3bb0026aa */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Après ce guide, vous disposerez d'un site de documentation en direct à une adresse sécurisée
+`thally.app` et d'un référentiel GitHub que votre équipe possède.
+
+## Préférez-vous utiliser un agent de codage ?
+
+Copiez cette invite dans Codex, Claude Code, Cursor ou un autre agent capable d'utiliser
+un navigateur et un terminal. L'invite fait de Thally Cloud la source de création de site,
+indique à l'agent quand il a besoin de vous, et le maintient en fonctionnement jusqu'à ce que
+l'URL publiée se charge.
+
+<AgentPrompt
+  title="Copiez une invite complète pour publier votre site Thally"
+  copyOnly
+>
+
+Mettez ma documentation en direct sur un site Thally Cloud publié. Vous avez terminé avec succès lorsque vous me donnez l'URL en direct, confirmez qu'elle se charge, et résumez ce qui a été publié. Dites-moi clairement chaque fois qu'une étape nécessite mon intervention ; faites tout le reste vous-même. Si cette invite a été collée avant ou si la session a redémarré, inspectez l'état actuel et continuez à partir du point où le travail s'est arrêté au lieu de recommencer.
+
+Utilisez Thally Cloud sur https://app.thally.io/ pour créer et publier le site. Ne remplacez pas l'échafaudage local ou un autre fournisseur d'hébergement par la création de site. L'interface de ligne de commande n'est qu'un outil de développeur pour préparer, migrer, valider et prévisualiser le contenu du référentiel après que le site Cloud existe.
+
+1. Demandez quel contenu de documentation vous souhaitez publier. Acceptez un répertoire local, un référentiel GitHub, une URL de documentation publique ou une instruction claire pour commencer avec le contenu de démarrage de Thally. Répétez la source exacte et listez ses contenus de niveau supérieur afin que vous puissiez confirmer que c'est correct. Si vous ne pouvez pas accéder à la source nommée, arrêtez et demandez ; ne remplacez jamais la source par une autre.
+2. Ouvrez https://app.thally.io/. Si vous ne pouvez pas contrôler un navigateur, dites-moi d'ouvrir cette URL et guidez-moi uniquement à travers les étapes du navigateur qui nécessitent mon compte tandis que vous gérez tout le travail du référentiel et du terminal vous-même.
+3. J'ai besoin de vous : demandez-moi de me connecter ou de créer un compte si le navigateur n'est pas déjà authentifié. Ne me demandez jamais mon mot de passe, mon code de vérification, mon cookie de session ou mon code de récupération en chat.
+4. Sélectionnez Créer un site. Demandez-moi les détails manquants du nom du site, la description courte et l'adresse thally.app préférée. N'inventez jamais de détails de marque ou d'entreprise.
+5. À la source Docs, recommandez Créer un nouveau référentiel docs. Utilisez un référentiel existant uniquement lorsqu'il s'agit déjà d'un projet Thally actuel que vous avez explicitement sélectionné. J'ai besoin de vous : faites-moi installer ou approuver l'application Thally GitHub pour le compte GitHub prévu. Expliquez que la création d'un nouveau référentiel nécessite un accès à tous les référentiels pour que l'application puisse initialiser le nouveau référentiel. Si je nécessite un accès aux référentiels sélectionnés, utilisez un référentiel Thally existant compatible que j'approuve et accordez-lui l'accès. Ne sélectionnez ni ne modifiez un référentiel non lié.
+6. Aux sources produit, demandez si je veux que Thally Track soit configuré maintenant. Si oui, montrez-moi les référentiels produit disponibles et confirmez les sélections exactes avant de continuer. Ne sélectionnez jamais le référentiel de documentation lui-même. Si je ne veux pas Track maintenant, choisissez Je le ferai plus tard.
+7. Si l'étape Surfaces de connaissance est disponible pour mon espace de travail, demandez si chaque événement Track admissible doit également vérifier un autre référentiel destiné aux clients. Traitez-les comme des destinations Track indépendantes, pas comme des sources de produit ou des entrées de connaissance de produit. Confirmez le référentiel, la branche, la racine et les chemins exactement autorisés avant d'en ajouter un, ou ignorez cette étape optionnelle. Chaque destination affectée reçoit sa propre demande d'extraction prête à être examinée ; Track ne la fusionne jamais.
+8. Passez en revue le nom du site, l'adresse thally.app, le référentiel de documentation, la branche de production, les sources produit et les surfaces de connaissance avec moi. Expliquez qu'un espace de travail admissible prévisualise les fonctionnalités d'essai lors de la configuration et commence son essai Cloud unique de 14 jours lorsqu'une soumission Publier le site autorisée est acceptée, même si la publication en arrière-plan échoue ultérieurement. Sélectionnez Publier le site uniquement après que ces valeurs correspondent à ce que j'ai approuvé.
+9. Attendez que Thally Cloud crée ou connecte le référentiel GitHub et termine le premier déploiement de production. Ne réessayez pas aveuglément. Si la publication échoue, signalez le message exact et conservez le référentiel créé et l'état du site pour une nouvelle tentative sécurisée.
+10. Confirmez que la page d'accueil de l'espace de travail montre le site comme En direct. Enregistrez le référentiel de documentation et l'URL https://SITE_SLUG.thally.app en direct à partir du résumé du site.
+11. Si j'ai fourni une documentation existante et que le référentiel créé par Cloud contient toujours du contenu de démarrage, clonez le référentiel de documentation exact. Pour un référentiel GitHub ou une URL de documentation publique, importez dans le projet Thally existant avec npx --yes @thallylabs/cli@latest migrate SOURCE --into REPOSITORY_DIRECTORY --yes. Pour les fichiers locaux, conservez le contenu créé par l'auteur et adaptez-le sous src/content sans supprimer les fichiers projet non liés. Si j'ai connecté un référentiel Thally existant, ne le remplacez pas.
+12. Avant de modifier, lisez AGENTS.md s'il existe, docs.json, package.json et src/data/site.ts. Gardez les éléments internes du framework inchangés. Organisez les pages autour des tâches des lecteurs, conservez les redirections et les ressources utiles, et mettez à jour la navigation uniquement pour les pages qui existent.
+13. Exécutez npx --yes @thallylabs/cli@latest check et npm run build. Corrigez les erreurs causées par les modifications de contenu. Commencez npm run dev lorsque l'environnement peut maintenir un serveur local en fonctionnement, inspectez la page d'accueil, la navigation, les pages représentatives, les blocs de code, les images et la référence d'API, puis arrêtez le serveur.
+14. Validez uniquement les modifications de documentation prévues avec un message simple et sans attribution, et poussez-les vers la branche de production connectée dans Thally Cloud. La poussée doit déclencher un nouveau déploiement géré. Ne forcez pas la poussée, ne réécrivez pas l'historique, ne supprimez pas de référentiels et ne fusionnez pas de travaux non liés.
+15. Attendez que le déploiement géré se termine. Récupérez l'URL en direct et confirmez qu'elle renvoie une réponse réussie et affiche le site attendu. Si le contenu en direct est obsolète, inspectez l'état du déploiement et le SHA de commit avant de modifier quoi que ce soit d'autre.
+16. Configurez le travail futur de l'agent. Lisez LIVE_URL/AGENTS.md et LIVE_URL/skill.md. Si le client actuel prend en charge MCP, connectez le serveur de création local avec npx -y @thallylabs/mcp et connectez le serveur distant en lecture seule du site sur LIVE_URL/api/mcp en utilisant la configuration spécifique au client correct. Dites-moi si le client doit redémarrer avant que ces outils n'apparaissent.
+17. Si je vous demande un domaine personnalisé, ouvrez les paramètres de domaine du site, montrez-moi les enregistrements DNS exacts fournis par Thally, et clarifiez que je dois les ajouter chez mon fournisseur DNS. Confirmez que le domaine personnalisé se charge avant d'appeler ce travail optionnel terminé.
+
+Si une commande ou une action de plateforme échoue d'une manière non couverte ci-dessus, arrêtez et donnez-moi l'erreur exacte, l'étape qui a échoué et l'action la plus sûre suivante. Ne devinez pas, ne changez pas silencieusement de produit et ne prétendez pas que le site est en direct avant d'avoir vérifié l'URL.
+
+</AgentPrompt>
+
+Pour les invites qui mettent à jour des pages, migrent du contenu ou auditent un site avec MCP, voir
+[Utiliser Thally avec des agents de codage IA](/guides/ai-coding-agents).
+
+## Avant de commencer
+
+Vous avez besoin d'un compte [Thally Cloud](https://app.thally.io/) et d'un compte GitHub
+avec la permission d'installer ou d'approuver l'application Thally GitHub pour l'organisation
+qui possédera le référentiel de documentation. Vous n'avez pas besoin de Node.js ou d'un
+clone local pour publier le site de démarrage.
+
+Si votre espace de travail n'a jamais eu d'abonnement, la configuration prévisualise les fonctionnalités
+et l'allocation de trois sites de son essai Cloud unique. Parcourir l'assistant ne démarre pas l'essai.
+Voir [accès aux essais et crédits IA](/guides/thally-cloud#understand-trial-access-and-ai-credits)
+avant de publier.
+
+<Note type="info" title="Vérifiez la capacité de l'espace de travail avant de publier">
+  Consultez [capacité du site géré](/guides/thally-cloud#plan-managed-site-capacity)
+  avant de créer un autre site. Si l'espace de travail atteint sa limite de sites actifs,
+  un propriétaire peut ajouter une capacité récurrente ou supprimer un autre site Thally Cloud sans
+  supprimer le référentiel GitHub ou les fichiers de documentation de ce site.
+</Note>
+
+## Créez votre site dans Thally Cloud
+
+<Steps>
+
+<Step title="Ouvrez Thally Cloud">
+
+Accédez à [app.thally.io](https://app.thally.io/), connectez-vous et sélectionnez
+**Créer un site** depuis la page d'accueil de l'espace de travail.
+
+</Step>
+
+<Step title="Choisissez les détails du site">
+
+Entrez un nom de site, une description optionnelle et l'adresse `thally.app` que
+vous souhaitez. Thally vérifie l'adresse avant de continuer. Vous pouvez modifier la marque
+et connecter un domaine personnalisé ultérieurement.
+
+</Step>
+
+<Step title="Connectez le référentiel de documentation">
+
+Choisissez **Créer un nouveau référentiel docs** pour le chemin recommandé. Thally crée
+un référentiel GitHub à partir de la version de démarrage vérifiée actuelle, vous donne
+des fichiers sources modifiables et gère le premier déploiement. Le démarrage est épinglé
+à une révision d'exécution Thally publique exacte.
+
+Pour ce chemin de nouveau référentiel, choisissez **Tous les référentiels** lors de l'installation
+de l'application Thally GitHub sur le compte prévu. Cela permet à l'application d'initialiser
+le référentiel qu'elle crée. Si votre organisation nécessite un accès aux référentiels sélectionnés,
+utilisez plutôt un référentiel Thally compatible existant et accordez à l'application l'accès
+à ce référentiel.
+
+Choisissez **Utiliser un référentiel existant** uniquement lorsque le référentiel est déjà
+un projet Thally. Installez ou approuvez l'application Thally GitHub lorsque vous y êtes invité,
+puis confirmez les détails du compte et du référentiel GitHub.
+
+</Step>
+
+<Step title="Choisissez les sources produit">
+
+Connectez les référentiels produit que Thally Track doit surveiller pour les modifications fusionnées,
+ou choisissez **Je le ferai plus tard**. Le référentiel de documentation est exclu pour éviter
+les boucles de mise à jour.
+
+</Step>
+
+<Step title="Choisissez les surfaces de connaissance">
+
+Si cette étape est disponible pour votre espace de travail, vous pouvez ajouter un autre référentiel
+avec du contenu Markdown, MDX ou React pris en charge. Les fichiers JSX et TSX existants peuvent
+recevoir des modifications de prose visibles ; le code exécutable et la structure des composants restent
+inchangés. Track peut préparer des demandes d'extraction prêtes pour examen, limitées au chemin. Chaque
+événement Track admissible donne à la documentation principale et à chaque surface activée une exécution
+indépendante et une décision sans modification. Une surface est une destination d'examen Track, pas une
+source produit, une entrée de connaissance produit ou un autre site géré. Vous pouvez également l'ajouter
+ultérieurement à partir de **Paramètres du site → Surfaces de connaissance**. Voir
+[comment fonctionne le fan-out de surface de connaissance](/guides/knowledge-surfaces) avant d'approuver
+ses limites de branche et de chemin.
+
+</Step>
+
+<Step title="Vérifiez et publiez">
+
+Confirmez l'adresse du site, le référentiel, la branche de production, les sources produit optionnelles
+et les surfaces de connaissance optionnelles. Sélectionnez **Publier le site**. Thally enregistre la configuration
+avant le démarrage du travail en arrière-plan, afin que vous puissiez revenir à l'accueil pour suivre la progression
+sans créer un autre site.
+
+</Step>
+
+</Steps>
+
+## Affichage votre site en direct
+
+Lorsque la publication est terminée, la page d'accueil de l'espace de travail affiche le site comme **En direct**.
+Ouvrez **Afficher le site en direct** depuis le résumé du site. Chaque site géré reçoit une
+adresse sécurisée dans ce format :
+
+```text
+https://your-site.thally.app
+```
+
+<Frame caption="Un site publié et son référentiel sur la page d'accueil de l'espace de travail Thally Cloud">
+
+![Espace de travail Thally Cloud affichant un site de documentation en direct](/images/thally-cloud-live-site.webp)
+
+</Frame>
+
+Le site est prêt à être partagé immédiatement. Son HTML, Markdown, JSON, JSON-LD,
+index de recherche, `llms.txt`, manifestes d'agent et point de terminaison MCP en lecture seule sont
+publiés à partir de la même source de documentation.
+
+## Mettez à jour le contenu publié
+
+Ouvrez le référentiel GitHub affiché dans le résumé du site et clonez-le localement. Les
+trois fichiers que vous éditerez le plus souvent sont :
+
+| Fichier | Ce que vous contrôlez |
+| --- | --- |
+| `src/content/*.mdx` | Contenu de la page et première matière |
+| `docs.json` | Onglets, groupes de barres latérales, ordre des pages et fonctionnalités optionnelles |
+| `src/data/site.ts` | Nom du produit, description, liens et valeurs de marque par défaut versionnées |
+
+Avant de pousser une modification, exécutez :
+
+```bash
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+Poussez la modification révisée vers la branche de production. Thally Cloud crée et
+publie la nouvelle version, et l'historique de déploiement enregistre le commit.
+
+## Option développeur : commencez avec l'interface de ligne de commande
+
+Utilisez l'interface de ligne de commande lorsque vous avez besoin d'une évaluation locale isolée, d'une automatisation CI ou d'un site auto-hébergé. C'est le chemin de configuration secondaire, pas le flux d'intégration géré recommandé.
+
+```bash
+npx --yes create-thally-docs@latest my-docs --yes --install
+cd my-docs
+npm run dev
+```
+
+Continuez vers la [présentation de l'interface de ligne de commande](/guides/cli-overview) pour les commandes de configuration,
+les migrations, la validation et les flux de travail auto-hébergés.
+
+## Choisissez votre tâche suivante
+
+<CardGroup cols="2">
+  <Card title="Gérez votre site Cloud" icon="grid-round" href="/guides/thally-cloud">
+    Découvrez où trouver les déploiements, Track, Knowledge, la disponibilité et les paramètres du site.
+  </Card>
+  <Card title="Gérez la publication" icon="code-simple" href="/guides/managed-hosting">
+    Consultez les publications de production, les aperçus de demande d'extraction, les restaurations, les domaines et les mises à jour Thally.
+  </Card>
+  <Card title="Écrivez et formatez des pages" icon="book-open" href="/guides/writing-content">
+    Ajoutez une première matière, des exemples de code, des légendes, des étapes, des onglets et du contenu réutilisable.
+  </Card>
+  <Card title="Organisez la navigation" icon="grid-round" href="/guides/configuring-navigation">
+    Transformez votre liste de pages en onglets basés sur des tâches et en groupes de barres latérales.
+  </Card>
+  <Card title="Personnalisez le site" icon="wrench" href="/guides/branding-and-theming">
+    Définissez votre identité de produit, vos couleurs, vos logos, vos polices, votre barre de navigation et votre pied de page.
+  </Card>
+  <Card title="Générez une référence d'API" icon="link-simple" href="/guides/api-reference-setup">
+    Connectez une spécification OpenAPI et publiez une documentation d'endpoint interactive.
+  </Card>
+  <Card title="Utilisez un agent de codage IA" icon="message" href="/guides/ai-coding-agents">
+    Copiez les invites prêtes pour les tâches ou connectez les outils MCP structurés de Thally.
+  </Card>
+</CardGroup>

@@ -1,0 +1,49 @@
+---
+title: Ajouter une bannière de site
+navTitle: Bannière de site
+description: Afficher une bannière d'annonce renvoyable en haut de chaque page.
+---
+
+{/* thally:ai-translation locale=fr source-sha=d7b055344ca65700549c8d40bd5f0c137fb3c60b6e4b3335a728df5b622bc520 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Une bannière de site apparaît au-dessus de la barre de navigation sur chaque page — utile pour les annonces de lancement, les avis d'obsolescence ou les alertes importantes. Les utilisateurs peuvent la fermer et elle ne réapparaîtra pas (stockée dans `localStorage`).
+
+## Configuration
+
+Ajoutez un bloc `banner` à `docs.json` :
+
+```json
+"banner": {
+  "content": "We just launched v2! [Read the announcement →](/changelog)",
+  "dismissible": true
+}
+```
+
+La bannière ne nécessite aucune modification du code applicatif. Mettez à jour `docs.json`, puis redéployez le site.
+
+## Champs
+
+| Champ | Type | Par défaut | Description |
+| --- | --- | --- | --- |
+| `content` | `string` | — | Texte de la bannière. Supporte les liens markdown `[label](url)`. |
+| `dismissible` | `boolean` | `true` | S'il faut afficher un bouton × pour masquer la bannière |
+
+## Liens Markdown
+
+Le champ `content` supporte la syntaxe inline des liens markdown : `[text](url)`. Les liens internes et externes fonctionnent tous les deux.
+
+```json
+"banner": {
+  "content": "New: [Multi-language docs](/guides/multi-language) are now available",
+  "dismissible": true
+}
+```
+
+## Suppression de la bannière
+
+Supprimez la clé `banner` de `docs.json` et redéployez. Les utilisateurs qui l'ont précédemment fermée ne verront aucun changement ; les utilisateurs qui ne l'avaient pas fermée ne la verront plus.
+
+<Note type="info" title="Conseil">
+Pour forcer les utilisateurs à voir une bannière mise à jour même s'ils ont fermé la précédente, modifiez le texte `content`. La fermeture est liée à la chaîne de contenu exacte.
+</Note>

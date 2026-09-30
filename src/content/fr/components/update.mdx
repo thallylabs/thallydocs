@@ -1,0 +1,42 @@
+---
+title: "Mise à jour"
+description: "Un bloc d'entrée de journal des modifications stylisé avec une étiquette et une date optionnelles."
+---
+
+{/* thally:ai-translation locale=fr source-sha=29a119088751e69d241b0893a40a7fece1481a174db94d641a7b0a0863f661bc */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utilisez `<Update>` sur les pages de journal des modifications pour afficher les entrées de version avec une bordure d'accent à gauche.
+
+## Exemple
+
+<Update label="v2.0.0" date="2025-01-15">
+  Version majeure avec des changements importants. Consultez le [guide de migration](/guides/migrating) pour plus de détails.
+
+  - Barre latérale repensée avec groupes réductibles
+  - Nouveau composant `<Steps>` pour les flux de travail guidés
+  - Améliorations des performances sur tous les itinéraires
+</Update>
+
+<Update label="v1.4.0" date="2024-11-20">
+  Version mineure avec nouvelles fonctionnalités et corrections de bugs.
+
+  - Support multilingue ajouté
+  - Position de défilement de la barre latérale corrigée lors de la navigation
+</Update>
+
+```mdx
+<Update label="v2.0.0" date="2025-01-15">
+  Major release with breaking changes.
+
+  - Redesigned sidebar
+  - New Steps component
+</Update>
+```
+
+## Props
+
+| Prop | Type | Défaut | Description |
+|---|---|---|---|
+| `label` | `string` | — | Étiquette de version ou balise affichée sous forme de pastille |
+| `date` | `string` | — | Chaîne de date de sortie (tout format) |

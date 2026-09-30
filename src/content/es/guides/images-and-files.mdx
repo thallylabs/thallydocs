@@ -1,0 +1,77 @@
+---
+title: Agregar imágenes y archivos descargables
+navTitle: Imágenes y archivos
+description: Almacena, referencia, enmarca y revisa imágenes y archivos públicos en la documentación de Thally.
+---
+
+{/* thally:ai-translation locale=es source-sha=d60c2df59ae3301ebe8f7804d720a0936af11c873b04ebdda8c631c6b4d04a06 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Coloca imágenes y descargas en `public/`. Haz referencia a ellas desde MDX con una ruta
+que comience en la raíz del sitio.
+
+## Agregar una imagen
+
+Crea una carpeta descriptiva como `public/images/setup/`, luego referencia el
+activo:
+
+```mdx
+![Repository settings with the Pages tab selected](/images/setup/pages-settings.png)
+```
+
+El texto alternativo debe comunicar la información útil en la imagen. Evita
+etiquetas como "captura de pantalla" que no ayudan a alguien que no puede verla.
+
+## Agregar una imagen enmarcada
+
+Usa `<Frame>` cuando una captura de pantalla se beneficia de un borde, leyenda y clic para
+ampliar:
+
+```mdx
+<Frame caption="Select the repository and production branch">
+  ![Repository and branch selectors](/images/setup/repository-picker.png)
+</Frame>
+```
+
+Desactiva el zoom cuando ampliar el activo no ayudaría:
+
+```mdx
+<Frame zoom={false}>
+  ![Small product mark](/images/product-mark.svg)
+</Frame>
+```
+
+## Vincular un archivo descargable
+
+Agrega el archivo a `public/downloads/` y usa un enlace Markdown normal:
+
+```mdx
+[Download the example configuration](/downloads/docs.example.json)
+```
+
+Los archivos en `public/` se sirven sin el segmento `public` en su URL.
+
+## Mantener los medios útiles
+
+- Usa nombres de archivo estables y descriptivos en lugar de `image1.png`.
+- Recorta las capturas de pantalla a la interfaz necesaria para el paso.
+- Prefiere texto y código para información que los lectores puedan necesitar copiar.
+- Actualiza las capturas de pantalla cuando las etiquetas o flujos cambien.
+- Comprime imágenes raster grandes y usa SVG para diagramas o marcas adecuadas.
+- Verifica el modo claro y oscuro cuando un activo tiene transparencia.
+
+## Verificar el resultado
+
+Ejecuta la vista previa local, abre cada imagen y enlace de descarga, y estrecha el
+navegador para confirmar que los medios no crean desbordamiento horizontal de la página. Luego ejecuta:
+
+```bash
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+## Próximos pasos
+
+- [Crear y editar páginas](/guides/writing-content)
+- [Componente Frame](/components/frame)
+- [Personalizar marca](/guides/branding-and-theming)

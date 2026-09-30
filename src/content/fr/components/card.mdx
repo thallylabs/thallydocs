@@ -1,0 +1,106 @@
+---
+title: "Card & CardGroup"
+description: "Cartes cliquables pour les aperçus de fonctionnalités, les grilles de liens et la navigation."
+---
+
+{/* thally:ai-translation locale=fr source-sha=ac4d608e7d7fe6ea6bd3c4b10d5ca715a288a4672986ac98d289c9c77bca407c */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utilisez `<Card>` pour les cartes de fonctionnalités ou de navigation individuelles, et `<CardGroup>` pour les disposer dans une grille réactive.
+
+## Exemple
+
+<CardGroup cols="2">
+  <Card title="Démarrage rapide" icon="party-horn" href="/quickstart">
+    Mettez votre site de documentation en marche en moins de cinq minutes.
+  </Card>
+  <Card title="Référence API" icon="code-simple" href="/api">
+    Explorez chaque endpoint avec des exemples en direct et des types générés.
+  </Card>
+  <Card title="Guides" icon="book-open" href="/guides/getting-started">
+    Des tutoriels détaillés pour les scénarios de configuration courants.
+  </Card>
+  <Card title="GitHub" icon="link-simple" href="https://github.com/your-org/your-docs">
+    Parcourez le code source, ouvrez des issues et contribuez.
+  </Card>
+</CardGroup>
+
+```mdx
+<CardGroup cols="2">
+  <Card title="Quickstart" icon="party-horn" href="/quickstart">
+    Get running in five minutes.
+  </Card>
+  <Card title="API Reference" icon="code-simple" href="/api">
+    Explore every endpoint.
+  </Card>
+</CardGroup>
+```
+
+## Carte avec image
+
+Les cartes peuvent inclure une image en haut — utile pour afficher des captures d'écran, des aperçus de produits ou de la documentation visuelle.
+
+<CardGroup cols="2">
+  <Card title="Tableau de bord Analytics" img="/images/image1.jpg" href="/quickstart">
+    Surveillez les utilisateurs actifs, les taux de conversion et la rétention en temps réel.
+  </Card>
+  <Card title="Explorateur API" img="/images/image2.jpg" href="/api">
+    Envoyez des requêtes en direct depuis la documentation avec votre propre clé API.
+  </Card>
+</CardGroup>
+
+```mdx
+<CardGroup cols="2">
+  <Card title="Analytics Dashboard" img="/images/dashboard.png" href="/quickstart">
+    Monitor active users and conversion rates.
+  </Card>
+  <Card title="API Explorer" img="/images/explorer.png" href="/api">
+    Send live requests from the docs.
+  </Card>
+</CardGroup>
+```
+
+## Trois colonnes
+
+<CardGroup cols={3}>
+  <Card title="Redirections" icon="link-simple" href="/guides/redirects">
+    Mappez les anciens chemins vers les nouveaux afin que les liens existants ne se cassent jamais.
+  </Card>
+  <Card title="Polices personnalisées" icon="book-open" href="/guides/custom-fonts">
+    Passez à n'importe quelle Google Font depuis docs.json — sans modification du code.
+  </Card>
+  <Card title="Bannière du site" icon="party-horn" href="/guides/site-banner">
+    Annoncez les lancements et les dépréciations avec une bannière dismissible en haut.
+  </Card>
+</CardGroup>
+
+```mdx
+<CardGroup cols={3}>
+  <Card title="Redirects" icon="link-simple" href="/guides/redirects">
+    Map old paths to new ones.
+  </Card>
+  <Card title="Custom Fonts" icon="book-open" href="/guides/custom-fonts">
+    Switch fonts from docs.json.
+  </Card>
+  <Card title="Site Banner" icon="party-horn" href="/guides/site-banner">
+    Announce launches and notices.
+  </Card>
+</CardGroup>
+```
+
+## Props
+
+### `<Card>`
+
+| Prop | Type | Description |
+|---|---|---|
+| `title` | `string` | En-tête de la carte |
+| `href` | `string` | URL de destination — rend la carte entière cliquable |
+| `icon` | `string` | Nom de l'icône (voir [les icônes disponibles](/components/tooltip)) |
+| `img` | `string` | Chemin de l'image affichée en haut de la carte |
+
+### `<CardGroup>`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `cols` | `1 \| 2 \| 3 \| 4` | `3` | Nombre de colonnes dans la grille |

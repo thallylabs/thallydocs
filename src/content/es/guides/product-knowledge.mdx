@@ -1,0 +1,106 @@
+---
+title: Revisar el Conocimiento del Producto
+navTitle: Conocimiento del Producto
+description: Mira cómo Thally convierte revisiones exactas del producto en cambios respaldados por evidencia y coincidencias de documentación que puedes revisar.
+keywords:
+  - product knowledge graph
+  - documentation impact
+  - product changes
+  - evidence-backed documentation
+---
+
+{/* thally:ai-translation locale=es source-sha=28511b195cfb19f996f888bcbdf56fedc3690f41ef673205c29c602e5d8bcfff */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Product Knowledge muestra qué cambió en repositorios de productos conectados y
+qué páginas de documentación pueden necesitar atención. Cada coincidencia retenida
+se vincula nuevamente a evidencia inspectable; la similitud de búsqueda por sí
+sola no se trata como prueba.
+
+El gráfico subyacente es un conjunto versionado de hechos del producto y las
+relaciones entre ellos. Cada hecho apunta al archivo y commit que lo respalda.
+
+Product Knowledge es una capacidad de Thally Cloud. Abre un sitio y luego
+selecciona **Knowledge**.
+
+## Qué lee Thally
+
+Cada trabajo de ingesta se fija a un repositorio, rama o solicitud de extracción,
+y commit exacto. El lector actualmente extrae hechos compatibles de:
+
+- Archivos OpenAPI JSON o YAML, incluidos archivos nombrados con `openapi` u
+  `swagger`;
+- Documentación MDX; y
+- Archivos fuente de TypeScript.
+
+El lector no instala dependencias, ejecuta scripts de proyecto, ejecuta
+plugins ni ejecuta código del cliente. Omite carpetas de dependencias, salida
+de compilación, fixtures, archivos de entorno, claves y rutas de secretos
+comunes. El trabajo demasiado grande se rechaza en lugar de ser parcialmente
+confiable.
+
+## Cómo un cambio de producto llega a la cola de revisión
+
+<Steps>
+  <Step title="Thally registra evidencia">
+    Cada hecho apunta al archivo exacto y commit que lo respalda. Los archivos
+    sin cambios pueden reutilizar evidencia anterior; los archivos cambiados
+    crean una nueva revisión.
+  </Step>
+  <Step title="Thally compara versiones completas de conocimiento">
+    Una nueva versión se convierte en actual solo cuando su instantánea de
+    fuente completa está lista. Las vistas de solicitud de extracción permanecen
+    separadas del gráfico de producción.
+  </Step>
+  <Step title="El análisis de impacto encuentra posibles páginas">
+    Los enlaces directos, las relaciones cortas de hechos, los términos exactos,
+    la búsqueda de texto y la búsqueda basada en significado producen candidatos.
+    Un candidato retenido aún necesita una relación respaldada y evidencia de
+    archivo.
+  </Step>
+  <Step title="Confirmas el resultado">
+    Los propietarios y editores pueden marcar una página como **Affected**,
+    **Not affected**, **False match** o **Review later**. Los espectadores pueden
+    inspeccionar la evidencia pero no pueden enviar una decisión.
+  </Step>
+</Steps>
+
+## Leer la pantalla de Knowledge
+
+| Sección | Qué te dice |
+| --- | --- |
+| **Documentation updates** | Páginas esperando revisión y el estado de actualizaciones propuestas o publicadas. |
+| **Product changes** | Cambios estructurados recientes detectados en fuentes conectadas. |
+| **Explore what Thally knows** | Conceptos dirigidos al cliente y su evidencia en fuentes de productos. |
+| Detalle de impacto | Qué cambió, valores antes y después, la ruta de relación más fuerte, señales de confianza y evidencia de archivo de apoyo. |
+
+La confianza ayuda a ordenar la cola de revisión. No reemplaza la evidencia ni
+tu decisión. Si dos fuentes no están de acuerdo, Thally mantiene ambas
+afirmaciones y crea un elemento de revisión en lugar de elegir silenciosamente
+una.
+
+## Conectar Product Knowledge a Track
+
+Track utiliza la misma revisión inmutable, cambios de producto significativos,
+evidencia y resultado de página afectada. Envía solo un conjunto limitado de
+páginas y hechos respaldados al agente de documentación. Si ninguna página tiene
+un impacto respaldado por evidencia, la ejecución finaliza sin crear una solicitud
+de extracción.
+
+Cuando Track sí crea una solicitud de extracción, la revisas en GitHub. El agente
+nunca fusiona su propio trabajo. Después de que una persona fusiona la solicitud
+de extracción de documentación, el flujo de implementación gestionada normal
+publica la fuente revisada.
+
+## Revisar un cambio
+
+1. Abre **Knowledge** y selecciona una página que necesita revisión.
+2. Lee **What changed** y compara los valores antes y después.
+3. Sigue la ruta de relación y abre las referencias de archivo de soporte.
+4. Marca la coincidencia con la decisión más precisa. Usa **Review later** solo
+   cuando aún necesites contexto del producto.
+5. Abre **Track** para seguir cualquier solicitud de extracción de documentación
+   creada para el cambio del producto.
+
+Tus decisiones mejoran la coincidencia posterior, pero no permiten que un modelo
+de IA marque evidencia no respaldada como verificada.

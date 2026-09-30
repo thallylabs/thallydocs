@@ -1,0 +1,77 @@
+---
+title: Referencia de frontmatter
+navTitle: Frontmatter
+description: Configura títulos de página, descripciones, metadatos de búsqueda, procedencia, operaciones de API, visibilidad y diseños en el frontmatter de MDX.
+---
+
+{/* thally:ai-translation locale=es source-sha=bde60d75fe668e7b7a1090a0c7430f6f0eb112373d24310c98adc114c494a20e */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Frontmatter es YAML entre marcadores `---` en la parte superior de una página MDX. Controla cómo Thally etiqueta, describe, indexa, verifica y renderiza la página.
+
+```yaml
+---
+title: Configure single sign-on
+navTitle: Single sign-on
+description: Connect your identity provider and verify team sign-in.
+keywords:
+  - SSO
+  - authentication
+timeEstimate: 10 min
+lastVerified: 2026-08-03
+verifiedVersion: 2.4.0
+---
+```
+
+## Campos
+
+| Campo | Tipo | Valor predeterminado | Propósito |
+| --- | --- | --- | --- |
+| `title` | cadena | Nombre de archivo convertido a palabras | Encabezado de página, título del navegador y resultado de búsqueda. |
+| `navTitle` | cadena | `title` | Etiqueta compacta opcional para la barra lateral y navegación anterior/siguiente. |
+| `description` | cadena | Vacío | Resumen de búsqueda y redes sociales que se muestra debajo del título. |
+| `badge` | cadena | Ninguno | Etiqueta de estado corta que se muestra con la página en la navegación. |
+| `keywords` | matriz de cadenas | Derivada de la página | Términos adicionales utilizados por la búsqueda de documentación. |
+| `timeEstimate` | cadena | `5 min` | Estimación de lectura o tarea que se muestra con los metadatos de la página. |
+| `lastUpdated` | cadena de fecha | Ninguno | Fecha de última actualización de contenido que se muestra en metadatos y salida estructurada. |
+| `lastVerified` | cadena de fecha | Ninguno | Fecha en la que una persona confirmó por última vez las instrucciones en el producto. |
+| `verifiedVersion` | cadena | Ninguno | Versión del producto utilizada durante esa verificación. |
+| `openapi` | cadena | Ninguno | Clave de operación OpenAPI, como `GET /users/{id}`. |
+| `hidden` | booleano | `false` | Oculta la página de la navegación generada mientras mantiene su ruta disponible. |
+| `noindex` | booleano | `false` | Excluye la página de superficies de indexación pública. |
+| `mode` | cadena | `default` | Diseño de página: `default`, `wide`, `custom`, `center` o `home`. |
+
+## Campos de autoría requeridos
+
+Siempre establece `title` y `description`, aunque Thally pueda derivar un título. Los metadatos explícitos brindan a los lectores, motores de búsqueda y agentes un resumen útil.
+
+No agregues un `# H1` en el cuerpo. Thally renderiza el título de frontmatter como el encabezado de la página.
+
+## Campos de visibilidad
+
+`hidden` y `noindex` resuelven problemas diferentes:
+
+- Usa `hidden: true` para una página que debería ser accesible por enlace directo pero no listada en la navegación.
+- Usa `noindex: true` cuando la página no debería aparecer en superficies de indexación pública.
+
+Para el comportamiento de indexación de páginas ocultas en todo el sitio, consulta [SEO y visibilidad](/guides/seo-and-visibility).
+
+## Páginas de operación OpenAPI
+
+Establece `openapi` cuando una página MDX creada debería renderizar los parámetros, esquemas, ejemplos y área de pruebas para una operación:
+
+```yaml
+---
+title: Get a user
+description: Retrieve one user by ID.
+openapi: GET /users/{id}
+---
+```
+
+El método y la ruta deben coincidir exactamente con la especificación configurada.
+
+## Próximos pasos
+
+- [Elige un modo de página](/guides/page-modes)
+- [Configura SEO y visibilidad](/guides/seo-and-visibility)
+- [Configura una referencia de API](/guides/api-reference-setup)

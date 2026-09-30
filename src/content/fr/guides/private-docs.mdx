@@ -1,0 +1,54 @@
+---
+title: Protéger la documentation privée
+navTitle: Docs privées
+description: Exiger un mot de passe visiteur partagé pour les pages Thally et vérifier quels points de terminaison de machine restent accessibles publiquement.
+---
+
+{/* thally:ai-translation locale=fr source-sha=d0943ba9ba780e30988d6ffaa1424f0d72a929764267af608968389dd0fd4774 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Définissez un mot de passe visiteur lorsque les pages de documentation ne doivent pas être lisibles sans accès partagé. Ceci est distinct de l'authentification du tableau de bord `/admin`.
+
+## Activer la barrière de visiteur
+
+Définissez `THALLY_ACCESS_PASSWORD` chez le fournisseur d'hébergement :
+
+```bash
+THALLY_ACCESS_PASSWORD=a-long-random-visitor-password
+```
+
+Redéployez le site. Un visiteur qui ouvre une page protégée est redirigé vers `/access`, puis renvoyé à la page demandée après avoir entré le mot de passe. L'accès est stocké dans un cookie sécurisé et HTTP-only pendant sept jours.
+
+Ne validez pas ce mot de passe dans `.env`, `docs.json` ou le référentiel. Utilisez les paramètres de secrets chiffrés du serveur.
+
+## Gérer le mot de passe depuis Thally Cloud
+
+Sur un site Thally Cloud géré, un Éditeur ou Propriétaire peut définir un mot de passe visiteur haché sous **Paramètres → Accès lecteur**. Le paramètre géré est publié avec la configuration d'exécution du site et a priorité quand il est présent.
+
+Pour un site auto-hébergé, gardez `THALLY_ACCESS_PASSWORD` défini car le middleware utilise sa présence pour activer la barrière d'edge.
+
+## Comprendre la limite
+
+La barrière de visiteur protège les pages de documentation et leurs routes de contenu protégé. Certains points de terminaison de machine et de service restent intentionnellement accessibles afin que les systèmes externes puissent découvrir les exigences d'authentification ou livrer des événements signés. Ceux-ci incluent les documents de contrôle des robots d'exploration et de découverte d'agents, l'authentification d'administration, l'ingestion d'analyses, la poignée de main Cloud et les webhooks Thally Track.
+
+Consultez `/robots.txt`, `/llms.txt` et `/.well-known/` sur le site déployé. Ne placez pas de prose confidentielle dans les métadonnées de découverte publique, l'identité du site ou les descriptions de points de terminaison simplement parce que l'accès à la page est limité.
+
+## Vérifier l'accès
+
+1. Ouvrez une page de documentation dans une fenêtre de navigateur privée.
+2. Confirmez qu'elle est redirigée vers `/access`.
+3. Essayez un mot de passe incorrect et confirmez que l'accès est refusé.
+4. Entrez le mot de passe correct et confirmez que la page d'origine s'ouvre.
+5. Fermez la session privée et vérifiez que la page est protégée à nouveau.
+
+Testez également la connexion admin séparément. `THALLY_ACCESS_PASSWORD` ne sécurise pas `/admin` ; configurez les méthodes dans [Gérer l'admin de site intégré](/guides/admin-dashboard).
+
+## Désactiver la protection
+
+Supprimez `THALLY_ACCESS_PASSWORD` du serveur et effacez le paramètre d'accès géré, puis redéployez. Vérifiez dans une fenêtre de navigateur privée que les pages sont publiques.
+
+## Étapes suivantes
+
+- [Variables d'environnement](/guides/environment-variables)
+- [Déployer votre documentation](/guides/deploying)
+- [Admin de site intégré et accès d'équipe](/guides/admin-dashboard)

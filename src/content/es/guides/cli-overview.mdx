@@ -1,0 +1,85 @@
+---
+title: Usar la Thally CLI
+navTitle: Descripción general de CLI
+description: Aprende el pequeño conjunto de comandos de Thally utilizados para crear, editar, validar, publicar y automatizar documentación.
+---
+
+{/* thally:ai-translation locale=es source-sha=7d64fca60d473540345da14a306030b456b807770a4d7d9d9b91ff13762a025e */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+La CLI de `thally` es la interfaz principal para un proyecto de documentación. Envuelve
+el framework para que puedas trabajar con contenido y configuración en lugar de
+internals de Next.js. Ejecuta el paquete `@thallylabs/cli` publicado con `npx` desde
+la raíz del proyecto; un proyecto generado no instala un binario `thally` local.
+
+```bash
+npx --yes @thallylabs/cli@latest
+```
+
+## La ruta de cinco comandos
+
+```bash
+npx --yes create-thally-docs@latest my-docs --yes --install
+cd my-docs
+npx --yes @thallylabs/cli@latest dev
+npx --yes @thallylabs/cli@latest new guides/invite-a-member --title "Invite a team member"
+npx --yes @thallylabs/cli@latest check
+```
+
+Usa `build` cuando el proyecto esté listo para producción y `deploy` cuando quieras
+que la CLI lo publique a través de un proveedor compatible.
+
+## Elige un comando por objetivo
+
+| Objetivo | Comando | Resultado |
+| --- | --- | --- |
+| Crear un proyecto | `create-thally-docs@latest [dir]` | Descarga y ejecuta el scaffold actual. |
+| Previsualizar localmente | `thally dev` | Inicia el sitio de documentos y los endpoints del agente. |
+| Agregar una página | `thally new PAGE_ID` | Crea MDX y lo registra en `docs.json`. |
+| Validar trabajo | `thally check` | Encuentra navegación rota, metadatos faltantes y problemas de preparación opcionales. |
+| Construir salida de producción | `thally build` | Ejecuta la compilación de producción. |
+| Publicar | `thally deploy` | Construye e implementa a través de Vercel o Cloudflare. |
+| Migrar documentación | `thally migrate SOURCE [dir]` | Importa un repositorio o sitio de documentos público. |
+| Traducir páginas | `thally translate --locale CODE` | Escribe un árbol de contenido localizado. |
+| Iniciar MCP local | `thally mcp` | Ejecuta el servidor MCP stdio de 15 herramientas. |
+| Redactar una actualización | `thally agent` | Produce una rama o solicitud de extracción revisable. |
+| Automatizar cambios de producto | `thally track` | Convierte cambios de repositorio rastreados en tareas de documentación. |
+| Actualizar Thally | `thally starter update` | Previsualiza o aplica una actualización de framework compatible. |
+
+## `thally` y `create-thally-docs`
+
+Usa `npx --yes @thallylabs/cli@latest` para trabajo rutinario dentro de un proyecto. Usa
+`npx --yes create-thally-docs@latest` cuando necesites el scaffold más nuevo antes de que
+exista un proyecto. `thally init` y `thally migrate` delegan en el paquete scaffold,
+por lo que ambas interfaces producen la misma forma de proyecto compatible.
+
+## Validar trabajo desde un agente
+
+<AgentPrompt
+  title="Copia un prompt completo para verificar un proyecto de Thally"
+  copyOnly
+>
+
+Audita y repara el proyecto de documentación actual de Thally sin cambiar su significado de producto, intención de marca o límites de propiedad. Terminaste cuando la validación y la compilación de producción pasen, cada corrección automática esté justificada, y tengas un informe preciso de cualquier cosa que aún necesite una decisión humana.
+
+1. Confirma que el directorio de trabajo contiene package.json, docs.json y src/content. Lee AGENTS.md o las instrucciones de repositorio equivalentes antes de cambiar archivos. Registra el estado actual de git y preserva ediciones no relacionadas.
+2. Lee docs.json, scripts de package.json, src/data/site.ts y cualquier archivo de configuración o contenido nombrado por errores existentes. No edites salida generada o internals de framework ocultos cuando existe una corrección de contenido o configuración escrita.
+3. Ejecuta npx --yes @thallylabs/cli@latest check sin una bandera de corrección primero. Agrupa resultados en errores bloqueadores, advertencias que se pueden probar desde el estado del repositorio, y advertencias que requieren juicio editorial o de producto.
+4. Corrige solo problemas que puedas probar: objetivos de navegación faltantes, frontmatter inválido o incompleto, IDs de página duplicados, enlaces locales rotos, configuración malformada, y páginas huérfanas claramente accidentales. No elimines o publiques contenido huérfano meramente para silenciar una advertencia. No reescribas afirmaciones de producto a menos que la implementación o pruebas las contradigan.
+5. Ejecuta npx --yes @thallylabs/cli@latest check nuevamente. Cuando pase, ejecuta npm run build. Si un comando falla, aísla si la falla vino de tu edición, estado de repositorio existente, el entorno, o un servicio externo antes de cambiar más archivos.
+6. Inicia el sitio local cuando sea posible e inspecciona la página principal, navegación principal, una guía representativa, una página con mucho código, imágenes, y cualquier referencia API. Verifica diseños estrechos y anchos, modo claro y oscuro, enlaces rotos, desbordamiento horizontal, y errores de consola.
+7. Resume los hallazgos iniciales, archivos exactos cambiados, por qué cada edición fue segura, resultados finales del comando, verificaciones visuales, y advertencias restantes con un propietario recomendado y próximo paso.
+
+No confirmes, empujes, implementes, instales paquetes no relacionados, elimines contenido, sobrescribas cambios del usuario, o cambies internals de framework a menos que lo pida explícitamente. Si una corrección cambiaría el significado del producto o la intención de navegación pública, detente y pregunta antes de aplicarla.
+
+</AgentPrompt>
+
+## ¿CLI o MCP?
+
+Usa la CLI cuando estés en una terminal, escribiendo automatización, o depurando un
+comando específico. Conecta el [servidor MCP local](/guides/mcp-overview) cuando
+quieras que un agente de codificación descubra operaciones estructuradas y sus parámetros.
+Ambas interfaces actúan sobre los mismos archivos de proyecto y usan las mismas
+reglas de validación.
+
+Para cada bandera y opción de migración, continúa con la [referencia de CLI](/guides/cli-reference).

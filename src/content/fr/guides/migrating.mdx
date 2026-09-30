@@ -1,0 +1,261 @@
+---
+title: Migrer et publier la documentation existante
+navTitle: Migration
+description: Importez un site de documentation public ou un dépôt GitHub avec la CLI Thally, examinez-le localement et publiez-le via Thally Cloud.
+---
+
+{/* thally:ai-translation locale=fr source-sha=69ce4d50ffddbcba27640b9d0fb6edcde4bd07f03fdf81dd4cb4dc0de9e38074 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally migre la documentation publique à partir d'un dépôt GitHub ou d'une URL en direct vers un dépôt que vous possédez. Pour les migrations de plateforme automatiques, utilisez le dépôt GitHub source chaque fois qu'il est disponible : les importations de dépôt peuvent conserver la navigation créée, les ressources, les fichiers OpenAPI, les redirections et la structure MDX qu'un site déployé n'expose peut-être pas.
+
+Ce guide vous amène d'une source de documentation existante à un déploiement Thally géré.
+
+<Note type="info" title="La migration s'exécute localement">
+  Thally Cloud n'analyse pas le site source. Exécutez la migration avec la CLI, poussez le projet généré vers GitHub, puis connectez ce dépôt à Thally Cloud.
+</Note>
+
+<AgentPrompt
+  title="Copiez une invite complète pour exécuter et examiner une migration"
+  copyOnly
+>
+
+Migrez SOURCE_URL dans un nouveau projet Thally au répertoire TARGET_DIRECTORY. Vous avez terminé lorsque la source a été importée dans un projet Thally récent, que la navigation et les ressources importantes ont survécu au déplacement, que la validation et la construction de production réussissent, et que j'ai un examen appuyé sur des preuves de tout ce qui a encore besoin de travail manuel.
+
+Avant d'écrire des fichiers, lisez les instructions du dépôt dans l'espace de travail actuel et inspectez TARGET_DIRECTORY. Arrêtez si la cible existe et n'est pas vide. Déterminez si SOURCE_URL est un dépôt source, un site public ou les deux. Préférez le dépôt GitHub source lorsqu'il est disponible car il préserve le MDX créé, la configuration, les redirections et les ressources. Confirmez les sources ou destinations ambiguës avec moi plutôt que de substituer une autre.
+
+Utilisez l'outil MCP migrate_docs Thally local si connecté ; sinon exécutez npx --yes @thallylabs/cli@latest migrate SOURCE_URL TARGET_DIRECTORY. N'utilisez jamais import_docs ou --into à moins que je demande explicitement une fusion en place et que vous approuviez la destination. Préservez la sortie et les avertissements de l'importateur.
+
+Après la migration, comparez les nombres de pages source et de destination, la navigation de haut niveau, les redirections, les ressources et téléchargements importants, les langages de code, les composants personnalisés et les références API. L'importateur installe les dépendances et exécute la validation du contenu et une construction de production lui-même ; lisez migration-report.json avant de faire quoi que ce soit d'autre. Après vos modifications, exécutez npx --yes @thallylabs/cli@latest check et npm run build à nouveau.
+
+Démarrez le site local et inspectez la page d'accueil, chaque onglet de navigation principal, les pages représentatives peu profondes et profondes, les liens, les en-têtes, les blocs de code, les images, les tableaux, les légendes et toute référence API. Vérifiez le mode clair et sombre ainsi qu'une fenêtre étroite. Recherchez les ressources manquantes, le MDX brut non supporté, les ancres cassées, le débordement horizontal, les en-têtes en double, le texte d'espace réservé et le contenu qui est devenu générique lors de la conversion.
+
+Corrigez les problèmes mécaniques sûrs qui ne changent pas le sens du produit. Signalez les composants non supportés, la navigation ambiguë, le contenu obsolète ou en double, et les affirmations qui ont besoin d'un propriétaire de produit au lieu d'inventer des remplacements. Signalez les commandes exactes, les fichiers modifiés, les vérifications, la couverture visuelle, les avertissements et les prochaines actions. Ne remplacez pas un répertoire non vide, ne supprimez pas de contenu source, ne déployez pas, ne validez pas, ne poussez pas ou ne modifiez pas les URL publiques sans demander.
+
+</AgentPrompt>
+
+## Avant de commencer
+
+Vous avez besoin de :
+
+- Node.js 22 ou version ultérieure
+- Un dépôt GitHub public (recommandé) ou une URL de documentation publique
+- Un compte GitHub où vous pouvez créer un dépôt
+- Un [compte Thally Cloud](https://app.thally.io)
+
+## 1. Migrer la documentation
+
+Passez le dépôt GitHub source, nommez la plateforme qui l'héberge, et ignorez les invites. Une URL `tree/<branch>/<directory>` définit la branche et le répertoire docs pour vous :
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/example/product/tree/main/docs --platform mintlify --yes
+```
+
+Ajoutez un répertoire de sortie après l'URL pour contrôler le lieu de création du projet. Sans cela, Thally nomme le répertoire d'après le dépôt avec le suffixe `-docs`, donc cet exemple crée `product-docs`.
+
+La commande génère un projet Thally récent, importe la source, installe les dépendances, puis exécute la validation du contenu et une construction de production. Elle écrit le résultat dans `migration-report.json` dans le nouveau projet. La migration exécute le code du projet localement, y compris le MDX et les composants importés, donc migrez uniquement les sources que vous possédez ou en qui vous avez confiance.
+
+<Note type="info" title="La migration du dépôt est recommandée">
+  Un dépôt donne à Thally le contenu et la configuration d'origine au lieu de la sortie du navigateur reconstruite. C'est le chemin le plus précis lorsque vous sélectionnez la détection automatique.
+</Note>
+
+### Sélectionnez la plateforme source
+
+Lorsque vous omettez `--platform` et `--yes`, la CLI demande quelle plateforme héberge actuellement la documentation : Mintlify, Docusaurus, ou une autre plateforme que Thally doit détecter automatiquement.
+
+Si vous sélectionnez la détection automatique pour une URL en direct, la CLI recommande de migrer d'abord depuis le dépôt GitHub source et vous permet de l'entrer. Vous pouvez continuer avec l'URL en direct uniquement après avoir accepté que le résultat puisse nécessiter un alignement manuel. Pour le nettoyage assisté par agent, utilisez le [serveur Thally MCP](/guides/mcp-server) et demandez à votre agent de codage d'ouvrir une PR.
+
+Par exemple, cette commande démarre le flux interactif pour un site en direct :
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ ./relay-docs --max-pages 1000
+```
+
+Pour les scripts et CI, sélectionnez l'adaptateur explicitement :
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ ./relay-docs \
+  --platform docusaurus \
+  --max-pages 1000 \
+  --yes
+```
+
+<Note type="warning" title="La détection automatique non interactive accepte les limitations du site en direct">
+  `--platform auto` et `--yes` gardent les migrations scripées non interactives. Pour une URL en direct, la CLI imprime la recommandation du dépôt et enregistre l'avertissement d'alignement manuel sans pause. Préférez une URL de dépôt dans les scripts chaque fois qu'une est disponible.
+</Note>
+
+Lorsque seul le site déployé est disponible, passez son URL publique :
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://docs.example.com ./example-docs
+```
+
+Pour les sites publics, Thally recherche des index lisibles par machine tels que `llms.txt` et `sitemap.xml`, puis suit la navigation de documentation du même domaine dans le chemin soumis. Elle préserve la hiérarchie découverte, les composants MDX portables, les ressources, les redirections et les métadonnées OpenAPI où la source les expose.
+
+### Limitez le nombre de pages
+
+L'analyseur importe jusqu'à 1 000 pages par défaut. Utilisez `--max-pages` pour exécuter une migration d'essai plus petite ou limiter un grand site :
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://docs.example.com ./example-docs --max-pages 100
+```
+
+`--max-pages` accepte un entier de 1 à 1 000. Une limite s'applique aux pages de contenu importées, pas aux fichiers de découverte tels que les sitemaps.
+
+<Note type="warning" title="Choisissez une limite représentative">
+  Une petite limite est utile pour examiner la qualité de la conversion, mais la navigation générée inclut uniquement les pages importées lors de cette exécution. Exécutez la migration finale avec une limite suffisamment élevée avant la publication.
+</Note>
+
+### Migrations Mintlify
+
+Pour les dépôts Mintlify, Thally lit `docs.json` ou `mint.json` pour la navigation, les redirections et les références OpenAPI, convertit les pages en MDX Thally, et renomme uniquement les composants qui ne partagent pas un nom avec un équivalent Thally. Consultez le [mappage des composants](/guides/cli-reference#component-mapping) pour la liste complète.
+
+### Migrations Docusaurus
+
+Pour les sites Docusaurus en direct, Thally reconstruit la hiérarchie de la barre latérale de la version actuelle, suit les redirections canoniques, préserve les routes sensibles à la casse et exclut les arbres de version hérités ou `next`. Les avertissements, les onglets, les tableaux et les blocs de code surlignés rendus deviennent du MDX Thally compilable.
+
+Pour les sources de dépôt, Thally analyse la configuration Docusaurus de manière statique—elle n'exécute jamais la configuration source. Les projets imbriqués dans les monodépôts, les catégories autogénérées, les ressources statiques, les extraits `@site` et les instances supplémentaires `plugin-content-docs` sont supportées.
+
+L'importateur a été vérifié par rapport à chaque page de documentation canonique actuelle et entrée de navigation pour [Relay](https://relay.dev/), [Algolia DocSearch](https://docsearch.algolia.com/docs/what-is-docsearch), et [Hasura DDN](https://hasura.io/docs/3.0/index/).
+
+## 2. Examinez le site généré
+
+Les dépendances sont déjà installées, commencez donc le projet et inspectez ses chemins de navigation principaux :
+
+```bash
+cd product-docs
+npm run dev
+```
+
+Ouvrez l'URL locale imprimée par le serveur de développement. Vérifiez les onglets de haut niveau, les groupes de barre latérale, les liens internes, les blocs de code, les cartes, les onglets, les images et les pages de référence API.
+
+Lisez `migration-report.json` pour les avertissements de l'importateur et le résultat de la validation. Si le rapport affiche une vérification de contenu ou une construction échouée, corrigez la cause avant la publication. Après modification, réexécutez les vérifications :
+
+```bash
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+<Note type="info" title="Ignorer la validation">
+  Passez `--skip-validation` pour importer sans installer les dépendances ou exécuter la construction. Le rapport marque alors l'importation comme non vérifiée, exécutez donc les vérifications ci-dessus avant la publication.
+</Note>
+
+Vous pouvez modifier le MDX généré dans `src/content/`, la navigation dans `docs.json`, et la personnalisation dans `src/data/site.ts` avant la publication.
+
+## 3. Poussez le projet généré vers GitHub
+
+Créez un dépôt GitHub vide, puis validez et poussez le projet généré. Avec la CLI GitHub :
+
+```bash
+git init
+git add .
+git commit -m "docs: migrate documentation to Thally"
+git branch -M main
+gh repo create product-docs --private --source=. --remote=origin --push
+```
+
+Vous pouvez rendre le dépôt public en remplaçant `--private` par `--public`. N'initialisez pas le dépôt GitHub avec un README ou une licence avant de pousser ; le projet généré contient déjà ses propres fichiers.
+
+## 4. Connectez le dépôt dans Thally Cloud
+
+<Steps>
+
+<Step title="Créez ou connectez-vous à votre compte">
+
+Ouvrez [Thally Cloud](https://app.thally.io), créez un compte si nécessaire, et choisissez l'espace de travail qui doit posséder le site.
+
+</Step>
+
+<Step title="Commencez un nouveau site">
+
+Depuis le tableau de bord, sélectionnez **Créer un site** et entrez le nom du site, la description et l'adresse Thally.
+
+</Step>
+
+<Step title="Choisissez Connecter un dépôt existant">
+
+À l'étape source, sélectionnez **Connecter un dépôt existant**. Installez ou reconnectez l'application GitHub Thally lorsque vous y êtes invité, et accordez-lui accès au dépôt que vous avez poussé.
+
+</Step>
+
+<Step title="Sélectionnez les paramètres source">
+
+Choisissez le dépôt et sa branche de production, normalement `main`. Laissez **Répertoire des documents** vide lorsque le projet Thally est à la racine du dépôt. Pour un monodépôt, entrez le répertoire relatif contenant `docs.json` et `package.json`.
+
+</Step>
+
+<Step title="Publier">
+
+Examinez le résumé source et sélectionnez **Publier le site**. Thally Cloud provisionne l'hébergement géré et affiche l'état du déploiement sur le tableau de bord du site.
+
+</Step>
+
+</Steps>
+
+Les poussées futures vers la branche de production déclenchent de nouveaux déploiements, le dépôt GitHub reste donc la source de vérité après la migration.
+
+## Options CLI
+
+| Indicateur | Description |
+|------|-------------|
+| `--max-pages <count>` | Importez au maximum 1–1 000 pages de contenu à partir d'une URL de documentation publique |
+| `--into <dir>` | Fusionnez le contenu dans un projet Thally existant |
+| `--branch <name>` | Remplacez la branche GitHub détectée automatiquement |
+| `--docs-dir <path>` | Remplacez le sous-répertoire docs détecté automatiquement pour une source de dépôt |
+| `--platform <name>` | Sélectionnez `mintlify`, `docusaurus` ou `auto` |
+| `--api-key <key>` | Clé API Anthropic, ou `ANTHROPIC_API_KEY`, pour la conversion non-Markdown |
+| `--skip-validation` | Importer uniquement ; ignorer l'installation des dépendances, les vérifications de contenu et la construction de production |
+| `--yes`, `-y` | Acceptez les valeurs par défaut et les limitations du site en direct, puis ignorez toutes les invites |
+
+## Comment les sources de dépôt sont détectées
+
+Pour les dépôts GitHub, Thally détecte la configuration de plateforme courante et les racines de contenu :
+
+| Fichier | Plateforme détectée |
+|------|-------------------|
+| `mint.json`, ou un `docs.json` avec navigation Mintlify | Mintlify |
+| `docs.json` avec `tabs` Thally | Projet Thally existant |
+| `docusaurus.config.js`, `.ts` ou `.mjs` | Docusaurus |
+| `SUMMARY.md` | GitBook |
+| `.vitepress/` | VitePress |
+| `astro.config.mjs` ou `.ts` | Starlight |
+| `_meta.json` ou `pages/_meta.json` | Nextra |
+| *(aucun des éléments ci-dessus)* | Structure du répertoire Markdown simple |
+
+Thally les vérifie dans l'ordre et utilise la première correspondance. Le répertoire des documents est détecté automatiquement à partir de `docs/`, `documentation/`, `content/`, `pages/`, `src/content/`, `src/pages/`, `guide/`, `guides/` ou de la racine du dépôt, en prenant la première contenant Markdown. Les projets Docusaurus imbriqués dans les monodépôts et les racines de plugin docs supplémentaires sont découverts automatiquement.
+
+## Migrer dans un projet existant
+
+Utilisez `--into` pour ajouter du contenu migré à un projet Thally sans remplacer ses pages existantes :
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://docs.example.com --into ./existing-docs --max-pages 250
+```
+
+De nouveaux groupes de navigation sont fusionnés dans le `docs.json` existant. Examinez le résultat avant de valider car les sites sources peuvent utiliser des composants ou des fonctionnalités de référence API qui nécessitent un dernier examen éditorial.
+
+## Migrer avec le serveur Thally MCP
+
+Utilisez `migrate_docs` lorsque vous souhaitez qu'un agent crée un nouveau site Thally. Il démarre toujours à partir du modèle Thally canonique récent, puis importe le contenu source, la navigation, la personnalisation, les ressources et la référence API dans cet exécution récente. Le répertoire cible doit être nouveau ou vide.
+
+Utilisez `import_docs` uniquement lorsque vous souhaitez explicitement fusionner du contenu dans un projet Thally existant. Cette distinction empêche un agent de traiter un exécution hérité comme s'il s'agissait d'un site Thally nouvellement généré.
+
+Consultez [Serveur Thally MCP](/guides/mcp-server) pour la configuration et les paramètres des outils.
+
+## Dépannage
+
+### Certaines pages manquent
+
+Augmentez `--max-pages` et réexécutez dans un répertoire de sortie propre. Confirmez également que les pages manquantes sont liées à partir du chemin soumis, `llms.txt` ou un sitemap sur le même domaine.
+
+### La mauvaise section a été importée
+
+Soumettez l'URL d'entrée publique la plus étroite qui contient la documentation que vous souhaitez. Les migrations d'URL restent dans l'origine source et la portée de documentation découverte.
+
+### Thally Cloud ne peut pas connecter le dépôt
+
+Ouvrez les paramètres d'installation de l'application GitHub à partir de l'étape source et accordez l'accès au dépôt généré. Puis retournez au flux et rechargez les dépôts disponibles.
+
+### Le dépôt est rejeté comme incompatible
+
+Exécutez la migration avec `@thallylabs/cli@latest`, validez tous les fichiers d'exécution générés et assurez-vous que `package-lock.json`, `wrangler.jsonc` et `open-next.config.ts` sont présents sur la branche sélectionnée.

@@ -1,0 +1,65 @@
+---
+title: Extender Track a superficies de conocimiento
+navTitle: Superficies de conocimiento
+description: Conecta sitios web acotados, centros de ayuda y otros repositorios de contenido para que cada evento Track calificado pueda preparar una solicitud de extracción independiente para revisión.
+keywords:
+  - superficies de conocimiento
+  - Thally Track
+  - repositorios conectados
+  - actualizaciones de sitio web
+  - contenido de soporte
+---
+
+{/* thally:ai-translation locale=es source-sha=2dae4cd784dfe5d3c2882a659c60e3f6ce41aa594182732891632f6bd1c07dc0 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Conecta una superficie de conocimiento cuando el contenido orientado al cliente se encuentra fuera del repositorio de documentación principal del sitio. Cada evento Track calificado entonces verifica la documentación principal y cada superficie habilitada de forma independiente. Track abre una solicitud de extracción lista para revisión solo en los repositorios que necesitan una actualización.
+
+Las superficies de conocimiento son destinos de Track. No contribuyen al conocimiento del producto y no necesitan un resultado de gráfico de conocimiento del producto antes de que Track pueda considerarlas.
+
+## Entender la distribución
+
+Un evento aceptado de fuente de producto crea una ejecución de documentación principal y una ejecución separada para cada superficie de conocimiento que esté habilitada en ese momento.
+
+| Disparador de origen | Cuándo puede distribuirse |
+| --- | --- |
+| Actualización de solicitud de extracción | La solicitud de extracción está abierta, no es borrador, proviene del repositorio rastreado y apunta a la rama configurada. Las solicitudes de extracción de bifurcación y colaboradores no confiables no califican. |
+| Cambio fusionado | La solicitud de extracción se fusionó en la rama de origen del producto configurada. |
+| Verificación programada | El cronograma UTC guardado vence y la rama de origen del producto cambió desde su punto de control anterior. |
+
+Los filtros de ruta de origen del producto aún controlan la autoría. Un cambio completo completamente fuera de esas rutas termina como **Sin cambios** sin trabajo de modelo. La entrega duplicada de la misma revisión de origen no crea otro conjunto de ejecuciones.
+
+Cada destino obtiene su propia instantánea, ejecución de autoría, resultado de validación y decisión de publicación. Un repositorio puede terminar con **Sin cambios** mientras otro abre una solicitud de extracción. Conectar una superficie después de un evento de origen no la agrega al evento anterior retroactivamente.
+
+## Conectar una superficie
+
+Abre el sitio en Thally Cloud, luego ve a **Configuración del sitio → Superficies de conocimiento**. Los propietarios y editores pueden conectar un repositorio al que la aplicación Thally GitHub tiene permiso de acceso.
+
+Para cada destino, confirma:
+
+- el repositorio y rama base;
+- una raíz de repositorio opcional;
+- los archivos o directorios exactos que Track puede cambiar; e
+- orientación de autoría opcional para ese repositorio.
+
+Usa una ruta por línea. Los ámbitos de archivos soportan Markdown, MDX, JSX y TSX; los ámbitos de directorio terminan en `/`. Pausa un destino cuando debe mantener su configuración pero dejar de recibir trabajo nuevo.
+
+## Mantente dentro del límite de publicación
+
+Track congela el repositorio aprobado, la rama, la raíz y los ámbitos de ruta con cada ejecución. Verifica esa autoridad nuevamente antes de la preparación y antes de abrir una solicitud de extracción. Pausar, eliminar o cambiar un destino previene que trabajo obsoleto se publique bajo el ámbito anterior.
+
+La puerta de publicación permite cambios solo dentro de las rutas guardadas. Markdown y MDX deben pasar las verificaciones de contenido propiedad del servidor. Los archivos JSX o TSX existentes solo pueden recibir ediciones de prosa visible; las importaciones, controladores, enlaces, scripts, estructura de componentes y otros cambios ejecutables se rechazan. Track nunca instala las dependencias de un destino ni ejecuta sus scripts de paquete, compilación o CI.
+
+## Revisar, previsualizar y publicar
+
+Track abre solicitudes de extracción normales de GitHub listas para revisión y nunca las fusiona. Las direcciones URL de vista previa de Thally administradas se aplican solo al repositorio de documentación principal, que sigue la ruta de lanzamiento administrada después de que tu equipo fusiona su solicitud de extracción.
+
+Una superficie de conocimiento conectada no es otro sitio administrado por Thally. Thally no compila, previsualizaa ni publica ese repositorio de destino. Su solicitud de extracción utiliza el sistema de verificación y vista previa ya configurado allí; los propietarios del destino deciden si fusionarla y cómo llega el contenido a producción.
+
+La vista previa pública de Track también es de solo lectura. Puede analizar repositorios de productos y orientados al cliente seleccionados, pero no abre solicitudes de extracción. Después de crear un espacio de trabajo y conectar los destinos aprobados, el flujo de trabajo Track normal puede preparar propuestas a través del límite de revisión anterior.
+
+## Continuar el flujo de trabajo
+
+- [Configura orígenes de productos y disparadores](/guides/thally-track).
+- [Revisa el proceso de cambio de producto](/product-change-pipeline).
+- [Gestiona vistas previas y lanzamientos de documentación principal](/guides/managed-hosting).

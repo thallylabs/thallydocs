@@ -1,0 +1,107 @@
+---
+title: Soluciona problemas de tu sitio de documentación
+navTitle: Solución de problemas
+description: Diagnostica fallos de contenido, navegación, compilación, despliegue, búsqueda y características en tiempo de ejecución en un proyecto de Thally.
+---
+
+{/* thally:ai-translation locale=es source-sha=a5c90398239487cfad07d7ce498654e8402a9b29a7acf5ff5d241dc9505b58cb */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Reproduce el fallo localmente, ejecuta las comprobaciones y aísla si el problema
+proviene del contenido, la configuración, la compilación de producción o el
+tiempo de ejecución desplegado.
+
+## Recopila la línea base
+
+Desde la raíz del proyecto, ejecuta:
+
+```bash
+node --version
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+Registra la URL que falla, el comando exacto, el error completo, el host y si
+el mismo comportamiento ocurre en `npm run dev`.
+
+## Una página falta o devuelve 404
+
+- Confirma que el archivo existe en `src/content/` y termina en `.mdx`.
+- Deriva la URL de la ruta del archivo sin `src/content/` o `.mdx`.
+- Añade el ID de la página a un grupo en `docs.json` si debe aparecer en la navegación.
+- Comprueba la página y el grupo para `hidden: true`.
+- Ejecuta `npx --yes @thallylabs/cli@latest check` para IDs de página huérfanos o faltantes.
+
+## La compilación falla en MDX
+
+Comprueba los delimitadores de frontmatter, las etiquetas JSX sin cerrar y los bloques de código anidados. Cuando una muestra de código contiene un bloque entre rejas, envuelve el ejemplo exterior en una cerca más larga.
+Reduce temporalmente la página a la sección más pequeña que falla para identificar el componente o sintaxis inválida.
+
+## La navegación es incorrecta
+
+Valida `docs.json` con:
+
+```bash
+jq empty docs.json
+```
+
+Los IDs de página utilizan barras diagonales y omiten la extensión. Un grupo anidado pertenece
+dentro del array `pages` de otro grupo. Consulta
+[Configurar navegación](/guides/configuring-navigation).
+
+## Los enlaces de producción usan localhost o el dominio incorrecto
+
+Establece `THALLY_SITE_URL` en el origen público en el proveedor de alojamiento y
+vuelve a desplegar. Comprueba las etiquetas canónicas, `/sitemap.xml` y `/llms.txt` después de la nueva
+compilación.
+
+## Una característica del servidor funciona localmente pero no después del despliegue
+
+- Confirma que el host ejecuta el tiempo de ejecución del servidor en lugar de una exportación estática.
+- Añade las variables de entorno requeridas por la característica al entorno correcto.
+- En hosts sin servidor, configura el almacenamiento remoto cuando el estado debe persistir.
+- Comprueba los registros de funciones de la solicitud `/api/...` que falla.
+- Vuelve a desplegar después de cambiar las variables de entorno.
+
+## El proveedor reporta éxito pero cada ruta devuelve 404
+
+Un mensaje de despliegue completado demuestra que el proveedor aceptó un artefacto. Esto
+no demuestra que el artefacto contenga una aplicación Thally ejecutable.
+
+1. Ejecuta las [comprobaciones HTTP de humo después del despliegue](/guides/deploying#verify-the-live-site).
+2. Confirma que el despliegue utilizó un [destino y comando soportados](/guides/deploying#choose-a-supported-deployment-path).
+3. Inspecciona el registro de compilación del proveedor, detección de framework y artefacto
+   publicado. Cargar la raíz del repositorio o servir `.next/` como un
+   directorio estático sin formato devuelve 404 incluso cuando la carga tiene éxito.
+4. Vuelve a desplegar con el adaptador de Vercel, el script incluido de Cloudflare/OpenNext,
+   o la receta documentada del servidor Docker. Prueba el artefacto del proveedor generado
+   antes de cambiar las rutas de contenido.
+
+Un andamiaje de Thally sin tocar no incluye un contrato de compilación de Netlify. Si
+`netlify deploy --build --prod` reportó éxito y cada ruta es 404, deja de
+reintentar la misma carga. Utiliza un destino soportado, o añade y mantén una integración
+de Next.js específica de Netlify probada como infraestructura que tu equipo posee.
+
+## La búsqueda no encuentra una página
+
+Confirma que la página es navegable o permitida por el modo de indexación SEO configurado.
+Añade una descripción clara y palabras clave útiles de frontmatter, luego vuelve a compilar para que el
+índice de contenido incluya el cambio.
+
+## Obtén un informe útil
+
+Cuando pidas ayuda, incluye:
+
+- las versiones de Thally y Node;
+- el resultado de `npx --yes @thallylabs/cli@latest check`;
+- el fragmento de página o `docs.json` más pequeño que reproduce el problema;
+- si desarrollo y producción difieren;
+- registros del host relevantes con credenciales eliminadas.
+
+Nunca pegues contraseñas de acceso, claves API, tokens, cookies o valores de clave privada.
+
+## Solución de problemas relacionada
+
+- [Solución de problemas de referencia API](/guides/api-troubleshooting)
+- [Vista previa localmente](/guides/preview-locally)
+- [Despliegue tu documentación](/guides/deploying)

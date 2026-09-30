@@ -1,0 +1,78 @@
+---
+title: "Contrôler la recherche et la visibilité des pages"
+navTitle: "Recherche et visibilité"
+description: "Décidez quelles pages apparaissent dans la navigation, la recherche interne, les moteurs de recherche et les fichiers de découverte d'agent."
+---
+
+{/* thally:ai-translation locale=fr source-sha=e8cd0ff3938b00947e7fc0a0ce8f75a9f50b274fc7b6f011eda4083f376e19ac */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally vous donne un contrôle précis sur les pages visibles dans la barre latérale, celles indexées par les moteurs de recherche et celles qui apparaissent dans le contexte de recherche IA.
+
+## Pages masquées
+
+Définissez `hidden: true` dans le frontmatter d'une page pour la supprimer de la barre latérale et du sitemap sans la rendre inaccessible :
+
+```mdx
+---
+title: Internal Notes
+hidden: true
+---
+```
+
+Pages masquées :
+- Sont **non** listées dans la navigation de la barre latérale
+- Sont **non** incluses dans le sitemap
+- Reçoivent automatiquement une `noindex` balise meta
+- Restent accessibles par URL directe
+
+Ceci est utile pour les pages de prévisualisation, les références internes ou les brouillons partiels que vous n'êtes pas prêt à mettre en avant.
+
+## `noindex` frontmatter
+
+Pour conserver une page dans la barre latérale mais l'exclure des moteurs de recherche, utilisez `noindex: true`:
+
+```mdx
+---
+title: Legacy Reference
+noindex: true
+---
+```
+
+Cela injecte `<meta name="robots" content="noindex, nofollow">` dans la page `<head>`.
+
+## Différence entre `hidden` et `noindex`
+
+\| \| Apparaît dans la barre latérale \| Dans le sitemap \| Robots noindex \|\\n\| --- \| --- \| --- \| --- \|\\n\| Défaut \| ✓ \| ✓ \| — \|\\n\| `noindex: true` \| ✓ \| ✓ \| ✓ \|\\n\| `hidden: true` \| — \| — \| ✓ \|
+
+## Groupes et onglets masqués
+
+Vous pouvez également masquer des groupes ou des onglets entiers de la barre latérale dans `docs.json`:
+
+```json
+{
+  "tab": "Internal",
+  "hidden": true,
+  "groups": [
+    {
+      "group": "Staff Only",
+      "hidden": true,
+      "pages": ["internal/roadmap"]
+    }
+  ]
+}
+```
+
+Les onglets et groupes masqués sont filtrés de la navigation mais leurs pages restent accessibles par URL.
+
+## Mode d'indexation SEO
+
+Par défaut, les pages masquées sont exclues du contexte de recherche IA. Pour les inclure (par exemple, pour rendre les notes internes consultables dans le chat ThallyAI), définissez :
+
+```json
+"seo": {
+  "indexing": "all"
+}
+```
+
+\| Valeur \| Comportement \|\\n\| --- \| --- \|\\n\| `"navigable"` \| Défaut. Exclut les pages masquées de la recherche et du contexte IA. \|\\n\| `"all"` \| Inclut toutes les pages — y compris les masquées — dans la recherche et le contexte IA. \|

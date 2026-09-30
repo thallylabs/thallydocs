@@ -1,0 +1,68 @@
+---
+title: Ajouter des scripts personnalisés
+navTitle: Scripts personnalisés
+description: Chargez un script externe sur chaque page de documentation et choisissez quand il devient interactif.
+---
+
+{/* thally:ai-translation locale=fr source-sha=c925dbdc511ebc32436845ef44a65a894dbd63fbde36689fa981ac5e81f403f8 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Ajoutez un tableau `customScripts` à `docs.json` quand un widget ou un service fournit une URL JavaScript externe. Thally lit ce tableau dans sa disposition racine et affiche chaque entrée avec le composant `<Script>` de Next.js. Il s'agit d'un chemin de configuration explicite de Thally construit sur Next.js ; Next.js ne découvre pas `docs.json` ou ne charge pas ces URL de manière indépendante.
+
+## Configuration
+
+```json
+{
+  "customScripts": [
+    {
+      "src": "https://cdn.example.com/widget.js",
+      "strategy": "afterInteractive"
+    },
+    {
+      "src": "https://cdn.example.com/optional-widget.js",
+      "strategy": "lazyOnload"
+    }
+  ]
+}
+```
+
+Thally charge chaque URL configurée sur chaque route. Le paramètre actuel accepte un `src` externe ; il n'accepte pas le JavaScript en ligne ou le ciblage par page.
+
+## Champs
+
+| Champ | Type | Par défaut | Description |
+| --- | --- | --- | --- |
+| `src` | `string` | — | URL du script externe. Utilisez HTTPS en production. |
+| `strategy` | `string` | `"afterInteractive"` | L'une des stratégies de chargement supportées ci-dessous. |
+
+## Stratégies de chargement
+
+| Stratégie | Quand elle s'exécute | À utiliser pour |
+| --- | --- | --- |
+| `beforeInteractive` | Avant l'hydratation de la page | Les scripts critiques qui doivent s'exécuter en premier |
+| `afterInteractive` | Après l'hydratation | Analyses, widgets de chat, la plupart des outils tiers |
+| `lazyOnload` | Pendant le temps d'inactivité du navigateur | Scripts non critiques et décoratifs |
+
+Préférez `afterInteractive` pour la plupart des outils. Utilisez `beforeInteractive` uniquement quand le fournisseur doit s'exécuter avant l'hydratation, et mesurez l'effet avant de le déployer. Utilisez `lazyOnload` pour les tâches qui peuvent attendre que le navigateur soit inactif.
+
+## Raccourcis du fournisseur pour les analyses
+
+Pour Google Analytics, Plausible ou PostHog, vous pouvez utiliser le champ typé `siteConfig.analytics` dans `src/data/site.ts` à la place. Le `AnalyticsProvider` de Thally charge et initialise les scripts du fournisseur sélectionné :
+
+```ts
+analytics: {
+  googleAnalyticsId: 'G-XXXXXXXXXX',
+  plausibleDomain: 'docs.example.com',
+  posthogKey: 'phc_...',
+}
+```
+
+Utilisez `customScripts` pour tout fournisseur non nativement supporté.
+
+Ce raccourci initialise les fournisseurs. Ce n'est pas une API d'événements Thally partagée, et l'exécution open-source n'ajoute pas d'événements personnalisés pour votre produit. Vérifiez le comportement de l'application monopage du fournisseur sélectionné et les paramètres de consentement avant de compter sur ses rapports.
+
+<Warning title="Le code tiers s'exécute sur chaque page">
+Chargez uniquement les scripts en lesquels vous avez confiance. Un script tiers peut lire le contenu de la page, effectuer des requêtes réseau, affecter les performances et définir des cookies ou des identifiants similaires. Si le consentement est requis, bloquez le script jusqu'à ce que le consentement soit enregistré ; une bannière qui apparaît après le chargement du script n'est pas suffisante.
+</Warning>
+
+Pour la collecte de trafic côté serveur et sans cookies de Thally, consultez [Analyses et commentaires](/guides/analytics-and-feedback).

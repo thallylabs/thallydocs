@@ -1,0 +1,72 @@
+---
+title: Ajouter des images et des fichiers téléchargeables
+navTitle: Images et fichiers
+description: Stockez, référencez, encadrez et examinez des images et des fichiers publics dans la documentation Thally.
+---
+
+{/* thally:ai-translation locale=fr source-sha=d60c2df59ae3301ebe8f7804d720a0936af11c873b04ebdda8c631c6b4d04a06 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Placez les images et les téléchargements dans `public/`. Référencez-les à partir de MDX avec un chemin qui commence à la racine du site.
+
+## Ajouter une image
+
+Créez un dossier descriptif tel que `public/images/setup/`, puis référencez l'élément :
+
+```mdx
+![Repository settings with the Pages tab selected](/images/setup/pages-settings.png)
+```
+
+Le texte alternatif doit communiquer les informations utiles contenues dans l'image. Évitez les étiquettes telles que « capture d'écran » qui n'aident pas quelqu'un qui ne peut pas la voir.
+
+## Ajouter une image encadrée
+
+Utilisez `<Frame>` quand une capture d'écran bénéficie d'une bordure, d'une légende et d'un zoom au clic :
+
+```mdx
+<Frame caption="Select the repository and production branch">
+  ![Repository and branch selectors](/images/setup/repository-picker.png)
+</Frame>
+```
+
+Désactivez le zoom quand l'agrandissement de l'élément ne serait pas utile :
+
+```mdx
+<Frame zoom={false}>
+  ![Small product mark](/images/product-mark.svg)
+</Frame>
+```
+
+## Lier un fichier téléchargeable
+
+Ajoutez le fichier à `public/downloads/` et utilisez un lien Markdown normal :
+
+```mdx
+[Download the example configuration](/downloads/docs.example.json)
+```
+
+Les fichiers dans `public/` sont servis sans le segment `public` dans leur URL.
+
+## Garder les médias utiles
+
+- Utilisez des noms de fichier stables et descriptifs plutôt que `image1.png`.
+- Recadrez les captures d'écran à l'interface nécessaire pour l'étape.
+- Préférez le texte et le code pour les informations que les lecteurs peuvent avoir besoin de copier.
+- Mettez à jour les captures d'écran quand les étiquettes ou les flux changent.
+- Compressez les grandes images raster et utilisez SVG pour les diagrammes ou les marques appropriés.
+- Vérifiez le mode clair et le mode sombre quand un élément a une transparence.
+
+## Vérifier le résultat
+
+Exécutez l'aperçu local, ouvrez chaque image et lien de téléchargement, et réduisez le navigateur pour confirmer que les médias ne créent pas de débordement horizontal de la page. Ensuite, exécutez :
+
+```bash
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+## Prochaines étapes
+
+- [Créer et modifier des pages](/guides/writing-content)
+- [Composant Frame](/components/frame)
+- [Personnaliser la marque](/guides/branding-and-theming)

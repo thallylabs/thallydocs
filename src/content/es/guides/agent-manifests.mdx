@@ -1,0 +1,46 @@
+---
+title: Publicar manifiestos de agentes
+navTitle: Manifiestos de agentes
+description: Manifiestos generados automáticamente que le indican a los agentes de IA qué es su producto y cómo leer y editar su documentación.
+keywords:
+  - skill.md
+  - AGENTS.md
+  - agents
+  - llms.txt
+  - ai-readable docs
+---
+
+{/* thally:ai-translation locale=es source-sha=7b989cdef1fd40a0fdd988c2cb4a445c3c027937838bfc0d782431799461918a */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally publica un conjunto de superficies orientadas a agentes automáticamente. Todas provienen del mismo gráfico de contenido, por lo que los agentes pueden descubrir, recuperar, citar y editar de forma segura su documentación sin depender de una segunda copia del contenido.
+
+## `skill.md` — un manifiesto de capacidad
+
+Servido en **`/skill.md`**, esta es una descripción con forma de Claude-skill de qué es su producto y cómo un agente puede leer su documentación mediante programación. Le indica al agente que busque antes de leer profundamente, cite URL de páginas canónicas, separe los hechos documentados de la inferencia y trate el servidor MCP público como de solo lectura.
+
+## `AGENTS.md` — orientación para editar la documentación
+
+Servido en **`/AGENTS.md`**, esto le indica a un agente *trabajando en su repositorio* cómo está organizado el proyecto y cómo agregar o editar páginas de forma segura. Cubre la estructura de página orientada a tareas, navegación `docs.json`, límites de propiedad, verificación de hechos del producto, validación, revisión del navegador y acciones que requieren aprobación explícita. También es la superficie de configuración que `thally agent` lee.
+
+<Note type="tip">
+Coloque un `AGENTS.md` físico en la raíz de su proyecto para reemplazar el generado con orientación personalizada: reglas de estilo, archivos que nunca debe tocar, requisitos de revisión.
+El archivo prevalece sobre el valor predeterminado generado.
+</Note>
+
+## Superficies de descubrimiento y recuperación
+
+| Superficie | Qué le proporciona a un agente |
+| --- | --- |
+| `/llms.txt` | Un índice de documentación conciso y el flujo de trabajo de recuperación recomendado |
+| `/llms-full.txt` | El corpus publicado completo en una respuesta de texto |
+| `/.well-known/llms.txt` | Un espejo compatible con estándares del índice conciso |
+| `/ai.txt` | Reglas de negociación de contenido, rutas de agentes permitidas y puntos finales de recuperación |
+| `/robots.txt` | Permisos de rastreador más punteros a `llms.txt`, `skill.md` y `AGENTS.md` |
+| `/api/docs-index` | Un índice JSON estructurado con metadatos de página y enlaces de descubrimiento |
+| `/api/search` | Descubrimiento de páginas clasificadas para una consulta en lenguaje natural |
+| `/api/docs/{slug}` | Una página como JSON, JSON-LD o Markdown |
+| `/api/mcp` | Cuatro herramientas públicas de solo lectura para búsqueda, recuperación de páginas, listado y disponibilidad |
+| `/api/agent-readiness` | Un informe legible por máquina de superficies de agentes ausentes o débiles |
+
+Thally anuncia `/llms.txt` en cada página con los encabezados de respuesta `Link: </llms.txt>; rel="llms-txt"` y `X-Llms-Txt`. Los agentes pueden comenzar desde cualquier superficie de descubrimiento sin adivinar rutas no documentadas.

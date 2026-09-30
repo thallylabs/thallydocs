@@ -1,0 +1,65 @@
+---
+title: Étendre Track aux surfaces Knowledge
+navTitle: Surfaces Knowledge
+description: Connectez des référentiels de contenu délimités, centres d'aide et autres dépôts de contenu afin que chaque événement Track admissible puisse préparer une demande de fusion indépendante pour examen.
+keywords:
+  - surfaces knowledge
+  - Thally Track
+  - référentiels connectés
+  - mises à jour de site web
+  - contenu d'assistance
+---
+
+{/* thally:ai-translation locale=fr source-sha=2dae4cd784dfe5d3c2882a659c60e3f6ce41aa594182732891632f6bd1c07dc0 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Connectez une surface Knowledge lorsque le contenu destiné aux clients réside en dehors du référentiels de documentation principale du site. Chaque événement Track admissible vérifie alors la documentation principale et chaque surface activée indépendamment. Track ouvre une demande de fusion prête pour examen uniquement dans les référentiels qui nécessitent une mise à jour.
+
+Les surfaces Knowledge sont des destinations Track. Elles ne contribuent pas à Product Knowledge et n'ont pas besoin d'un résultat de graphique Product Knowledge avant que Track puisse les considérer.
+
+## Comprendre le fan-out
+
+Un événement Product-source accepté crée une exécution de documentation principale et une exécution distincte pour chaque surface Knowledge activée à ce moment.
+
+| Déclencheur de source | Quand il peut fan-out |
+| --- | --- |
+| Mise à jour de demande de fusion | La demande de fusion est ouverte, non-brouillon, provient du référentiels suivi et cible la branche configurée. Les demandes de fusion de fork et de contributeurs non fiables ne sont pas admissibles. |
+| Changement fusionné | La demande de fusion fusionnée dans la branche Product-source configurée. |
+| Vérification planifiée | La planification UTC enregistrée est due et la branche Product-source a changé depuis son point de contrôle précédent. |
+
+Les filtres de chemin Product-source gèrent toujours la création. Un changement complet entièrement en dehors de ces chemins se termine par **Aucun changement** sans travail de modèle. La livraison en double de la même révision de source ne crée pas un autre ensemble d'exécutions.
+
+Chaque destination reçoit son propre snapshot, exécution de création, résultat de validation et décision de publication. Un référentiels peut se terminer avec **Aucun changement** tandis qu'un autre ouvre une demande de fusion. Connecter une surface après un événement de source ne l'ajoute pas à l'événement antérieur rétroactivement.
+
+## Connecter une surface
+
+Ouvrez le site dans Thally Cloud, puis allez à **Paramètres du site → Surfaces Knowledge**. Les propriétaires et les éditeurs peuvent connecter un référentiels auquel l'application GitHub Thally est autorisée à accéder.
+
+Pour chaque destination, confirmez :
+
+- le référentiels et la branche de base ;
+- une racine de référentiels facultative ;
+- les fichiers ou répertoires exacts que Track peut modifier ; et
+- des conseils de création facultatifs pour ce référentiels.
+
+Utilisez un chemin par ligne. Les portées de fichiers supportent Markdown, MDX, JSX et TSX ; les portées de répertoire se terminent par `/`. Mettez en pause une destination lorsqu'elle doit conserver sa configuration mais cesser de recevoir du nouveau travail.
+
+## Rester dans la limite de publication
+
+Track fige le référentiels approuvé, la branche, la racine et les portées de chemin à chaque exécution. Il vérifie cette autorité à nouveau avant la préparation et avant d'ouvrir une demande de fusion. Mettre en pause, supprimer ou modifier une destination empêche le travail obsolète d'être publié sous la portée antérieure.
+
+La barrière de publication n'autorise que les modifications à l'intérieur des chemins enregistrés. Markdown et MDX doivent réussir les vérifications de contenu appartenant au serveur. Les fichiers JSX ou TSX existants ne peuvent recevoir que des modifications de prose visible ; les imports, les handlers, les liens, les scripts, la structure des composants et les autres modifications exécutables sont rejetés. Track n'installe jamais les dépendances d'une destination ou n'exécute ses scripts de package, de compilation ou de CI.
+
+## Examiner, prévisualiser et publier
+
+Track ouvre les demandes de fusion GitHub normales prêtes pour examen et ne les fusionne jamais. Les URL de prévisualisation Thally gérées s'appliquent uniquement au référentiels de documentation principale, qui suit le chemin de libération géré après que votre équipe fusionne sa demande de fusion.
+
+Une surface Knowledge connectée n'est pas un autre site géré par Thally. Thally ne construit, ne prévisualise ni ne publie ce référentiels de destination. Sa demande de fusion utilise le système de vérifications et de prévisualisations déjà configuré là-bas ; les propriétaires de la destination décident s'il faut fusionner et comment le contenu atteint la production.
+
+La prévisualisation publique de Track est également en lecture seule. Elle peut analyser les référentiels de produits et destinés aux clients sélectionnés, mais elle n'ouvre pas de demandes de fusion. Après avoir créé un espace de travail et connecté les destinations approuvées, le flux de travail Track normal peut préparer des propositions au-delà de la limite d'examen ci-dessus.
+
+## Continuer le flux de travail
+
+- [Configurez les sources de produit et les déclencheurs](/guides/thally-track).
+- [Examinez le pipeline de changement de produit](/product-change-pipeline).
+- [Exploitez les prévisualisations et les versions de documentation principale gérées](/guides/managed-hosting).

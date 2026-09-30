@@ -1,0 +1,49 @@
+---
+title: "Mermaid"
+description: "Rendu des diagrammes Mermaid en ligne dans votre documentation."
+---
+
+{/* thally:ai-translation locale=fr source-sha=7415d36d09a7c37aabc1caecc05698e50fef685dfad788e838a613049fda04d0 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utilisez `<Mermaid>` pour intégrer des organigrammes, des diagrammes de séquence, des diagrammes entité-relation et tout autre type de diagramme [pris en charge par Mermaid](https://mermaid.js.org). Les diagrammes sont rendus côté client à la première vue.
+
+## Organigramme
+
+<Mermaid>{`
+flowchart LR
+    A[Client] -->|Request| B(API Gateway)
+    B --> C{Auth}
+    C -->|Valid| D[Service]
+    C -->|Invalid| E[401 Error]
+`}</Mermaid>
+
+## Diagramme de séquence
+
+<Mermaid>{`
+sequenceDiagram
+    participant U as User
+    participant A as API
+    participant D as Database
+    U->>A: POST /login
+    A->>D: SELECT user WHERE email=?
+    D-->>A: user row
+    A-->>U: 200 OK + JWT
+`}</Mermaid>
+
+```mdx
+<Mermaid>{`
+flowchart LR
+    A[Start] --> B[Process] --> C[End]
+`}</Mermaid>
+```
+
+<Note>
+  La définition Mermaid doit être passée en tant que chaîne de modèle littérale enfant (`{\`...\`}`), et non comme enfants JSX.
+</Note>
+
+## Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `children` | `string` | Chaîne de définition du diagramme Mermaid |

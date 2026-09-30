@@ -1,0 +1,60 @@
+---
+title: Déployer sur Vercel
+navTitle: Vercel
+description: Importez un référentiel Thally dans Vercel, configurez les variables de production et vérifiez le site déployé.
+---
+
+{/* thally:ai-translation locale=fr source-sha=e2a7fe12e04c1df45b5a68f1f25aad09168cf57040d36f344c80ae6c7b16b2fa */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Vercel détecte le runtime Next.js et peut déployer directement depuis votre référentiel Git ou via l'interface de ligne de commande Thally.
+
+## Déployer depuis un référentiel
+
+1. Poussez le projet de documentation vers GitHub, GitLab ou Bitbucket.
+2. Dans Vercel, créez un nouveau projet et importez le référentiel.
+3. Conservez le framework détecté et les paramètres de compilation.
+4. Ajoutez `THALLY_SITE_URL` avec l'origine finale de la documentation.
+5. Ajoutez uniquement les secrets optionnels requis par les fonctionnalités activées.
+6. Déployez le projet.
+
+Vercel crée des déploiements d'aperçu pour les branches et les demandes de tirage connectées au projet. Conservez `THALLY_SITE_URL` défini sur le domaine de production sauf si vous avez une stratégie d'URL délibérément par environnement.
+
+## Déployer avec l'interface de ligne de commande
+
+À partir de la racine du projet, exécutez :
+
+```bash
+npx --yes @thallylabs/cli@latest deploy
+```
+
+Utilisez `--prod` pour un déploiement en production :
+
+```bash
+npx --yes @thallylabs/cli@latest deploy --prod
+```
+
+La commande construit le site, exécute la vérification de préparation de l'agent lorsque le projet la fournit, et invoque le déploiement Vercel.
+
+## Persister les données d'exécution
+
+Les systèmes de fichiers Vercel sont éphémères. Configurez le stockage libSQL distant si vous avez besoin que l'analytique, les paramètres d'administration, l'état des tâches ou les compteurs de limite de débit persistent :
+
+```bash
+THALLY_ANALYTICS_DB_URL=libsql://your-database.turso.io
+THALLY_ANALYTICS_DB_TOKEN=your-token
+THALLY_DATABASE_URL=libsql://your-database.turso.io
+THALLY_DATABASE_TOKEN=your-token
+```
+
+La même base de données peut soutenir les deux paires. Thally crée les tableaux requis à la première utilisation.
+
+## Vérifier le déploiement
+
+Ouvrez le domaine de production et testez les routes et les fonctionnalités activées énumérées dans [Déployez votre site de documentation](/guides/deploying#verify-the-live-site). Exécutez les commandes de smoke HTTP de la page d'accueil, de la page imbriquée et de `/llms.txt` à partir de cette section. Confirmez que le journal de compilation Vercel ne contient pas d'erreurs `thally check` ou MDX.
+
+## Étapes suivantes
+
+- [Variables d'environnement](/guides/environment-variables)
+- [Analytique et commentaires](/guides/analytics-and-feedback)
+- [Protéger la documentation privée](/guides/private-docs)

@@ -1,0 +1,66 @@
+---
+title: Implementar en Cloudflare Workers
+navTitle: Cloudflare Workers
+description: Compilar, probar y publicar un sitio Thally como un Cloudflare Worker de OpenNext.
+---
+
+{/* thally:ai-translation locale=es source-sha=7deb5cb4fb945f5c98db16af770d2506db992893e8f6fc59172694708183626f */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+El proyecto Thally incluye un adaptador de OpenNext y `wrangler.jsonc` para una
+implementación en Cloudflare Workers con capacidad de servidor.
+
+## Antes de comenzar
+
+Instala las dependencias y autentica Wrangler con la cuenta de Cloudflare
+que posee el Worker de destino.
+
+Establece `THALLY_SITE_URL` y cualquier secreto opcional en el entorno del Worker. No
+confirmes secretos de producción en `wrangler.jsonc`.
+
+## Compilar el Worker
+
+```bash
+npm run build:cloudflare
+```
+
+El comando crea el punto de entrada del Worker y los activos estáticos en
+`.open-next/`.
+
+## Prueba básica del artefacto
+
+```bash
+npm run smoke:cloudflare
+```
+
+Esto ejecuta el artefacto adaptado en el tiempo de ejecución de Cloudflare antes de que lo
+publiques.
+
+## Implementar
+
+Usa el script del proyecto:
+
+```bash
+npm run deploy:cloudflare
+```
+
+El script compila el artefacto de OpenNext y lo publica a través de la
+configuración de Cloudflare Workers incluida.
+
+## Verificar el Worker
+
+Abre la URL implementada y prueba una página normal, una búsqueda y cada función
+de servidor habilitada. Confirma que `/llms.txt` y `/api/docs-index` usen el origen esperado.
+Ejecuta los comandos HTTP de prueba básica de la página principal, página anidada y `/llms.txt` desde
+[Verificar el sitio en vivo](/guides/deploying#verify-the-live-site) antes de confiar
+en el resultado de la implementación del Worker.
+
+Si el dominio personalizado difiere de la URL inicial del Worker, actualiza
+`THALLY_SITE_URL` e implementa nuevamente para que los enlaces canónicos y orientados a agentes usen
+el dominio personalizado.
+
+## Pasos siguientes
+
+- [Variables de entorno](/guides/environment-variables)
+- [Solucionar problemas de una implementación](/guides/troubleshooting)
+- [Proteger documentación privada](/guides/private-docs)

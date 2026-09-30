@@ -1,0 +1,67 @@
+---
+title: Déployer sur Cloudflare Workers
+navTitle: Cloudflare Workers
+description: Construire, tester et publier un site Thally en tant qu'OpenNext Cloudflare Worker.
+---
+
+{/* thally:ai-translation locale=fr source-sha=7deb5cb4fb945f5c98db16af770d2506db992893e8f6fc59172694708183626f */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Le projet Thally inclut un adaptateur OpenNext et `wrangler.jsonc` pour un
+déploiement Cloudflare Workers avec capacités serveur.
+
+## Avant de commencer
+
+Installez les dépendances et authentifiez Wrangler avec le compte Cloudflare
+qui possède le Worker cible.
+
+Définissez `THALLY_SITE_URL` et tous les secrets optionnels dans l'environnement
+du Worker. Ne validez pas les secrets de production dans `wrangler.jsonc`.
+
+## Construire le Worker
+
+```bash
+npm run build:cloudflare
+```
+
+La commande crée le point d'entrée du Worker et les actifs statiques sous
+`.open-next/`.
+
+## Test de fumée de l'artefact
+
+```bash
+npm run smoke:cloudflare
+```
+
+Ceci exerce l'artefact adapté sous l'environnement d'exécution Cloudflare avant
+que vous le publiiez.
+
+## Déployer
+
+Utilisez le script du projet :
+
+```bash
+npm run deploy:cloudflare
+```
+
+Le script construit l'artefact OpenNext et le publie via la configuration
+Cloudflare Workers incluse.
+
+## Vérifier le Worker
+
+Ouvrez l'URL déployée et testez une page normale, une recherche, et chaque
+fonctionnalité serveur activée. Confirmez que `/llms.txt` et `/api/docs-index`
+utilisent l'origine attendue. Exécutez les commandes de test de fumée HTTP de
+la page d'accueil, de la page imbriquée et de `/llms.txt` à partir de
+[Vérifier le site actif](/guides/deploying#verify-the-live-site) avant de
+compter sur le résultat du déploiement du Worker.
+
+Si le domaine personnalisé diffère de l'URL initiale du Worker, mettez à jour
+`THALLY_SITE_URL` et redéployez pour que les liens canoniques et ceux visibles
+par les agents utilisent le domaine personnalisé.
+
+## Étapes suivantes
+
+- [Variables d'environnement](/guides/environment-variables)
+- [Dépanner un déploiement](/guides/troubleshooting)
+- [Protéger la documentation privée](/guides/private-docs)

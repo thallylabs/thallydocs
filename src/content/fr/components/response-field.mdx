@@ -1,0 +1,63 @@
+---
+title: "ResponseField"
+description: "Documentez les propriétés des objets de réponse renvoyés par les points de terminaison API."
+---
+
+{/* thally:ai-translation locale=fr source-sha=03920d01ebad2994ba9169a6afac952dd6d23392264fb0f1837d45096c9f1eed */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`<ResponseField>` affiche une entrée de propriété structurée pour la documentation des réponses API. Associez-le à `<Expandable>` pour documenter les objets imbriqués.
+
+## Exemple
+
+<ResponseField name="id" type="string" required>
+  Identifiant unique pour l'animal. Format : `pet_xxxxxxxx`
+</ResponseField>
+
+<ResponseField name="name" type="string" required>
+  Le nom d'affichage de l'animal.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Statut actuel. L'une des valeurs : `available`, `pending` ou `sold`.
+</ResponseField>
+
+<ResponseField name="tags" type="Tag[]">
+  Tableau des étiquettes associées à l'animal.
+
+  <Expandable title="Propriétés de Tag">
+    <ResponseField name="id" type="integer">
+      Identifiant de l'étiquette.
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Nom d'affichage de l'étiquette.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+```mdx
+<ResponseField name="id" type="string" required>
+  Unique identifier.
+</ResponseField>
+
+<ResponseField name="tags" type="Tag[]">
+  Associated tags.
+  <Expandable title="Tag properties">
+    <ResponseField name="name" type="string">
+      Tag name.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+```
+
+## Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `name` | `string` | Nom de la propriété |
+| `type` | `string` | Type de données (p. ex. `string`, `integer`, `boolean`, `object`) |
+| `required` | `boolean` | Affiche un badge « requis » |
+
+<Tip>
+  Utilisez `<Expandable>` à l'intérieur d'une `<ResponseField>` pour documenter les propriétés des objets imbriqués sans encombrer le schéma de réponse de haut niveau.
+</Tip>

@@ -1,0 +1,167 @@
+---
+title: Utiliser Thally avec les agents IA de codage
+navTitle: Agents IA de codage
+description: Donnez aux agents de codage Codex, Claude Code, Cursor et autres des instructions précises et des outils Thally structurés.
+---
+
+{/* thally:ai-translation locale=fr source-sha=f42c0b94dee7d31b9ae4141ddff4c4a6171fb81c1426fced5d4d1fdf31f38de3 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally fonctionne avec n'importe quel agent de codage capable d'utiliser un navigateur, de modifier des fichiers et d'exécuter des commandes terminales. Utilisez Thally Cloud pour créer et publier le site. Une fois que le site existe, l'agent peut travailler directement dans son référentiel avec l'interface de ligne de commande ou utiliser le serveur MCP local pour les opérations de documentation structurées.
+
+## Choisir comment votre agent fonctionne
+
+| Flux de travail | Idéal pour | Ce que l'agent peut faire |
+| --- | --- | --- |
+| Thally Cloud | Créer et publier un site géré | Créer ou connecter le référentiel de documentation, publier sur une adresse `thally.app` et gérer les déploiements. |
+| Référentiel + CLI | Agents ayant accès au shell et aux fichiers | Modifier MDX et `docs.json`, prévisualiser, créer et exécuter des vérifications. |
+| Serveur MCP local | Agents de codage compatibles MCP | Créer, lire, rechercher, mettre à jour, migrer, traduire et valider les projets avec des outils structurés. |
+| `thally agent` | Automatisation de la documentation avec validation d'examen | Transformer une instruction, un diff ou une PR produit en branche ou demande de tirage. Nécessite une clé API Anthropic. |
+| Serveur MCP distant | Agents recherchant un site déployé | Rechercher et lire les documents publiés via quatre outils publics en lecture seule. |
+
+Vous n'avez pas besoin de MCP pour utiliser Thally avec un agent. MCP rend l'agent plus fiable car il expose des opérations explicites telles que `add_page`, `search_docs` et `lint_project`.
+
+## Connecter le serveur MCP local
+
+Exécutez la commande pour votre agent de codage, puis redémarrez ou rechargez l'agent afin qu'il découvre le serveur `thally`.
+
+<Tabs>
+
+<Tab title="Codex">
+
+```bash
+codex mcp add thally -- npx -y @thallylabs/mcp
+```
+
+</Tab>
+
+<Tab title="Claude Code">
+
+```bash
+claude mcp add thally -- npx -y @thallylabs/mcp
+```
+
+</Tab>
+
+<Tab title="Cursor">
+
+Ajoutez ceci à `.cursor/mcp.json` :
+
+```json
+{
+  "mcpServers": {
+    "thally": {
+      "command": "npx",
+      "args": ["-y", "@thallylabs/mcp"]
+    }
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+Le serveur local s'exécute via l'entrée/sortie standard sur votre machine. Les outils qui modifient le contenu nécessitent un `projectDir` explicite ; utilisez un chemin absolu si votre agent ne se trouve pas déjà dans le référentiel de documentation.
+
+## Créer et publier un site avec un agent
+
+La configuration recommandée commence dans [Thally Cloud](https://app.thally.io/), et non avec un scaffold local. Le [démarrage rapide Cloud](/quickstart#prefer-to-use-a-coding-agent) comprend une invite à copier seule qui indique à l'agent comment :
+
+- vérifier la source de documentation avant de rien modifier ;
+- marquer une pause pour la connexion, l'approbation de l'application GitHub, les choix de référentiel et les modifications DNS ;
+- créer et publier le site via Thally Cloud ;
+- migrer en toute sécurité le contenu existant dans le référentiel créé par Cloud ;
+- valider, envoyer et vérifier le déploiement géré ; et
+- connecter les serveurs MCP locaux et distants pour les travaux futurs.
+
+L'invite reste réduite sur la page afin que les lecteurs puissent copier les instructions complètes et examinées sans faire défiler un manuel d'agent.
+
+## Ajouter ou mettre à jour une page de documentation
+
+Cette invite fonctionne que l'agent utilise les outils MCP ou modifie directement le référentiel. Elle demande à l'agent de préserver l'architecture informationnelle existante au lieu d'ajouter une page là où c'est pratique.
+
+<AgentPrompt
+  title="Copier une invite complète pour documenter une tâche"
+  copyOnly
+>
+
+Documentez cette tâche utilisateur dans le projet Thally actuel : TASK_TO_DOCUMENT. Vous avez terminé quand un lecteur novice peut accomplir la tâche sans deviner, la page est facile à trouver, chaque affirmation de Thally est vérifiée par rapport au référentiel actuel, et la validation plus la version de production passent.
+
+Commencez par lire AGENTS.md ou les instructions équivalentes du référentiel si elles sont présentes. Enregistrez l'état git actuel pour préserver les travaux non connexes. Inspectez docs.json, package.json, src/data/site.ts, les pages de contenu pertinentes, et l'implémentation, l'aide CLI, les types de configuration ou les tests derrière la tâche. Recherchez la langue du lecteur ainsi que les noms de fonctionnalités internes. Ne copiez pas les conseils génériques d'un autre produit de documentation et ne supposez pas qu'une capacité Node.js standard est configurée par Thally.
+
+Si le serveur MCP Thally local est connecté, utilisez list_pages, search_docs et read_page pour comprendre la structure actuelle. Utilisez update_page quand une page possède déjà la tâche ; utilisez add_page uniquement quand une URL distincte est justifiée. Sinon, modifiez les fichiers créés sous src/content et docs.json directement. Ne modifiez pas les sources d'exécution générées.
+
+Écrivez pour le lecteur qui essaie d'accomplir la tâche maintenant :
+
+- Utilisez un titre de tâche spécifique et une description basée sur les résultats.
+- Mettez les conditions préalables, les autorisations et les effets irréversibles avant les étapes.
+- Donnez les étapes ordonnées avec les libellés UI exacts ou les commandes que vous pouvez tester.
+- Utilisez des valeurs réalistes et indiquez le résultat attendu après les étapes importantes.
+- Couvrez les modes de défaillance les plus probables et l'action de récupération la plus sûre.
+- Gardez les libellés de la barre latérale courts avec navTitle quand le titre complet de la page s'enroulerait.
+- Liez vers des concepts préalables au lieu de les répéter.
+- Utilisez les composants MDX intégrés uniquement lorsqu'ils améliorent l'analyse.
+
+Exécutez npx --yes @thallylabs/cli@latest check et npm run build. Démarrez un aperçu local si possible et inspectez la page en mode clair et sombre à des largeurs de bureau et étroites, y compris les liens, les blocs de code, la navigation, les en-têtes et le débordement. Corrigez les régressions causées par vos modifications.
+
+Résumez le résultat du lecteur, les fichiers modifiés, les sources utilisées pour authentifier le comportement du produit, les commandes et les vérifications visuelles terminées, et tous les faits qui ont encore besoin d'un propriétaire de produit. Ne commitez pas, ne poussez pas, ne déployez pas, ne supprimez pas de contenu ou ne modifiez pas les fichiers de framework non connexes à moins que je demande.
+
+</AgentPrompt>
+
+## Migrer la documentation existante
+
+Utilisez un référentiel GitHub lorsqu'il est disponible. Les migrations de référentiel conservent plus de structure créée qu'une analyse du site déployé.
+
+<AgentPrompt
+  title="Copier une invite complète pour migrer la documentation"
+  copyOnly
+>
+
+Migrez SOURCE_URL dans un nouveau projet Thally à TARGET_DIRECTORY. Vous avez terminé quand la source a été importée dans un projet Thally frais, l'architecture informationnelle et les actifs importants survivent au déplacement, les vérifications et la version de production passent, et j'ai un rapport d'examen au lieu d'une affirmation non vérifiée que la migration est terminée.
+
+Avant d'écrire les fichiers, lisez les instructions du référentiel dans l'espace de travail actuel et inspectez TARGET_DIRECTORY. Arrêtez si la cible existe et n'est pas vide ; ne l'écrasez jamais ou ne la fusionnez pas par supposition. Déterminez si SOURCE_URL est un référentiel de documentation GitHub, un site de documentation public ou les deux. Préférez le référentiel source quand il est disponible car il préserve MDX source, la configuration, l'historique et les actifs. Confirmez la source et la cible exactes avec moi si l'une ou l'autre est ambiguë.
+
+Utilisez l'outil migrate_docs MCP Thally local si connecté. Sinon, exécutez npx --yes @thallylabs/cli@latest migrate SOURCE_URL TARGET_DIRECTORY. N'utilisez pas import_docs ou --into à moins que je demande explicitement une fusion sur place et que j'approuve la destination. Préservez le journal de migration et les avertissements.
+
+Après la migration :
+
+1. Lisez le AGENTS.md généré si présent, docs.json, package.json et src/data/site.ts. Comparez le nombre de pages source et destination, la navigation de haut niveau, les redirections, les images et téléchargements importants, les langages de code, les composants personnalisés et les références de spécification API.
+2. Installez les dépendances uniquement avec le gestionnaire de packages et le verrouillage choisis par le projet généré. Ne mettez pas à niveau les packages non connexes.
+3. Exécutez npx --yes @thallylabs/cli@latest check et npm run build. Séparez les limitations du programme d'importation des erreurs de contenu source et des défaillances d'environnement.
+4. Démarrez le site local et inspectez la page d'accueil, chaque onglet de navigation principal, les pages représentatives peu profondes et profondes, les liens, les en-têtes, les blocs de code, les images, les tableaux, les appels et tout type OpenAPI. Vérifiez le mode clair et sombre plus une fenêtre d'affichage étroite. Cherchez les actifs manquants, le MDX brut non pris en charge, les ancres brisées, le débordement, les en-têtes en double et la copie générique de remplacement.
+5. Corrigez les problèmes de migration mécanique sûre qui ne modifient pas le sens du produit. Signalez les composants non pris en charge, la navigation ambiguë, le contenu obsolète ou en double, et les affirmations qui ont besoin d'un propriétaire de produit au lieu d'inventer des remplacements.
+6. Signalez ce qui a migré, les commandes exactes exécutées, les résultats de validation, les vérifications visuelles, les avertissements, le contenu non résolu, et l'action la plus sûre suivante pour chaque élément.
+
+N'écrasez pas un répertoire existant non vide, ne supprimez pas le matériel source, ne déployez pas, ne commitez pas, ne poussez pas ou ne modifiez pas les URL publiques sans demander.
+
+</AgentPrompt>
+
+## Examiner une modification de produit
+
+Pour un travail ponctuel, votre agent de codage actuel peut inspecter un diff et mettre à jour les documents directement. Pour un flux de travail répétable et avec validation d'examen, utilisez l'agent de documents intégré :
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+npx --yes @thallylabs/cli@latest agent "Document the new webhook retry policy" --diff HEAD~1 --dry-run
+```
+
+`--dry-run` affiche le diff proposé et n'écrit rien. La valeur par défaut laisse les modifications sur une nouvelle branche ; `--pr` valide, pousse et ouvre une demande de tirage. L'agent de documents nécessite un arbre de travail git propre et ne fusionne jamais son propre travail.
+
+## Donner aux agents des règles spécifiques au projet
+
+Ajoutez un fichier `AGENTS.md` à la racine du projet pour le ton, l'architecture informationnelle, les fichiers qui ne doivent pas être modifiés et les exigences d'examen. Thally transmet ce fichier à l'agent de documents intégré. D'autres agents de codage le découvrent également quand ils travaillent dans le référentiel.
+
+Les sites déployés publient automatiquement des conseils supplémentaires lisibles par machine :
+
+- `/AGENTS.md` explique comment éditer le projet en toute sécurité ;
+- `/skill.md` décrit les capacités lisibles par agent du site ;
+- `/llms.txt` et `/llms-full.txt` indexent la documentation publiée ;
+- `/api/mcp` expose le serveur MCP distant public en lecture seule.
+
+## Étapes suivantes
+
+- [Aperçu de l'interface de ligne de commande](/guides/cli-overview)
+- [Aperçu de MCP](/guides/mcp-overview)
+- [Ébauche de mises à jour avec l'agent de documents](/guides/docs-agent)
+- [Publier des manifestes d'agent](/guides/agent-manifests)

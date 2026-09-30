@@ -1,0 +1,100 @@
+---
+title: "Tile & TileGroup"
+description: "Cartes plus grandes avec support d'images pour les aperçus de fonctionnalités et les sections de lancement de produits."
+---
+
+{/* thally:ai-translation locale=fr source-sha=14534054a987700411a80903302599276e0e6a5449e02075629c02372ac3e122 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`<Tile>` est une variante de carte plus grande avec une zone d'image proéminente et une animation au survol. Utilisez `<TileGroup>` pour organiser les tiles dans une grille. Contrairement à `<Card>`, les tiles sont conçues pour les présentations visuelles de fonctionnalités plutôt que pour les liens de navigation.
+
+## Exemple
+
+<TileGroup cols={2}>
+  <Tile title="REST API" icon="code-simple" href="/api">
+    Opérations CRUD complètes via HTTP. Supporte la pagination, le filtrage et les opérations en masse prêts à l'emploi.
+  </Tile>
+  <Tile title="CLI" icon="wrench" href="/guides/cli-overview">
+    Bibliothèques clientes officielles pour TypeScript, Python, Go et Ruby avec types générés.
+  </Tile>
+</TileGroup>
+
+```mdx
+<TileGroup cols={2}>
+  <Tile title="REST API" icon="code-simple" href="/api">
+    Full CRUD operations over HTTP.
+  </Tile>
+  <Tile title="CLI" icon="wrench" href="/guides/cli-overview">
+    Official client libraries for multiple languages.
+  </Tile>
+</TileGroup>
+```
+
+## Avec image
+
+Ajoutez une image en haut des tiles pour les présentations visuelles de produits. L'image s'agrandit au survol pour un effet interactif subtil.
+
+<TileGroup cols={2}>
+  <Tile title="Tableau de bord analytique" img="/images/image1.jpg" href="/quickstart">
+    Surveillez les utilisateurs actifs, les taux de conversion et la rétention en une seule vue.
+  </Tile>
+  <Tile title="Explorateur API" img="/images/image2.jpg" href="/api">
+    Envoyez des requêtes en direct depuis la documentation avec votre propre clé API.
+  </Tile>
+</TileGroup>
+
+```mdx
+<TileGroup cols={2}>
+  <Tile title="Analytics Dashboard" img="/images/dashboard.png" href="/quickstart">
+    Monitor users and conversion rates.
+  </Tile>
+  <Tile title="API Explorer" img="/images/explorer.png" href="/api">
+    Send live requests from the docs.
+  </Tile>
+</TileGroup>
+```
+
+## Trois tiles
+
+<TileGroup cols={3}>
+  <Tile title="Référence API" icon="telegram" href="/guides/api-reference-setup">
+    Recevez des notifications d'événements en temps réel via HTTP POST sur votre point de terminaison.
+  </Tile>
+  <Tile title="Docs privée" icon="envelope" href="/guides/private-docs">
+    Sécurisez votre API avec OAuth 2.0, les clés API ou les jetons de porteur JWT.
+  </Tile>
+  <Tile title="Navigation" icon="grid-round" href="/guides/configuring-navigation">
+    Pagination basée sur le curseur pour les grands ensembles de données avec des performances cohérentes.
+  </Tile>
+</TileGroup>
+
+```mdx
+<TileGroup cols={3}>
+  <Tile title="API reference" icon="telegram" href="/guides/api-reference-setup">
+    Real-time event notifications.
+  </Tile>
+  <Tile title="Private docs" icon="envelope" href="/guides/private-docs">
+    OAuth 2.0, API keys, or JWT.
+  </Tile>
+  <Tile title="Navigation" icon="grid-round" href="/guides/configuring-navigation">
+    Cursor-based for large datasets.
+  </Tile>
+</TileGroup>
+```
+
+## Props
+
+### `<Tile>`
+
+| Prop | Type | Description |
+|---|---|---|
+| `title` | `string` | En-tête de la tile |
+| `href` | `string` | Rend la tile un lien |
+| `icon` | `string` | Nom de l'icône affichée à côté du titre |
+| `img` | `string` | Image affichée en haut de la tile |
+
+### `<TileGroup>`
+
+| Prop | Type | Par défaut | Description |
+|---|---|---|---|
+| `cols` | `1 \| 2 \| 3 \| 4` | `2` | Nombre de colonnes |

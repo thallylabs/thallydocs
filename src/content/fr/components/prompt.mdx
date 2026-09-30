@@ -1,0 +1,46 @@
+---
+title: "Prompt"
+description: "Un bloc terminal stylisé pour documenter les interactions CLI et les conversations IA."
+---
+
+{/* thally:ai-translation locale=fr source-sha=670999ecaba497e79024406e0c01ab794e3e06fd658850faac420d57f4edabd2 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utilisez `<Prompt>` avec `<PromptUser>` et `<PromptAssistant>` pour afficher des sessions en ligne de commande ou des paires de requête/réponse IA dans un conteneur de style terminal.
+
+## Exemple CLI
+
+<Prompt>
+  <PromptUser>npx create-thally-docs my-docs --yes</PromptUser>
+  <PromptAssistant>
+    ✓ Scaffolded my-docs/
+    ✓ Installed 312 packages
+    ✓ Initialized git repository
+
+    → Run `cd my-docs && npm run dev` to get started
+  </PromptAssistant>
+</Prompt>
+
+## Exemple de conversation IA
+
+<Prompt>
+  <PromptUser>What is the rate limit for the API?</PromptUser>
+  <PromptAssistant>
+    The default rate limit is 1,000 requests per minute per API key. Enterprise plans support higher limits — contact support to upgrade.
+  </PromptAssistant>
+</Prompt>
+
+```mdx
+<Prompt>
+  <PromptUser>npm run build</PromptUser>
+  <PromptAssistant>✓ Build complete in 2.4s</PromptAssistant>
+</Prompt>
+```
+
+## Composants
+
+| Composant | Description |
+|---|---|
+| `<Prompt>` | Conteneur externe avec style de police monospace |
+| `<PromptUser>` | Ligne d'entrée utilisateur — préfixée par un symbole `$` |
+| `<PromptAssistant>` | Bloc de réponse ou de résultat sous l'entrée |

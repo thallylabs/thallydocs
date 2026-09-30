@@ -1,0 +1,85 @@
+---
+title: Mesurer l'utilisation et collecter les commentaires
+navTitle: Analytique et commentaires
+description: Activez l'analytique Thally et les évaluations de pages, conservez les événements et utilisez les résultats pour améliorer la documentation.
+---
+
+{/* thally:ai-translation locale=fr source-sha=1af0b81c99a7009f361bcfa2e93c8afd4ee2af47188ebf3fa07cf10e3f29a12d */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally peut enregistrer les vues de pages, les recherches, le trafic des agents et les commentaires sur les pages. Le service d'analytique et le tableau de bord sont des capacités de Thally Cloud ; le runtime open-source conserve les points d'intégration mais désactive sans risque lorsqu'aucun service n'est connecté.
+
+## Activer les contrôles du site
+
+Définissez les valeurs par défaut du fichier dans `docs.json` :
+
+```json
+{
+  "analytics": {
+    "enabled": true
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "endpoint": "/api/feedback"
+  }
+}
+```
+
+| Champ | Défaut | Objectif |
+| --- | --- | --- |
+| `analytics.enabled` | `true` | Permet la collecte lorsqu'un service d'analytique connecté la fournit. Définissez `false` pour refuser. |
+| `feedback.thumbsRating` | `true` | Affiche ou masque le contrôle utile/non utile. |
+| `feedback.endpoint` | `/api/feedback` | Reçoit les évaluations de pages et les suites écrites optionnelles. |
+
+Le point de terminaison intégré accepte une évaluation sans permettre à une défaillance d'analytique de casser la demande du lecteur. Sur un site open-source non connecté, il ne crée pas de magasin de commentaires durable. Remplacez la route par votre propre intégration si vous souhaitez un stockage ou un transfert autogérés.
+
+## Connecter l'analytique
+
+Connectez le déploiement à Thally Cloud, ouvrez le site, puis sélectionnez **Analytics**. Le tableau de bord Cloud sépare le trafic humain et le trafic des agents et affiche les signaux d'engagement et de découverte pour le site sélectionné. Lorsque l'analytique n'est pas incluse dans le plan de l'espace de travail, la page explique l'exigence au lieu de présenter des données vides comme une configuration réussie.
+
+Pour un runtime autohébergé, `/admin/analytics` utilise le même pont de service lorsque le déploiement dispose d'une connexion Cloud valide.
+
+Vous n'avez pas besoin de configurer une base de données d'analytique pour un site Cloud géré. Si vous exploitez le runtime open-source et avez besoin d'une analytique locale au site pour survivre aux redéploiements, consultez [Paramètres autohébergés](/guides/environment-variables#keep-self-hosted-state-after-a-redeploy).
+
+## Cookies et consentement
+
+La collecte de trafic native de Thally s'exécute sur le serveur. Elle enregistre le chemin demandé, l'identifiant du contenu, le format de la demande, le référent et si la demande semble provenir d'un humain ou d'un agent. Elle **ne** crée pas d'identifiant de visiteur persistant ou de cookie d'analytique, donc un site public utilisant uniquement l'analytique Thally native n'a pas besoin d'une bannière de cookie pour cette fonctionnalité.
+
+Thally utilise des cookies strictement nécessaires et `HttpOnly` lorsque vous activez des fonctionnalités qui nécessitent une session :
+
+- connexion par mot de passe administrateur ou OIDC ;
+- documentation protégée par mot de passe ;
+- le flux de connexion OIDC de courte durée.
+
+Ces cookies utilisent `SameSite=Lax`, sont marqués `Secure` en production et ne sont pas utilisés pour la publicité ou le suivi entre sites. Une bannière de site pouvant être fermée stocke son état fermé dans `localStorage`, et non dans un cookie.
+
+<Warning title="Les scripts tiers peuvent modifier l'exigence">
+Google Analytics, PostHog, les pixels publicitaires, les médias intégrés ou les scripts personnalisés peuvent définir des cookies ou des identifiants similaires. Si vous les activez, ajoutez des contrôles de consentement qui correspondent aux fournisseurs, à votre configuration et aux régions que vous servez. N'affichez pas une bannière de consentement générique qui ne peut pas réellement empêcher le chargement de ces scripts.
+</Warning>
+
+## Examiner les signaux utiles
+
+Utilisez le tableau de bord pour rechercher :
+
+- des pages à fort trafic avec des évaluations négatives ;
+- des recherches répétées qui retournent de faibles résultats ;
+- des tâches importantes avec peu de trafic parce que les lecteurs ne peuvent pas les trouver ;
+- des différences entre l'accès humain et l'accès des agents ;
+- des lacunes de contenu qui devraient devenir un guide ou une page de référence focalisés.
+
+Traitez une évaluation comme une incitation à enquêter, non comme la preuve qu'un paragraphe a causé le problème. Lisez la page, reproduisez la tâche et mettez à jour les documents permanents.
+
+## Vérifier la collecte
+
+1. Ouvrez une page sur le site déployé.
+2. Exécutez une recherche.
+3. Soumettez une évaluation positive et une évaluation négative sur les pages de test.
+4. Confirmez que les événements apparaissent dans le tableau de bord d'analytique connecté.
+5. S'ils ne le font pas, inspectez les demandes du navigateur à `/api/analytics/collect` et `/api/feedback`, puis vérifiez les journaux du serveur et les variables de stockage.
+
+## Prochaines étapes
+
+- [Gérer les sites avec Thally Cloud](/guides/thally-cloud)
+- [Gérer l'administrateur de site intégré](/guides/admin-dashboard)
+- [Paramètres autohébergés](/guides/environment-variables)
+- [Dépanner un déploiement](/guides/troubleshooting)

@@ -1,0 +1,85 @@
+---
+title: Utiliser la CLI Thally
+navTitle: Aperçu de la CLI
+description: Découvrez le petit ensemble de commandes Thally utilisées pour créer, modifier, valider, publier et automatiser la documentation.
+---
+
+{/* thally:ai-translation locale=fr source-sha=7d64fca60d473540345da14a306030b456b807770a4d7d9d9b91ff13762a025e */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+La CLI `thally` est l'interface principale d'un projet de documentation. Elle encapsule
+le framework pour que vous puissiez travailler avec le contenu et la configuration au lieu des
+éléments internes de Next.js. Exécutez le paquet `@thallylabs/cli` publié avec `npx` à partir de
+la racine du projet ; un projet généré n'installe pas de binaire `thally` local.
+
+```bash
+npx --yes @thallylabs/cli@latest
+```
+
+## Le chemin des cinq commandes
+
+```bash
+npx --yes create-thally-docs@latest my-docs --yes --install
+cd my-docs
+npx --yes @thallylabs/cli@latest dev
+npx --yes @thallylabs/cli@latest new guides/invite-a-member --title "Invite a team member"
+npx --yes @thallylabs/cli@latest check
+```
+
+Utilisez `build` quand le projet est prêt pour la production et `deploy` quand vous voulez
+que la CLI le publie via un fournisseur pris en charge.
+
+## Choisir une commande selon votre objectif
+
+| Objectif | Commande | Résultat |
+| --- | --- | --- |
+| Créer un projet | `create-thally-docs@latest [dir]` | Télécharge et exécute l'échafaudage actuel. |
+| Prévisualiser localement | `thally dev` | Démarre le site de documentation et les endpoints d'agent. |
+| Ajouter une page | `thally new PAGE_ID` | Crée du MDX et l'enregistre dans `docs.json`. |
+| Valider le travail | `thally check` | Détecte la navigation cassée, les métadonnées manquantes et les problèmes de préparation optionnels. |
+| Construire la sortie de production | `thally build` | Exécute la construction de production. |
+| Publier | `thally deploy` | Construit et déploie via Vercel ou Cloudflare. |
+| Migrer la documentation | `thally migrate SOURCE [dir]` | Importe un référentiel ou un site de documentation public. |
+| Traduire les pages | `thally translate --locale CODE` | Écrit une arborescence de contenu localisée. |
+| Démarrer MCP local | `thally mcp` | Exécute le serveur MCP stdio à 15 outils. |
+| Rédiger une mise à jour | `thally agent` | Produit une branche ou une demande de fusion révisable. |
+| Automatiser les modifications de produit | `thally track` | Transforme les modifications de référentiel suivies en tâches de documentation. |
+| Mettre à jour Thally | `thally starter update` | Prévisualise ou applique une mise à jour compatible du framework. |
+
+## `thally` et `create-thally-docs`
+
+Utilisez `npx --yes @thallylabs/cli@latest` pour le travail courant à l'intérieur d'un projet. Utilisez
+`npx --yes create-thally-docs@latest` quand vous avez besoin du nouvel échafaudage avant
+qu'un projet existe. `thally init` et `thally migrate` délèguent au paquet
+d'échafaudage, donc les deux interfaces produisent la même forme de projet prise en charge.
+
+## Valider le travail à partir d'un agent
+
+<AgentPrompt
+  title="Copier une invite complète pour vérifier un projet Thally"
+  copyOnly
+>
+
+Auditez et réparez le projet de documentation Thally actuel sans modifier sa signification produit, son intention de marque ou ses limites de propriété. Vous avez terminé quand la validation et la construction de production réussissent, chaque correction automatique est justifiée, et j'ai un rapport précis de tout ce qui nécessite encore une décision humaine.
+
+1. Confirmez que le répertoire de travail contient package.json, docs.json et src/content. Lisez AGENTS.md ou les instructions du référentiel équivalentes avant de modifier les fichiers. Enregistrez l'état git actuel et préservez les modifications non liées.
+2. Lisez docs.json, les scripts package.json, src/data/site.ts et tous les fichiers de configuration ou de contenu nommés par les erreurs existantes. Ne modifiez pas la sortie générée ou les éléments internes du framework caché quand une correction de contenu ou de configuration créée existe.
+3. Exécutez npx --yes @thallylabs/cli@latest check sans indicateur de correction d'abord. Groupez les résultats en erreurs bloquantes, avertissements qui peuvent être prouvés à partir de l'état du référentiel, et avertissements qui nécessitent un jugement éditorial ou produit.
+4. Corrigez uniquement les problèmes que vous pouvez prouver : cibles de navigation manquantes, frontmatter invalide ou incomplet, IDs de page en double, liens locaux cassés, configuration malformée et pages orphelines clairement accidentelles. Ne supprimez pas et ne publiez pas le contenu orphelin simplement pour faire taire un avertissement. Ne réécrivez pas les revendications produit sauf si l'implémentation ou les tests les contredisent.
+5. Exécutez npx --yes @thallylabs/cli@latest check à nouveau. Quand il réussit, exécutez npm run build. Si une commande échoue, isolez si l'échec provenait de votre modification, de l'état existant du référentiel, de l'environnement ou d'un service externe avant de modifier d'autres fichiers.
+6. Démarrez le site local si possible et inspectez la page d'accueil, la navigation principale, un guide représentatif, une page riche en code, les images et toute référence API. Vérifiez les mises en page étroites et larges, le mode clair et sombre, les liens cassés, le débordement horizontal et les erreurs de console.
+7. Résumez les conclusions initiales, les fichiers exactement modifiés, pourquoi chaque modification était sûre, les résultats finaux des commandes, les vérifications visuelles et les avertissements restants avec un propriétaire recommandé et une prochaine étape.
+
+Ne validez pas, n'envoyez pas, ne déployez pas, n'installez pas de paquets non liés, ne supprimez pas de contenu, ne remplacez pas les modifications utilisateur ou ne modifiez pas les éléments internes du framework à moins que je le demande explicitement. Si une correction changerait la signification produit ou l'intention de navigation publique, arrêtez-vous et demandez avant de l'appliquer.
+
+</AgentPrompt>
+
+## CLI ou MCP ?
+
+Utilisez la CLI quand vous êtes dans un terminal, écrivez de l'automatisation ou déboguez une
+commande spécifique. Connectez le [serveur MCP local](/guides/mcp-overview) quand vous
+voulez qu'un agent de codage découvre des opérations structurées et leurs paramètres.
+Les deux interfaces agissent sur les mêmes fichiers de projet et utilisent les mêmes
+règles de validation.
+
+Pour chaque indicateur et option de migration, continuez vers la [référence CLI](/guides/cli-reference).

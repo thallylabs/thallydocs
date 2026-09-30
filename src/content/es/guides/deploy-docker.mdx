@@ -1,0 +1,88 @@
+---
+title: Implementar con Docker
+navTitle: Docker
+description: Crea un contenedor de Thally, persiste datos locales cuando sea necesario y ejecuta el sitio de documentación en un host de contenedores.
+---
+
+{/* thally:ai-translation locale=es source-sha=1ec3337a9bb599c2cebba1d6559b6b2267b68583d70da0b5d9aa6c094463205b */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Usa Docker cuando tu plataforma ejecuta contenedores o cuando quieres que el sitio y sus archivos libSQL locales compartan un volumen persistente.
+
+## Crear un Dockerfile
+
+Primero crea `.dockerignore` para que las credenciales locales y los artefactos de compilación no se copien en una capa de imagen:
+
+```text
+node_modules
+.next
+.open-next
+.git
+.env*
+.data
+*.pem
+npm-debug.log*
+```
+
+Añade este `Dockerfile` a la raíz del proyecto:
+
+```dockerfile
+FROM node:22-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:22-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+RUN mkdir -p /app/.data && chown node:node /app/.data
+COPY --chown=node:node --from=builder /app/.next ./.next
+COPY --chown=node:node --from=builder /app/node_modules ./node_modules
+COPY --chown=node:node --from=builder /app/package.json ./package.json
+COPY --chown=node:node --from=builder /app/public ./public
+COPY --chown=node:node --from=builder /app/src/content ./src/content
+COPY --chown=node:node --from=builder /app/docs.json ./docs.json
+COPY --chown=node:node --from=builder /app/openapi.yaml ./openapi.yaml
+USER node
+EXPOSE 3040
+CMD ["npm", "start"]
+```
+
+Si tu proyecto usa una ruta de especificación de API diferente o recursos cargados en tiempo de ejecución, copia esos archivos en la etapa de ejecución también.
+
+## Compilar y ejecutar
+
+```bash
+docker build -t my-docs .
+docker run --rm -p 3040:3040 \
+  -e THALLY_SITE_URL=https://docs.example.com \
+  my-docs
+```
+
+Abre [http://localhost:3040](http://localhost:3040) para probar el contenedor.
+Ejecuta los comandos de prueba de humo HTTP de la página principal, página anidada y `/llms.txt` desde [Verificar el sitio en directo](/guides/deploying#verify-the-live-site) contra la URL del contenedor antes de enviar la imagen a un host de producción.
+
+## Persistir datos en tiempo de ejecución
+
+Monta `/app/.data` cuando los análisis y el estado local del administrador deben sobrevivir al reemplazo del contenedor:
+
+```bash
+docker run -d -p 3040:3040 \
+  -e THALLY_SITE_URL=https://docs.example.com \
+  -v thally-data:/app/.data \
+  my-docs
+```
+
+Alternativamente, configura las variables remotas de libSQL desde la [referencia de variables de entorno](/guides/environment-variables).
+
+## Verificar la implementación
+
+Comprueba los registros del contenedor, abre una ruta de documentación anidada y prueba las características del servidor habilitadas. Confirma que tu plataforma reenvía el puerto 3040 y suministra secretos como variables de entorno en lugar de incorporarlos en la imagen.
+
+## Próximos pasos
+
+- [Proteger documentación privada](/guides/private-docs)
+- [Análisis y comentarios](/guides/analytics-and-feedback)
+- [Solucionar problemas de una implementación](/guides/troubleshooting)

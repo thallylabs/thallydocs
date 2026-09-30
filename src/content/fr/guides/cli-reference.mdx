@@ -1,0 +1,310 @@
+---
+title: Référence CLI
+navTitle: CLI
+description: Utilisez la CLI Thally pour créer, prévisualiser, vérifier, migrer, traduire et publier des projets de documentation.
+---
+
+{/* thally:ai-translation locale=fr source-sha=6a58482b4cce9822bc272b08c2dfa5cce852f8f59bb8cd9b6f7b6281bcb4f7ef */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Exécutez le package `@thallylabs/cli` publié avec `npx` à partir de la racine du projet.
+Un projet généré n'installe pas de binaire `thally` local. La commande
+garde le travail de routine concentré sur le contenu et la configuration plutôt que sur
+les éléments internes de Next.js.
+
+```bash
+npx --yes @thallylabs/cli@latest
+```
+
+## Commandes
+
+| Commande | Ce qu'elle fait |
+| --- | --- |
+| `thally init [dir]` | Créer un projet avec `create-thally-docs`. |
+| `thally dev` | Démarrer le serveur de documentation local. |
+| `thally build` | Générer le site de production. |
+| `thally start` | Servir une compilation de production terminée. |
+| `thally deploy [--prod] [--cloudflare]` | Générer et déployer avec Vercel ou Cloudflare Workers. |
+| `thally check [--agents] [--fix] [--ci] [--external] [--drift]` | Valider le contenu et les vérifications facultatives de disponibilité de l'agent. |
+| `thally new PAGE_ID` | Créer une page MDX et la enregistrer dans `docs.json`. |
+| `thally migrate SOURCE [dir]` | Importer un référentiel de documentation ou un site public. |
+| `thally translate --locale LOCALE` | Générer ou actualiser un arborescence de contenu traduit. |
+| `thally mcp` | Démarrer le serveur MCP local sur l'entrée/sortie standard. |
+| `thally agent "INSTRUCTION"` | Rédiger une modification de documentation pour examen. |
+| `thally track add`, `list`, `test`, ou `setup` | Connecter les modifications du référentiel de produit au travail de documentation. |
+| `thally starter update [--apply]` | Prévisualiser ou appliquer une mise à jour de framework compatible. |
+
+Exécutez `npx --yes @thallylabs/cli@latest` sans commande pour voir la liste des commandes actuelle. Pour les flux de travail détaillés de l'agent et du suivi, consultez [Rédiger les mises à jour avec l'agent de documentation](/guides/docs-agent)
+et [Transformer les modifications de produit en demandes de tirage de documentation](/guides/thally-track).
+
+### Mettre à jour Thally
+
+```bash
+npx --yes @thallylabs/cli@latest starter update
+npx --yes @thallylabs/cli@latest starter update --apply
+```
+
+La première commande prévisualise la mise à jour sans modifier les fichiers. Passez en revue le plan
+et votre arborescence de travail, puis passez `--apply`. Votre contenu créé et
+la configuration ne sont pas modifiés.
+
+### Prévisualiser et générer
+
+```bash
+npx --yes @thallylabs/cli@latest dev
+npx --yes @thallylabs/cli@latest build
+npx --yes @thallylabs/cli@latest start
+```
+
+`dev` démarre le serveur du projet. `build` crée la sortie de production, et
+`start` sert une compilation de production existante.
+
+### Ajouter et vérifier le contenu
+
+```bash
+npx --yes @thallylabs/cli@latest new guides/invite-a-member \
+  --title "Invite a team member" \
+  --description "Add a teammate and choose their role."
+
+npx --yes @thallylabs/cli@latest check
+```
+
+`new` crée le fichier MDX et le enregistre dans le dernier groupe du premier
+onglet de contenu. `check` valide le projet. Ajoutez `--ci` pour les annotations GitHub,
+`--external` pour vérifier les liens externes, `--drift` pour évaluer la provenance, ou
+`--agents` pour inclure le Score de disponibilité de l'agent.
+
+### Déployer
+
+```bash
+npx --yes @thallylabs/cli@latest deploy --prod          # Vercel
+```
+
+La commande de déploiement génère l'artefact Vercel avant de le publier. Pour le
+chemin de scaffold compatible Cloudflare Workers/OpenNext, utilisez
+`npm run deploy:cloudflare`. Consultez les
+[guides de déploiement](/guides/deploying) dédiés quand vous avez besoin de configuration d'hôte,
+de stockage durable, ou d'un flux de travail CI reproductible.
+
+## Scaffold avec create-thally-docs
+
+Utilisez `create-thally-docs` directement quand vous créez un projet avant que la CLI n'ait quelque chose à exécuter :
+
+```bash
+npx --yes create-thally-docs@latest [command] [args] [options]
+```
+
+---
+
+### Créer un projet
+
+Crée un nouveau projet de documentation Thally.
+
+```bash
+npx create-thally-docs my-docs
+```
+
+La CLI vous guide dans une configuration interactive :
+
+- **Nom du projet** — affiché dans l'en-tête et les métadonnées
+- **Description** — utilisée pour les balises SEO et OpenGraph
+- **Préset de marque** — `primary` (vert) ou `secondary` (violet)
+- **URL du référentiel GitHub** — câble automatiquement les liens Support et GitHub
+- **Installer les dépendances maintenant** — facultatif ; ignorez-le pour un scaffold plus rapide et exécutez `npm install` plus tard
+
+Ignorez toutes les invites et acceptez les valeurs par défaut avec `--yes` :
+
+```bash
+npx create-thally-docs my-docs --yes
+```
+
+### Options
+
+| Indicateur | Description |
+|------|-------------|
+| `--yes`, `-y` | Accepter tous les paramètres par défaut, ignorer les invites interactives |
+| `--install` | Installer les dépendances du projet après le scaffolding |
+| `--no-install` | Ignorer l'installation des dépendances sans demander confirmation |
+
+---
+
+## Migrer la documentation existante
+
+Migre une URL de documentation publique ou un référentiel de documentation GitHub dans un projet Thally.
+
+```bash
+npx --yes @thallylabs/cli@latest migrate <github-or-docs-url> [output-dir] [options]
+```
+
+Pour les sources de référentiel, Thally clone et lit le contenu source directement. Pour les sites en direct, il découvre les index lisibles par machine, les plans du site et la navigation de la documentation d'origine identique. Les deux chemins produisent le même projet Thally prêt à exécuter. Pour un nouveau projet, la commande installe également les dépendances, exécute les vérifications de contenu et une compilation de production, et enregistre le résultat dans `migration-report.json` ; passez `--skip-validation` pour importer uniquement.
+
+**Adaptateurs dédiés :** Mintlify et Docusaurus. La détection automatique peut également
+importer des référentiels avec du Markdown ou du MDX simple et explorer un site de documentation public,
+mais elle ne promet pas la parité de configuration spécifique au framework pour d'autres
+plates-formes.
+
+<Note type="info" title="Utiliser le référentiel pour la détection automatique">
+  Un référentiel GitHub est la source recommandée pour les migrations de plate-forme avec détection automatique car il expose le contenu d'origine, la navigation, les ressources, les fichiers OpenAPI, les redirections et la configuration.
+</Note>
+
+### Exemples
+
+```bash
+# Recommended: auto-detect from the source repository
+npx --yes @thallylabs/cli@latest migrate https://github.com/org/repo my-docs
+
+# Use a live site when the repository is unavailable
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs --max-pages 1000
+
+# Run the same Docusaurus migration without prompts
+npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs --platform docusaurus --max-pages 1000 --yes
+
+# Trial a large live site with at most 100 pages
+npx --yes @thallylabs/cli@latest migrate https://docs.example.com example-docs --max-pages 100
+
+# Derive the output dir from the repo name
+npx --yes @thallylabs/cli@latest migrate https://github.com/mintlify/starter
+
+# Migrate a specific branch or subdirectory
+npx --yes @thallylabs/cli@latest migrate https://github.com/org/repo/tree/main/docs my-docs
+
+# Migrate content into an existing Thally project
+npx --yes @thallylabs/cli@latest migrate https://github.com/org/repo --into ./existing-docs
+```
+
+### Ce qui est migré
+
+- Tous les fichiers `.md` et `.mdx` sont copiés et convertis en MDX propre
+- Les pages de site en direct sont découvertes à partir d'index lisibles par machine, de plans du site et de barres latérales rendues dans le chemin de documentation soumis
+- La structure de navigation est détectée à partir de la navigation Mintlify/Docusaurus rendue, `mint.json`, `docusaurus.config.js`, `docs.json`, ou la structure du répertoire
+- Les limites de version actuelle de Docusaurus, les routes sensibles à la casse, les redirections, les plugins de documentation imbriquée, les appels, les onglets, les tableaux et le code en surbrillance sont conservés
+- Les fichiers de spécification OpenAPI (`.json`, `.yaml`) sont détectés et câblés en tant qu'onglet API Reference
+- Les composants MDX spécifiques à la plate-forme sont normalisés aux équivalents Thally (consultez le [mappage des composants](#component-mapping) ci-dessous)
+
+### Options
+
+| Indicateur | Description |
+|------|-------------|
+| `--max-pages <count>` | Importer au maximum 1-1 000 pages de contenu à partir d'une URL de documentation publique (par défaut : 1 000) |
+| `--into <dir>` | Migrer dans un projet Thally existant au lieu d'en mettre en place un nouveau |
+| `--branch <name>` | Remplacer la branche git détectée automatiquement |
+| `--docs-dir <path>` | Remplacer le sous-répertoire docs détecté automatiquement |
+| `--platform <name>` | Sélectionner `mintlify`, `docusaurus`, ou `auto` |
+| `--api-key <key>` | Clé API Anthropic pour convertir les fichiers autres que Markdown (par exemple `.rst`). Revient à la variable d'environnement `ANTHROPIC_API_KEY` |
+| `--skip-validation` | Importer uniquement ; ignorer l'installation des dépendances, les vérifications de contenu et la compilation de production |
+| `--yes`, `-y` | Accepter les paramètres par défaut et les limitations du site en direct, puis ignorer toutes les invites |
+
+<Warning>
+Si une migration de plate-forme auto-interactive commence à partir d'une URL en direct, la CLI vous offre de passer au flux de travail du référentiel GitHub recommandé. Poursuivre avec l'URL nécessite une confirmation que le résultat peut nécessiter un alignement manuel et suggère d'utiliser le serveur MCP Thally pour terminer l'alignement dans une PR. `--platform auto` et `--yes` restent non-interactifs et impriment le même avertissement.
+</Warning>
+
+### Mappage des composants
+
+Thally rend les composants Mintlify courants directement. L'importateur ne renomme
+que la syntaxe qui ne partage pas le même nom de composant :
+
+| Source | Équivalent Thally |
+|--------|---------------|
+| `<Check>` | `<Note>` |
+| `<Danger>` | `<Error>` |
+| `<Tree.Folder>` | `<Folder>` |
+| `<Tree.File>` | `<File>` |
+| `<AccordionGroup>` | supprimé (enfants conservés) |
+| `<Expandable title="...">` | `<Accordion title="...">` |
+| `<ResponseField>` / `<ParamField>` | Définition de propriété Markdown |
+| `<RequestExample>` / `<ResponseExample>` | `<CodeGroup>` |
+| `<Tile>` | `<Card>` |
+| Docusaurus `:::note` / `:::tip` | `<Note>` |
+| Docusaurus `:::warning` / `:::caution` | `<Warning>` |
+| Docusaurus `:::danger` | `<Error>` |
+| Docusaurus `<TabItem>` | `<Tab>` |
+
+<Note type="info" title="Fichiers non-Markdown">
+Les fichiers au format `.rst` ou autres nécessitent une clé API Anthropic pour être convertis. Définissez `ANTHROPIC_API_KEY` dans votre environnement ou passez `--api-key`. Les fichiers `.md` et `.mdx` simples sont migrés gratuitement.
+</Note>
+
+Consultez [Migrer et publier la documentation existante](/guides/migrating) pour le flux de travail complet d'un site en direct vers un déploiement Thally Cloud géré.
+
+---
+
+## Vérifier un projet
+
+Linte un projet Thally pour les problèmes courants et rapporte les erreurs et les avertissements.
+
+```bash
+npx --yes @thallylabs/cli@latest check [project-dir]
+```
+
+Par défaut, le répertoire actuel si aucun chemin n'est donné.
+
+### Ce qu'il vérifie
+
+| Problème | Sévérité |
+|-------|----------|
+| Page listée dans `docs.json` mais aucun fichier MDX trouvé | Erreur |
+| ID de page dupliqué dans `docs.json` | Erreur |
+| Onglet sans groupes et sans `href` | Erreur |
+| Fichier MDX non listé dans `docs.json` (orphelin) | Avertissement |
+| `title` manquant dans les métadonnées | Avertissement |
+| `description` manquante dans les métadonnées | Avertissement |
+| Corps de page vide ou quasi-vide | Avertissement |
+
+```bash
+# Check the current project
+npx --yes @thallylabs/cli@latest check
+
+# Check a specific directory
+npx --yes @thallylabs/cli@latest check /path/to/my-docs
+
+# Auto-fix orphan files by adding them to the nav
+npx --yes @thallylabs/cli@latest check --fix
+```
+
+La CLI se termine avec le code `1` si des erreurs sont trouvées, `0` si le projet est propre ou n'a que des avertissements.
+
+### Options
+
+| Indicateur | Description |
+|------|-------------|
+| `--fix` | Ajouter automatiquement les pages orphelines au dernier groupe du premier onglet de contenu |
+
+---
+
+## Traduire le contenu
+
+Traduit les pages de documentation dans une locale secondaire en utilisant Claude AI. Nécessite un bloc `i18n` dans `docs.json`.
+
+```bash
+npx create-thally-docs translate --locale es
+```
+
+Les fichiers traduits sont écrits dans `src/content/{locale}/` pour que vous les examiniez et validiez — pas de coût d'exécution, SSG complet.
+
+### Exemples
+
+```bash
+# Translate all pages to Spanish
+npx create-thally-docs translate --locale es
+
+# Translate specific pages only
+npx create-thally-docs translate --locale fr --pages introduction,guides/getting-started
+
+# Overwrite existing translations
+npx create-thally-docs translate --locale es --force
+
+# Pass API key explicitly
+npx create-thally-docs translate --locale de --api-key sk-ant-...
+```
+
+### Options
+
+| Indicateur | Description |
+|------|-------------|
+| `--locale <code>` | Code de locale cible — requis (doit être dans la configuration i18n `docs.json`) |
+| `--pages <ids>` | IDs de page séparées par des virgules à traduire (omis pour toutes les pages) |
+| `--force` | Remplacer les fichiers de traduction existants |
+| `--api-key <key>` | Clé API Anthropic (revient à la variable d'environnement `ANTHROPIC_API_KEY`) |
+| `--model <id>` | Modèle Claude à utiliser (par défaut : `claude-sonnet-4-6`) |
+| `--yes`, `-y` | Ignorer l'invite de confirmation |
+
+Consultez [Support multilingue](/guides/multi-language) pour les instructions complètes de configuration.

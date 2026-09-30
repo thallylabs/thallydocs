@@ -1,0 +1,322 @@
+---
+title: Publier la documentation en plusieurs langues
+navTitle: Langues
+description: Ajoutez des pages traduites avec génération au moment de la compilation, des solutions de secours automatiques et un commutateur de langue intégré.
+keywords:
+  [
+    i18n,
+    internationalization,
+    translation,
+    multi-language,
+    localization,
+    locale,
+  ]
+---
+
+{/* thally:ai-translation locale=fr source-sha=932e340590d678a0cd70ef67f4d232109fd28dadb778cdc68d9a3126f97024d1 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally prend en charge la documentation multilingue au moment de la compilation. Les fichiers MDX traduits vivent dans votre dépôt aux côtés de votre contenu principal — entièrement contrôlés par versioning, générés statiquement et indexés par les moteurs de recherche avec des URL réelles spécifiques aux paramètres régionaux.
+
+<CardGroup cols="2">
+
+<Card title="URL de paramètres régionaux réels" icon="link-simple">
+  `/es/introduction`, `/fr/guides/getting-started`. Chaque traduction publiée
+  a sa propre URL consultable.
+</Card>
+
+<Card title="Traduction alimentée par l'IA" icon="wrench">
+  Thally Cloud génère des traductions en utilisant les crédits IA de votre
+  espace de travail. Les sites auto-hébergés peuvent traduire avec une seule
+  commande. Le code et la structure MDX sont validés.
+</Card>
+
+<Card title="Solutions de secours automatiques" icon="book-open">
+  Les traductions manquantes affichent l'original avec un avis. Les traductions
+  obsolètes restent visibles avec un avis de mise à jour.
+</Card>
+
+<Card title="Commutateur de langue intégré" icon="grid-round">
+  Une icône de globe apparaît automatiquement dans la barre supérieure dès que
+  vous configurez deux ou plusieurs paramètres régionaux.
+</Card>
+
+</CardGroup>
+
+---
+
+## Structure des URL
+
+Le paramètre régional par défaut est servi sans préfixe d'URL — entièrement rétro-compatible avec tous les liens existants. Les paramètres régionaux secondaires sont préfixés par leur code de paramètre régional :
+
+| URL                          | Contenu           |
+| ---------------------------- | ----------------- |
+| `/introduction`              | Anglais (par défaut) |
+| `/es/introduction`           | Espagnol           |
+| `/fr/introduction`           | Français            |
+| `/guides/getting-started`    | Anglais (par défaut) |
+| `/es/guides/getting-started` | Espagnol           |
+
+L'ajout d'une nouvelle langue ne casse jamais les URL existantes.
+
+---
+
+## Configuration
+
+<Steps>
+
+<Step title="Choisir les langues dans Thally Cloud">
+
+Pour un site géré, ouvrez **Paramètres du site → Langues**, choisissez chaque langue
+que les lecteurs doivent voir et enregistrez. Confirmez que Thally peut utiliser les
+crédits IA partagés de votre espace de travail pour générer des traductions. Vous pouvez
+quitter la page pendant que Thally génère les traductions manquantes ou obsolètes,
+valide le lot complet, valide les fichiers MDX dans votre dépôt connecté et publie le
+site. Thally ne remplace jamais les traductions rédigées par l'équipe.
+
+L'anglais reste la langue source aux URL sans préfixe. Les langues sélectionnées
+ne sont mises en ligne qu'après la réussite du lot complet. Si la génération ou la
+validation échoue, aucun fichier de traduction n'est publié ; résolvez le problème
+signalé et sélectionnez **Actualiser les traductions**. La section Langues affiche
+la couverture actuelle, obsolète, manquante et rédigée par l'équipe de votre dépôt connecté.
+
+</Step>
+
+<Step title="Configurer un site auto-hébergé">
+
+Les sites auto-hébergés peuvent configurer le même comportement dans `docs.json` :
+
+```json
+{
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": [
+      { "code": "en", "label": "English" },
+      { "code": "es", "label": "Español" },
+      { "code": "fr", "label": "Français" }
+    ]
+  },
+  "tabs": [...]
+}
+```
+
+`defaultLocale` doit correspondre à la langue du contenu source du dépôt. Le
+tableau locales contrôle l'ordre du commutateur de langue.
+
+Une fois cela enregistré, une icône de globe apparaît automatiquement dans la barre supérieure.
+
+</Step>
+
+<Step title="Traduire vos pages localement avec l'interface de ligne de commande">
+
+Ce flux de travail local optionnel est distinct de la traduction gérée de Thally Cloud.
+Exécutez la commande translate dans votre dépôt de documentation pour générer les fichiers
+MDX traduits pour un paramètre régional :
+
+```bash
+npx create-thally-docs translate --locale es
+```
+
+Cela appelle Claude pour traduire chaque page de contenu définie dans votre `docs.json` et écrit les résultats dans `src/content/es/`. Vous verrez une liste de progression en direct à mesure que chaque page se termine, et un résumé à la fin.
+
+**Traduire uniquement des pages spécifiques :**
+
+```bash
+npx create-thally-docs translate --locale es --pages introduction,guides/getting-started
+```
+
+**Remplacer les traductions existantes :**
+
+```bash
+npx create-thally-docs translate --locale es --force
+```
+
+**Toutes les options :**
+
+| Drapeau             | Description                                                                  |
+| ------------------- | ---------------------------------------------------------------------------- |
+| `--locale <code>`   | Paramètre régional cible — requis. Doit correspondre à un code dans votre configuration i18n `docs.json`. |
+| `--pages <ids>`     | ID de pages séparées par des virgules à traduire. Omettez pour traduire toutes les pages.          |
+| `--force`           | Remplacer les fichiers de traduction existants.                                        |
+| `--api-key <key>`   | Clé API Anthropic. Revient à la variable d'environnement `ANTHROPIC_API_KEY`.                |
+| `--model <id>`      | Modèle Claude à utiliser. Par défaut : `claude-sonnet-4-6`.                           |
+| `--yes`, `-y`       | Ignorer l'invite de confirmation.                                                |
+
+<Note type="info" title="Clé CLI locale uniquement">
+  La commande CLI s'exécute dans votre propre environnement et appelle Claude via
+  l'API Anthropic. Définissez `ANTHROPIC_API_KEY` localement ou passez `--api-key` à cette
+  commande. Ces options ne s'appliquent pas à Thally Cloud, qui utilise les crédits IA de l'espace de travail pour la traduction gérée.
+</Note>
+
+</Step>
+
+<Step title="Examiner et valider les traductions locales">
+
+Après une traduction CLI locale, votre répertoire de contenu ressemblera à ceci :
+
+```
+src/content/
+├── introduction.mdx            ← primary (English, unchanged)
+├── guides/
+│   └── getting-started.mdx
+├── es/                         ← Spanish translations
+│   ├── introduction.mdx
+│   └── guides/
+│       └── getting-started.mdx
+└── fr/                         ← French translations
+    └── introduction.mdx
+```
+
+Les fichiers traduits sont du MDX brut. Modifiez-les avec le reste de votre contenu, validez-les
+dans le dépôt et déployez normalement.
+
+</Step>
+
+</Steps>
+
+---
+
+## Qualité de la traduction
+
+Claude traduit avec ces règles appliquées automatiquement :
+
+- **Traduit :** tout le texte en prose, les en-têtes, la première page `title`, `description` et `keywords`
+- **Préserve :** les balises de composant MDX verbatim (`<Note>`, `<Steps>`, `<CodeGroup>`, etc.)
+- **Préserve :** tous les blocs de code et le code intégré exactement comme écrit
+- **Préserve :** tous les URL, chemins de fichiers et instructions d'importation
+- **Préserve :** toute la structure des métadonnées frontales et les champs non-texte
+
+Si une traduction doit être ajustée, modifiez le fichier dans `src/content/{locale}/` directement. Vous pouvez également réexécuter la commande pour des pages spécifiques :
+
+```bash
+npx create-thally-docs translate --locale es --pages guides/getting-started --force
+```
+
+---
+
+## Comportement de secours
+
+Lorsqu'une page source existe mais que sa traduction est manquante, Thally affiche le contenu en langue source avec une bannière informative. Une traduction laissée après la suppression de sa page source retourne 404.
+
+**Traduction manquante** — la page n'a pas encore été traduite pour ce paramètre régional :
+
+> ⚠️ Cette page n'a pas encore été traduite en **Español**. Affichage de la version **English** originale.
+
+**Traduction obsolète**, où le hachage source enregistré d'une traduction générée diffère du contenu source actuel :
+
+> Cette traduction peut être obsolète. [Afficher l'original →]
+
+Les deux bannières n'apparaissent que sur les itinéraires de paramètres régionaux secondaires. L'itinéraire principal n'est jamais affecté.
+
+Pour un site géré, sélectionnez **Actualiser les traductions** dans **Paramètres du site →
+Langues**. Pour un flux de travail CLI local, exécutez la commande translate pour cette page :
+
+```bash
+npx create-thally-docs translate --locale es --pages guides/getting-started
+```
+
+---
+
+## Commutateur de langue
+
+Une fois que vous avez configuré deux ou plusieurs paramètres régionaux, une **icône de globe** apparaît dans la barre supérieure automatiquement. Cliquer dessus ouvre une liste déroulante répertoriant tous les paramètres régionaux configurés.
+
+La sélection d'une langue vous amène à la même page dans ce paramètre régional — par exemple, passer de `/es/guides/getting-started` au français vous amène directement à `/fr/guides/getting-started`. Le commutateur vous garde toujours sur la page actuelle plutôt que de vous envoyer à une page d'accueil.
+
+---
+
+## Référence API
+
+L'onglet Référence API est généré automatiquement à partir de votre spécification OpenAPI. Son contenu est toujours dans la langue principale — les spécifications OpenAPI définissent des contrats lisibles par machine, pas du contenu en prose.
+
+Lors de la navigation vers l'onglet Référence API à partir d'une page de paramètre régional, le préfixe d'URL est préservé afin que vous restiez dans le contexte du paramètre régional (`/es/api/...`). La barre latérale et la barre d'onglets restent conscientes des paramètres régionaux ; seul le contenu d'opération lui-même provient de la spécification inchangée.
+
+<Note type="info" title="Localiser le contenu de l'API">
+  Pour modifier la langue des descriptions et résumés de la Référence API,
+  mettez-les à jour directement dans votre fichier de spécification OpenAPI.
+</Note>
+
+---
+
+## SEO
+
+Thally génère les métadonnées du robot à partir de la même sélection de langue utilisée par le site. Un paramètre régional est ajouté à `hreflang` et au plan du site uniquement lorsque cette page a un fichier MDX traduit et que ni la source ni la traduction n'est masquée ou marquée `noindex` :
+
+```html
+<link rel="canonical" href="https://docs.example.com/es/introduction" />
+<link
+  rel="alternate"
+  hreflang="en"
+  href="https://docs.example.com/introduction"
+/>
+<link
+  rel="alternate"
+  hreflang="es"
+  href="https://docs.example.com/es/introduction"
+/>
+<link
+  rel="alternate"
+  hreflang="fr"
+  href="https://docs.example.com/fr/introduction"
+/>
+<link
+  rel="alternate"
+  hreflang="x-default"
+  href="https://docs.example.com/introduction"
+/>
+```
+
+Les vraies traductions utilisent leur propre URL de paramètre régional comme canonique. Une solution de secours pour traduction manquante est marquée `noindex` et canonicalisée sur l'URL source, afin que les robots n'indexent jamais le texte anglais comme s'il était en espagnol ou en français. Le contenu traduit porte également son propre `lang` et la direction du texte sur le conteneur de contenu rendu côté serveur.
+
+La boîte de dialogue de recherche de docs recherche la langue actuelle et retourne les URL de pages traduites. Les agents peuvent demander `/api/docs-index?locale=fr`, `/api/search?q=installation&locale=fr` ou `/api/docs/fr/guides/getting-started` pour le contenu traduit. Ces API omettent les pages sans traduction publiée dans la langue demandée.
+
+Définissez `THALLY_SITE_URL` afin que le domaine correct apparaisse dans ces balises :
+
+```bash
+THALLY_SITE_URL=https://docs.example.com
+```
+
+---
+
+## Utilisation de l'outil MCP
+
+Si vous utilisez le serveur MCP Thally, vous pouvez traduire les docs directement à partir de votre assistant IA :
+
+```json
+{
+  "name": "translate_docs",
+  "arguments": {
+    "projectDir": "/path/to/my-docs",
+    "locale": "es",
+    "force": false
+  }
+}
+```
+
+L'outil MCP accepte les mêmes options que l'interface de ligne de commande. Consultez [MCP Server](/guides/mcp-server) pour les instructions de configuration.
+
+---
+
+## Échafaudage avec i18n
+
+Lors de la création d'un nouveau projet, vous pouvez activer le support multilingue dès le départ :
+
+```bash
+npx create-thally-docs my-docs
+```
+
+Lorsqu'on vous demande **"Add another documentation language? (y/N):"**, entrez `y` et fournissez vos codes de paramètres régionaux (p. ex. `es,fr,de`). Le bloc `i18n` est écrit dans `docs.json` automatiquement.
+
+---
+
+<CardGroup cols="2">
+
+<Card title="Référence CLI" href="/guides/cli-reference" icon="wrench">
+  Référence complète pour `translate` et toutes les autres commandes create-thally-docs.
+</Card>
+
+<Card title="Serveur MCP" href="/guides/mcp-server" icon="grid-round">
+  Configurez le serveur MCP Thally pour traduire les docs à partir de votre assistant IA.
+</Card>
+
+</CardGroup>

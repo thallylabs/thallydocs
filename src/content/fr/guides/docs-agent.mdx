@@ -1,0 +1,112 @@
+---
+title: "Rédiger les mises à jour avec l'agent docs"
+navTitle: "Agent docs"
+description: "Transformez une instruction, une différence ou une demande de tirage de produit en demande de tirage de documentation révisée avec `thally agent`."
+keywords:
+  - "agent docs"
+  - "thally agent"
+  - "Documentation IA"
+  - "docs-as-code"
+  - "Mises à jour étayées par des preuves"
+---
+
+{/* thally:ai-translation locale=fr source-sha=3d211eae2d186476bb8b6188c6168f8401238bdc2bf52dcbfbd9c67040b4f62c */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+L' **agent docs** transforme une instruction et un contexte optionnel — une différence git ou une demande de tirage de produit — en modifications de documentation. Il lit la documentation existante, rédige une modification ciblée dans votre style maison, exécute `thally check`, et vous offre une branche ou une demande de tirage à réviser.
+
+La commande `thally agent` et son flux de travail GitHub généré s'exécutent dans votre environnement avec votre clé Anthropic. Choisissez [Thally Track](/guides/thally-track)
+à la place lorsque vous souhaitez que Thally Cloud gère la détection des changements de produit et le flux de travail de rédaction.
+
+## Démarrage rapide
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+
+# Preview edits for an instruction (writes nothing):
+thally agent "Document that the swap widget now supports TRON and SOL" --dry-run
+
+# Draft from a merged product PR and open a documentation PR:
+thally agent --from-pr https://github.com/acme/widget/pull/482 --pr
+
+# Draft from a local diff, leaving edits on a branch to review:
+thally agent "Document the new webhook events" --diff HEAD~1
+```
+
+## Comment ça marche
+
+<Steps>
+<Step title="Sandbox">
+L'agent nécessite un **arbre git clean** et crée une branche nouvelle `HEAD`. Votre travail non engagé n'est jamais touché — si l'arbre est sale, il refuse.
+</Step>
+<Step title="Rédiger">
+Il explore votre documentation (`list_pages`, `search_docs`, `read_page`), puis édite — en préférant mettre à jour une page existante plutôt que d'en ajouter une nouvelle, en correspondant à votre voix et vos composants MDX existants, et en enregistrant toute nouvelle page dans `docs.json`.
+</Step>
+<Step title="Auto-valider">
+Il exécute `thally check` sur sa propre sortie et obtient un tour de réparation pour corriger tout ce qu'il a cassé — liens rompus, métadonnées manquantes, navigation invalide.
+</Step>
+<Step title="Remettre">
+`--dry-run` affiche la différence et l'abandonne. Par défaut, les modifications restent sur la branche. `--pr` valide, pousse et ouvre une demande de tirage de documentation pour que votre équipe révise — l'agent ne fusionne jamais.
+</Step>
+</Steps>
+
+## Options
+
+\| Drapeau \| Effet \|\\n\| --- \| --- \|\\n\| `--diff <ref>` \| Utilisez une différence git locale (par exemple `HEAD~1`, un SHA) comme contexte. \|\\n\| `--from-pr <url>` \| Récupérez le titre, le corps et la différence d'une PR GitHub en tant que contexte (nécessite `gh` authentifié). \|\\n\| `--dry-run` \| Prévisualisez la différence et abandonnez — n'écrit rien. \|\\n\| `--pr` \| Validez, poussez et ouvrez une demande de tirage de documentation. \|\\n\| _(par défaut)_ \| Laissez les modifications sur la branche de l'agent pour que vous révisiez. \|
+
+Définissez `THALLY_AGENT_MODEL` pour choisir le modèle (utilise par défaut un modèle Claude capable).
+
+## Orientation avec AGENTS.md
+
+Déposez un `AGENTS.md` dans votre projet de documentation pour donner à l'agent les règles de la maison — ton, conventions de structure, fichiers qu'il ne doit jamais toucher, exigences de révision. Il est fourni à chaque exécution :
+
+```markdown
+# AGENTS.md
+- Write in second person, present tense.
+- Never edit files under `src/content/legal/`.
+- New API endpoints go under the "API Reference" tab, not "Guides".
+```
+
+## Automatiser les brouillons avec révision contrôlée
+
+Vous pouvez connecter l'agent docs à GitHub afin qu'un collaborateur puisse demander un brouillon avec un `@thally` commentaire et votre équipe de documentation puisse réviser la demande de tirage résultante.
+
+<Steps>
+<Step title="Scaffolder le hub">
+Dans votre dépôt de documentation :
+
+```bash
+thally agent init --repo <owner>/<docs-repo>
+```
+
+Cela écrit `.github/workflows/thally-agent.yml`. Ajoutez `ANTHROPIC_API_KEY` et
+`THALLY_AGENT_TOKEN` au dépôt de documentation. Le jeton a besoin d'accès en écriture au dépôt de documentation et d'accès en lecture aux dépôts de produits que vous connectez.
+</Step>
+<Step title="Ajouter un expéditeur à chaque dépôt de produit">
+`thally agent init` affiche un `thally-mention.yml`prêt à coller. Ajoutez-le à un dépôt de produit, puis ajoutez `THALLY_DISPATCH_TOKEN` avec la permission de démarrer le flux de travail de documentation. Un collaborateur peut maintenant commenter **`@thally
+document this …`** sur une demande de tirage.
+</Step>
+<Step title="(Optionnel) Documenter à la fusion">
+Pour les dépôts de forme référence API, ajoutez l'expéditeur de fusion : lors de la fusion vers `main`, si la différence touche les chemins surveillés, elle se distribue automatiquement — aucun commentaire nécessaire.
+</Step>
+</Steps>
+
+Déclarez vos dépôts de produits dans `docs.json` pour que la configuration soit auto-documentée :
+
+```json
+{
+  "repositories": [
+    { "name": "widget", "repo": "acme/swap-widget", "watch": ["src/**", "openapi.yaml"] }
+  ]
+}
+```
+
+<Note>
+Chaque déclencheur — un `@thally` commentaire, une PR fusionnée, une PR `docs-preview`\-labellisée, le balayage de dérive, ou l'interface de ligne de commande — produit la même tâche et atterrit en tant que **demande de tirage révisée**. L'agent ne fusionne jamais ; un humain le fait toujours.
+</Note>
+
+**Voulez-vous que les PRs de produits fusionnées déclenchent automatiquement le travail de documentation ?** Utilisez
+[Thally Track](/guides/thally-track). Connectez les sources de produit dans Thally Cloud ; vous n'avez besoin d'aucune configuration de suivi locale du dépôt ou d'un flux de travail d'expéditeur. Ajoutez le
+`docs-preview` label lorsque vous souhaitez que la mise à jour principale de la documentation soit rédigée avant la fusion de la demande de tirage du produit.
+
+**Monorepo ?** Vous n'avez besoin d'aucune des tuyauteries d'expéditeur — le flux de travail voit les PRs et les différences nativement. Exécutez `thally agent init` et pointez-le vers le même dépôt.

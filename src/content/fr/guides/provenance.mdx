@@ -1,0 +1,87 @@
+---
+title: Suivre la provenance et la fraîcheur
+navTitle: Provenance et fraîcheur
+description: Dates last_updated / last_verified lisibles par machine qui gagnent la confiance des agents, plus thally check --drift pour détecter les pages obsolètes par rapport au code qu'elles documentent.
+keywords:
+  - provenance
+  - freshness
+  - last_verified
+  - drift
+  - documentation freshness
+---
+
+{/* thally:ai-translation locale=fr source-sha=7b38c14a28ea41eb2c1a8c45d65febc276e35d791eef22c16c4db738f6c2b0c6 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Les agents (et les personnes) font plus confiance aux docs quand ils peuvent déterminer *à quel point* une page est actuelle. Thally affiche un **signal de fraîcheur lisible par machine** sur chaque projection, et vous donne un moyen déterministe de détecter les pages qui se sont écartées du code qu'elles documentent.
+
+Il y a deux couches, avec deux audiences différentes.
+
+## Public : dates de fraîcheur
+
+Ajoutez l'une ou l'autre date à la première partie d'une page et elle apparaîtra dans chaque projection publique — les métadonnées de la page, `?format=json`, le miroir `.md`, et `/api/docs-index` :
+
+```yaml
+---
+title: Swap tokens
+lastUpdated: 2026-06-30      # the bytes last changed
+lastVerified: 2026-07-01     # a human last confirmed it's still accurate
+verifiedVersion: "2.3.0"     # optional: the product version it was verified against
+---
+```
+
+<Note>
+`lastUpdated` et `lastVerified` signifient des choses différentes. **Updated** est le moment où
+la page a changé ; **verified** est le moment où quelqu'un a confirmé pour la dernière fois
+qu'elle correspondait toujours au produit. Une page peut être vérifiée sans être modifiée.
+</Note>
+
+## Métadonnées de vérification privée
+
+Le mécanisme derrière `lastVerified` est un ensemble de **sources** — le code qu'une page documente — et le commit pour lequel elle a été vérifiée en dernier. Ceux-ci se trouvent dans la première partie mais ne sont **jamais publiés** : un agent consommateur ne peut pas interpréter un chemin de fichier d'un repo qu'il ne peut pas voir, donc Thally les supprime de chaque projection publique.
+
+```yaml
+---
+title: Swap tokens
+lastVerified: 2026-07-01
+# Read only by `thally check --drift`; never served publicly:
+sources:
+  - src/networks.ts
+  - "openapi.yaml#/paths/~1swap"
+verifiedCommit: 9f2c1a7
+---
+```
+
+Référencez les fichiers dans le même repo directement (`src/networks.ts`). Un `#fragment` (par exemple un chemin OpenAPI) affine *ce qu'* il documente — la dérive est toujours évaluée par rapport à l'ensemble du fichier.
+
+## `thally check --drift`
+
+Exécutez la vérification de dérive pour signaler toute page dont les `sources` ont changé depuis son `verifiedCommit` :
+
+```bash
+thally check --drift
+```
+
+La vérification utilise l'historique git plutôt qu'un modèle d'IA. Une page est signalée **stale**
+quand un fichier source a de nouveaux commits depuis la dernière vérification de la page. Combinez-le avec
+`--ci` pour les annotations GitHub :
+
+```bash
+thally check --drift --ci
+```
+
+<Warning>
+`--drift` a besoin de l'**historique git complet**. Les vérifications GitHub Actions extraient `fetch-depth: 1` par défaut, donc les anciens `verifiedCommit`s ne seront pas présents — définissez `fetch-depth: 0` :
+
+```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+```
+
+Si un `verifiedCommit` n'est pas dans l'historique, la vérification le signale comme **indeterminate** (« impossible de vérifier la fraîcheur ») plutôt que de passer silencieusement — un faux « frais » est la direction dangereuse.
+</Warning>
+
+## Le flux de vérification
+
+Quand vous avez confirmé qu'une page est toujours exacte, horodatez les deux couches ensemble — définissez `lastVerified` à la date d'aujourd'hui et `verifiedCommit` au commit actuel (`git rev-parse HEAD`). La date publique avance et la ligne de base de dérive se réinitialise. Programmer `thally check --drift` sur une cron en fait un filet de sécurité : dérive trouvée → une tâche docs → une pull request révisée.

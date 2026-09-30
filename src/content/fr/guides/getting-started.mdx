@@ -1,0 +1,122 @@
+---
+title: Créer un projet Thally avec la CLI
+navTitle: Configuration CLI
+description: Utilisez le chemin de configuration développeur pour une évaluation locale, l'automatisation, la migration ou un site de documentation auto-hébergé.
+---
+
+{/* thally:ai-translation locale=fr source-sha=08e57aab6d32d34dc7d35df3480fa6d54f4201f931e16dc1ad514cbd079d032f */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Le chemin recommandé est de créer et publier un site géré via le
+[démarrage rapide Thally Cloud](/quickstart). Utilisez ce guide développeur quand vous avez besoin
+d'une évaluation locale isolée, d'une automatisation CI, d'un espace de travail de migration, ou d'un
+déploiement auto-hébergé.
+
+<CardGroup cols={3}>
+  <Card title="Créer un projet local" icon="code-simple" href="#create-a-local-project">
+    Répondez à quelques questions et créez un projet de documentation prêt à être édité.
+  </Card>
+  <Card title="Utiliser les paramètres par défaut de l'automatisation" icon="wrench" href="#use-automation-defaults">
+    Générez le même projet sans interaction pour les scripts ou une évaluation rapide.
+  </Card>
+  <Card title="Migrer la documentation existante" icon="book-open" href="#migrate-existing-documentation">
+    Importez un référentiel ou un site de documentation public au lieu de recommencer.
+  </Card>
+</CardGroup>
+
+## Créer un projet local
+
+Exécutez la configuration interactive :
+
+```bash
+npx create-thally-docs my-docs --install
+```
+
+La configuration demande uniquement les valeurs qui façonnent le projet initial :
+
+| Question | Ce qu'elle change |
+| --- | --- |
+| Nom du projet | En-tête, métadonnées et contenu de démarrage |
+| Description | Métadonnées de recherche et réseaux sociaux |
+| Préréglage de marque | Jetons de couleur initial pour le mode clair et sombre |
+| Référentiel GitHub | Liens de la barre de navigation et d'assistance |
+| Installer les dépendances | Si le site est prêt à s'exécuter immédiatement |
+
+Démarrez le serveur local une fois la commande terminée :
+
+```bash
+cd my-docs
+npm run dev
+```
+
+Ouvrez l'URL affichée dans votre terminal. Elle commence à
+[http://localhost:3040](http://localhost:3040).
+
+## Utiliser les paramètres par défaut de l'automatisation
+
+Utilisez `--yes` pour accepter les paramètres par défaut et `--install` pour installer les dépendances dans
+la même commande :
+
+```bash
+npx create-thally-docs my-docs --yes --install
+```
+
+Utilisez cette forme dans un script, une évaluation temporaire ou un flux de travail d'agent. Vous
+pouvez modifier l'identité du produit plus tard dans `src/data/site.ts` et `docs.json`.
+
+## Migrer la documentation existante
+
+Préférez le référentiel source quand vous y avez accès. Une migration de référentiel
+peut préserver le Markdown ou MDX créé, la navigation, les actifs locaux, les extraits,
+les paramètres régionaux, les redirections et les fichiers OpenAPI qu'un site web public peut ne pas exposer.
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/acme/docs acme-docs
+```
+
+Vous pouvez également migrer une URL de documentation publique :
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://docs.acme.com acme-docs
+```
+
+Le flux interactif demande si la source utilise Mintlify, Docusaurus ou
+la détection automatique. Pour les exécutions sans interaction, sélectionnez l'adaptateur explicitement :
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/acme/docs acme-docs --platform mintlify --yes
+```
+
+<Note type="info" title="Vérifiez une migration avant de publier">
+Exécutez le projet migré localement, vérifiez sa navigation et ses actifs, puis exécutez
+`npx --yes @thallylabs/cli@latest check`. Le contenu importé reste le vôtre à éditer et réorganiser.
+</Note>
+
+## Ce que crée l'échafaudage
+
+| Chemin | Objectif |
+| --- | --- |
+| `src/content/` | Pages MDX qui vous appartiennent |
+| `docs.json` | Navigation et configuration des fonctionnalités |
+| `src/data/site.ts` | Identité du produit, liens et paramètres par défaut de marque |
+| `.github/workflows/` | Flux de travail de validation pour les demandes de tirage de documentation |
+
+L'exécution du framework est déjà câblée. Vous pouvez rester concentré sur le contenu et
+la configuration au lieu de modifier les éléments internes de Next.js.
+
+## Continuer avec une tâche
+
+<CardGroup cols="2">
+  <Card title="Créer et éditer des pages" icon="book-open" href="/guides/writing-content">
+    Apprenez la structure de la page et les composants disponibles dans MDX.
+  </Card>
+  <Card title="Organiser la navigation" icon="grid-round" href="/guides/configuring-navigation">
+    Concevez des onglets et des groupes de barres latérales autour des tâches que vos lecteurs doivent accomplir.
+  </Card>
+  <Card title="Personnaliser le site" icon="wrench" href="/guides/branding-and-theming">
+    Appliquez votre identité de produit et choisissez des contrôles de marque versionnés ou en direct.
+  </Card>
+  <Card title="Déployer le site" icon="code-simple" href="/guides/deploying">
+    Validez une compilation de production et configurez l'URL publique sur votre hôte.
+  </Card>
+</CardGroup>

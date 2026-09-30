@@ -1,0 +1,78 @@
+---
+title: Le pipeline de modification de produit
+navTitle: Pipeline de modification de produit
+description: Comment Thally transforme les modifications de produit configurées en mises à jour de documentation vérifiables tout en responsabilisant les personnes pour ce qui est publié.
+keywords:
+  - product change pipeline
+  - product changes
+  - documentation automation
+  - documentation pull requests
+  - human review
+---
+
+{/* thally:ai-translation locale=fr source-sha=905228dbf5d9a3f129116b4c601a7cffc510378c6b5d9baccfeb819a5cb3e124 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Les modifications de produit peuvent affecter la documentation, les références API et SDK, les tutoriels, les notes de version, les exemples et le contexte IA. Thally connecte une modification GitHub exacte à la documentation que vos clients utilisent et prépare une demande de fusion (pull request) pour que les personnes la relisent.
+
+## Comment cela fonctionne aujourd'hui
+
+<Steps>
+  <Step title="Un événement configuré déclenche la vérification">
+    Vous choisissez si Track s'exécute pour les mises à jour de demandes de fusion approuvées, du même référentiel, hors brouillon, pour les modifications fusionnées, un calendrier UTC ou une combinaison de ces déclencheurs. Track conserve la révision source exacte qui a démarré chaque exécution.
+  </Step>
+  <Step title="Track distribue la modification aux destinations de relecture">
+    Track lit la source Product connectée et démarre une exécution indépendante pour le référentiel de documentation principal et chaque surface Knowledge activée pour le site lors de l'arrivée de l'événement.
+  </Step>
+  <Step title="Chaque destination prépare et vérifie son résultat">
+    Chaque exécution utilise le référentiel, la branche, la racine et les portées de chemin exact enregistrés. Une destination qui n'a besoin d'aucune mise à jour se termine sans ouvrir de demande de fusion ; les autres destinations continuent indépendamment.
+  </Step>
+  <Step title="Une personne décide ce qui est publié">
+    Quand une mise à jour est nécessaire, Track ouvre une demande de fusion GitHub prête pour relecture dans cette destination. Les relecteurs peuvent l'accepter, la corriger ou la rejeter ; Track ne fusionne jamais son propre travail.
+  </Step>
+  <Step title="Une source relue alimente chaque sortie">
+    Après approbation et publication, la même source structurée alimente HTML, Markdown, JSON, JSON-LD, la recherche, les embeddings et le contexte agent.
+  </Step>
+</Steps>
+
+## Le contrat de confiance
+
+<Columns cols={2}>
+  <Card title="Vous choisissez le point de départ" icon="code-simple">
+    Configurez les vérifications de demandes de fusion, de fusion et programmées en fonction de la façon dont votre équipe expédie les modifications de produit.
+  </Card>
+  <Card title="La modification exacte reste attachée" icon="link-simple">
+    Chaque exécution conserve la source Product et la révision dont les relecteurs ont besoin pour comprendre pourquoi la proposition de documentation existe.
+  </Card>
+  <Card title="Aucune modification est un résultat valide" icon="book-open">
+    Track peut se terminer sans demande de fusion quand la révision source ne nécessite pas une mise à jour de documentation visible par les clients.
+  </Card>
+  <Card title="Les humains approuvent la communication" icon="message">
+    L'automatisation supprime le travail de découverte et de rédaction, pas la responsabilité de ce que les clients lisent.
+  </Card>
+</Columns>
+
+## Ce que Thally gère aujourd'hui
+
+| Zone              | Comportement actuel                                                                                                                                      |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sources Product   | Référentiels GitHub connectés, branches et chemins surveillés optionnels                                                                                  |
+| Déclencheurs      | Mises à jour de demandes de fusion approuvées, du même référentiel, hors brouillon ; modifications fusionnées ; et calendriers UTC quotidiens, hebdomadaires ou personnalisés |
+| Progression       | Activité persistante de la réception de la modification à travers la préparation, la rédaction, la vérification et la création de demandes de fusion     |
+| Sortie            | Une demande de fusion prête pour relecture indépendante, une décision de non-modification ou un résultat nécessitant attention pour chaque destination   |
+| Approbation       | Vos flux de travail de relecture et déploiement GitHub existants                                                                                        |
+
+<Note type="info" title="Votre référentiel reste la source de vérité">
+  Track prépare des propositions. La documentation principale est publiée via le chemin de version géré après relecture. Les surfaces connectées utilisent leurs propres vérifications de référentiel, aperçus, relecteurs et flux de travail de publication.
+</Note>
+
+Pour le contrat complet de déclenchement, confinement, validation, aperçu et publication, lisez [Étendre Track aux surfaces Knowledge](/guides/knowledge-surfaces).
+
+## Mettre le pipeline en action
+
+- [Voir comment Thally fonctionne](/architecture) pour le flux de travail de publication et de mise à jour visible par les clients.
+- [Configurer Thally Track](/guides/thally-track) pour connecter une source Product et choisir ses déclencheurs.
+- [Connecter les surfaces Knowledge](/guides/knowledge-surfaces) pour le contenu visible par les clients en dehors du référentiel de documentation principal.
+- [Utiliser l'agent de documentation](/guides/docs-agent) pour les tâches de rédaction auto-gérées.
+- [Ajouter la provenance](/guides/provenance) afin que les personnes et les agents puissent voir quand les pages ont été mises à jour et vérifiées en dernier.
+- Exécuter [`thally check`](/guides/cli-reference) en CI pour valider la source relue avant qu'elle ne soit publiée.

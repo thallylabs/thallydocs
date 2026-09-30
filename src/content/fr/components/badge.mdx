@@ -1,0 +1,39 @@
+---
+title: "Badge"
+description: "Étiquette en ligne pour les callouts de statut, version ou catégorie."
+---
+
+{/* thally:ai-translation locale=fr source-sha=ee519e7169913654d4f9e165e97781eac3ffd9eaa6682c453db8dbdd502e2ef1 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utilisez `<Badge>` pour mettre en évidence le statut, les versions ou les catégories en ligne dans le texte ou les en-têtes.
+
+## Variantes
+
+<Badge variant="default">Default</Badge>{" "}
+<Badge variant="success">Success</Badge>{" "}
+<Badge variant="warning">Warning</Badge>{" "}
+<Badge variant="danger">Danger</Badge>{" "}
+<Badge variant="info">Info</Badge>
+
+```mdx
+<Badge variant="default">Default</Badge>
+<Badge variant="success">Stable</Badge>
+<Badge variant="warning">Beta</Badge>
+<Badge variant="danger">Deprecated</Badge>
+<Badge variant="info">New</Badge>
+```
+
+## Modèles courants
+
+Placez les badges à côté d'un en-tête de page pour afficher le statut d'une fonctionnalité :
+
+```mdx
+## Webhooks <Badge variant="warning">Beta</Badge>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `variant` | `"default" \| "success" \| "warning" \| "danger" \| "info"` | `"default"` | Schéma de couleurs |

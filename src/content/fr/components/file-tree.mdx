@@ -1,0 +1,59 @@
+---
+title: "Arborescence de fichiers"
+description: "Rendez une arborescence de système de fichiers interactive pour la documentation des SDK et des monodépôts."
+---
+
+{/* thally:ai-translation locale=fr source-sha=d0eb54ce495ad702073bef79e56451261aa95de3894c54fdc3e694da62e10dc7 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utilisez `<Tree>`, `<Folder>`, et `<File>` pour représenter les structures de répertoires dans votre documentation. Les dossiers sont interactifs — cliquez pour les développer ou les réduire.
+
+## Exemple
+
+<Tree>
+  <Folder name="src" defaultOpen>
+    <Folder name="app">
+      <File name="page.tsx" />
+      <File name="layout.tsx" />
+    </Folder>
+    <Folder name="components">
+      <File name="button.tsx" />
+      <File name="card.tsx" />
+    </Folder>
+    <File name="globals.css" />
+  </Folder>
+  <File name="package.json" />
+  <File name="tsconfig.json" />
+  <File name="next.config.ts" />
+</Tree>
+
+```mdx
+<Tree>
+  <Folder name="src" defaultOpen>
+    <Folder name="app">
+      <File name="page.tsx" />
+      <File name="layout.tsx" />
+    </Folder>
+    <File name="globals.css" />
+  </Folder>
+  <File name="package.json" />
+</Tree>
+```
+
+## Props
+
+### `<Tree>`
+Élément conteneur — fournit le conteneur stylisé. Aucune prop supplémentaire.
+
+### `<Folder>`
+
+| Prop | Type | Par défaut | Description |
+|---|---|---|---|
+| `name` | `string` | — | Nom du dossier affiché à côté de l'icône |
+| `defaultOpen` | `boolean` | `false` | Si le dossier commence développé |
+
+### `<File>`
+
+| Prop | Type | Description |
+|---|---|---|
+| `name` | `string` | Nom du fichier affiché à côté de l'icône |

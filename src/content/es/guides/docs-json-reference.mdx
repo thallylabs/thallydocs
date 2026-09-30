@@ -1,0 +1,236 @@
+---
+title: referencia de docs.json
+navTitle: docs.json
+description: Consulta cada configuración de navegación, API, apariencia, SEO, comentarios, equipo y seguimiento orientada al autor en Thally.
+---
+
+{/* thally:ai-translation locale=es source-sha=a411cffd6cabd15badc1fb5e322fcb2894ded1f7dd26fdd19f537537a497df8b */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`docs.json` es la configuración del sitio controlada por el control de versiones. Controla la estructura
+y características portables; la identidad del producto y los valores predeterminados de marca viven en
+`src/data/site.ts`, mientras que los secretos de implementación pertenecen a variables de entorno.
+
+## Configuración mínima
+
+```json
+{
+  "tabs": [
+    {
+      "tab": "Get started",
+      "groups": [
+        {
+          "group": "Start here",
+          "pages": ["introduction", "quickstart"]
+        }
+      ]
+    }
+  ]
+}
+```
+
+`tabs` es el único campo raíz requerido.
+
+## Navegación
+
+| Campo | Tipo | Propósito |
+| --- | --- | --- |
+| `tabs[].tab` | string | Etiqueta de navegación superior. |
+| `tabs[].href` | string | Enlace directo para una pestaña que no posee grupos de barra lateral. |
+| `tabs[].hidden` | boolean | Oculta la pestaña. |
+| `tabs[].groups` | array | Grupos de barra lateral propiedad de la pestaña. |
+| `groups[].group` | string | Etiqueta de sección de barra lateral. |
+| `groups[].icon` | string | Icono nombrado de Thally. |
+| `groups[].hidden` | boolean | Oculta el grupo. |
+| `groups[].pages` | array | IDs de página u objetos de grupo anidados. |
+
+Un ID de página es su ruta bajo `src/content/` sin `.mdx`. Los grupos pueden estar anidados
+dentro de la matriz `pages` de otro grupo.
+
+Consulta [Configurar navegación](/guides/configuring-navigation) para obtener
+ejemplos orientados a tareas.
+
+## Referencia de API
+
+Agrega `api` a la pestaña que debe generar navegación de puntos finales:
+
+```json
+{
+  "tab": "API Reference",
+  "groups": [],
+  "api": {
+    "source": "openapi.yaml",
+    "navigation": true,
+    "tagsOrder": ["Authentication", "Users"],
+    "defaultGroup": "General",
+    "webhookGroup": "Webhooks",
+    "overrides": {
+      "GET /users/{id}": {
+        "title": "Get a user",
+        "description": "Retrieve one user by ID.",
+        "badge": "Stable",
+        "group": "Users",
+        "slug": ["api", "users", "get-user"],
+        "hidden": false
+      }
+    }
+  }
+}
+```
+
+| Campo | Predeterminado | Propósito |
+| --- | --- | --- |
+| `source` | Requerido | Ruta YAML/JSON de OpenAPI local o fuente remota compatible. |
+| `navigation` | `true` | Establece `false` cuando las páginas MDX creadas proporcionan la navegación de operaciones. |
+| `tagsOrder` | Orden de especificación | Orden preferido para grupos de etiquetas. |
+| `defaultGroup` | `Endpoints` | Grupo para operaciones sin etiquetar. |
+| `webhookGroup` | `Webhooks` | Grupo para operaciones de webhook de OpenAPI. |
+| `overrides` | `{}` | Por operación: título, descripción, distintivo, grupo, slug o visibilidad. |
+
+Las claves de operación usan `METHOD /path` exactamente como se escriben en la especificación.
+
+## Apariencia y elementos del sitio
+
+| Campo raíz | Propósito |
+| --- | --- |
+| `theme` | Tema estructural: `default`, `maple`, `sharp` o `minimal`. |
+| `banner` | `content` más opcional `dismissible`. Los enlaces Markdown son compatibles. |
+| `navbar` | `links` secundarios y una acción primaria opcional. |
+| `footer` | URLs de redes sociales y columnas de enlaces. |
+| `fonts` | Google Font `family` y matrices opcionales de `weight` para `body` y `heading`. |
+| `customScripts` | `src` de script externo más `strategy` de carga opcional. |
+
+Los enlaces de barra de navegación contienen `label`, `href` y tipo opcional `type: "github"`. Una acción primaria
+contiene `label` y `href`. Las columnas de pie de página contienen un `heading` y una
+matriz `items` de objetos `{ "label", "href" }`.
+
+## Redirecciones e indexación
+
+```json
+{
+  "redirects": [
+    {
+      "source": "/old-path",
+      "destination": "/new-path",
+      "permanent": true
+    }
+  ],
+  "seo": {
+    "indexing": "navigable"
+  }
+}
+```
+
+`seo.indexing` acepta `navigable` o `all`. El predeterminado excluye páginas ocultas
+de superficies de indexación. El frontmatter `noindex` a nivel de página siempre excluye esa
+página.
+
+## IA, análisis, comentarios y administración
+
+```json
+{
+  "ai": {
+    "chat": true,
+    "label": "Ask the docs",
+    "icon": "sparkles",
+    "systemPrompt": "Prefer concise answers with guide links."
+  },
+  "admin": { "enabled": true },
+  "analytics": { "enabled": true },
+  "feedback": {
+    "thumbsRating": true,
+    "endpoint": "/api/feedback"
+  }
+}
+```
+
+Los iconos de IA aceptan un icono nombrado o una URL/ruta de imagen. Habilitar un control portátil
+no crea una conexión de servicio pagado; las capacidades de Cloud no disponibles permanecen
+bloqueadas o sin operación.
+
+## Credenciales del playground de API
+
+```json
+{
+  "apiPlayground": {
+    "credentials": {
+      "bearerAuth": "YOUR_API_KEY"
+    }
+  }
+}
+```
+
+Las claves deben coincidir con los nombres de esquema de seguridad de OpenAPI. Los valores se implementan en el
+sitio de cara al lector, así que usa solo marcadores de posición o credenciales de sandbox públicas.
+
+## Idiomas
+
+```json
+{
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": [
+      { "code": "en", "label": "English" },
+      { "code": "es", "label": "Español" }
+    ]
+  }
+}
+```
+
+Consulta [Publicar varios idiomas](/guides/multi-language) para rutas de contenido y
+comportamiento de reserva.
+
+## Equipo de administración
+
+```json
+{
+  "team": {
+    "members": [
+      { "email": "owner@example.com", "role": "owner" }
+    ],
+    "domains": [
+      { "domain": "example.com", "role": "viewer" }
+    ]
+  }
+}
+```
+
+Los roles son `owner`, `editor` o `viewer`. Una entrada de miembro explícita toma
+precedencia sobre una regla de dominio.
+
+## Thally Track
+
+```json
+{
+  "tracking": {
+    "repos": [
+      {
+        "owner": "example",
+        "repo": "product",
+        "branch": "main",
+        "paths": ["src/**", "openapi.yaml"],
+        "outputTab": "Guides",
+        "outputGroup": "Product updates"
+      }
+    ]
+  }
+}
+```
+
+`owner` y `repo` son requeridos. `branch` tiene como predeterminado `main`; omite `paths` para
+considerar todos los archivos cambiados. Consulta [Configurar Thally Track](/guides/thally-track)
+antes de agregar repositorios.
+
+## Validar cambios
+
+```bash
+jq empty docs.json
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+## Referencias relacionadas
+
+- [Referencia de frontmatter](/guides/frontmatter-reference)
+- [Variables de entorno](/guides/environment-variables)
+- [Referencia de CLI](/guides/cli-reference)

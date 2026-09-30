@@ -1,0 +1,180 @@
+---
+title: Convierte cambios de productos en solicitudes de extracción de documentación
+navTitle: Thally Track
+description: Elige cuándo Thally Track verifica repositorios de productos conectados, sigue cada ejecución y revisa las solicitudes de extracción de documentación que prepara.
+keywords:
+  - thally track
+  - product sources
+  - docs automation
+  - pull request documentation
+  - scheduled documentation updates
+  - keep docs in sync with code
+---
+
+{/* thally:ai-translation locale=es source-sha=cc802257412f513cdd3d10c4a29ff8a9b4857a6de18167f2a4c873cce28b5b38 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Conecta los repositorios que describen tu producto y luego elige cuándo Thally
+Track debe verificarlos. Track lee el cambio exacto del producto, lo revisa
+contra tu documentación actual y abre una solicitud de extracción de documentación
+lista para revisar cuando sea necesario hacer una actualización.
+
+Track nunca fusiona sus propias solicitudes de extracción. Los cambios de tu
+documentación ocurren solo después de que tu equipo revise la propuesta y la
+fusione a través de tu flujo de trabajo normal de GitHub.
+
+Track requiere acceso a Cloud, incluyendo una prueba activa, y utiliza los
+Créditos de IA compartidos de tu espacio de trabajo. Antes de tu primera
+ejecución, revisa [acceso a prueba y Créditos de IA](/guides/thally-cloud#understand-trial-access-and-ai-credits).
+
+## Conectar orígenes de productos
+
+Puedes conectar orígenes de productos mientras creas un sitio o posteriormente
+desde la página Track del sitio.
+
+<Steps>
+  <Step title="Abre Track">
+    En Thally Cloud, abre el sitio y selecciona **Track**. Los propietarios y
+    editores pueden administrar los repositorios conectados desde esta página.
+  </Step>
+  <Step title="Autoriza el repositorio">
+    Instala o actualiza la aplicación GitHub de Thally para la cuenta que es
+    dueña del repositorio de productos.
+  </Step>
+  <Step title="Elige qué Track observa">
+    Selecciona el repositorio y la rama base. Agrega filtros de ruta cuando solo
+    parte de un monorepo representa la superficie del producto que Track debe
+    observar.
+  </Step>
+  <Step title="Elige tus disparadores">
+    Decide si Track debe ejecutarse para actualizaciones de solicitudes de
+    extracción, cambios fusionados, verificaciones programadas, o una combinación
+    de ellos. Los sitios nuevos mantienen el comportamiento familiar de solo
+    fusión hasta que cambies esta configuración.
+  </Step>
+</Steps>
+
+Cada origen de producto mantiene su propio repositorio, rama, filtros de ruta
+opcionales y estado habilitado. Un sitio puede conectar múltiples orígenes, como
+una API, SDK y aplicación web, al mismo repositorio de documentación.
+
+## Conectar superficies de conocimiento
+
+Si el contenido orientado al cliente también se encuentra en un sitio web, centro
+de ayuda u otro repositorio, conéctalo desde **Configuración del sitio →
+Superficies de conocimiento**. Una superficie de conocimiento es un destino de
+Track, no un origen de producto o una entrada de Conocimiento de producto.
+
+Cada evento de origen calificado crea una ejecución independiente para el
+repositorio de documentación principal y cada superficie habilitada. Confirma el
+repositorio de destino, la rama, la raíz opcional y las rutas exactas permitidas.
+Track puede abrir una solicitud de extracción lista para revisar por repositorio
+afectado; un destino que ya es preciso termina sin una.
+
+Lee el [contrato de superficies de conocimiento](/guides/knowledge-surfaces) para
+elegibilidad de disparadores, confinamiento de rutas, validación, límites de
+vista previa y propiedad de publicación.
+
+## Elige cuándo Track se ejecuta
+
+La configuración de disparadores se aplica a cada origen de producto habilitado
+para el sitio.
+
+| Disparador                    | Cuándo Track verifica                                                                                                    | Úsalo cuando                                                                 |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| **Actualizaciones de solicitudes de extracción** | Una solicitud de extracción de confianza, del mismo repositorio y que no sea borrador se abre, está lista para revisar o recibe un commit nuevo | Quieres documentación lista para revisar antes de que el cambio de producto se fusione |
+| **Cambios fusionados**        | Una solicitud de extracción se fusiona en la rama rastreada                                                               | Quieres que el trabajo de documentación comience solo después de que el cambio de producto se implemente |
+| **Verificaciones programadas** | Diariamente, semanalmente o en un intervalo personalizado entre cada hora y semanalmente                                 | Quieres que Track capture cambios en un cronograma UTC predecible            |
+
+Las actualizaciones de solicitudes de extracción no se ejecutan desde bifurcaciones
+o ramas de colaboradores no confiables. Track puede evaluar esos cambios después
+de que se fusionen en la rama rastreada.
+
+Puedes habilitar disparadores de solicitudes de extracción y fusión juntos. Track
+los trata como puntos de revisión separados, mientras que las entregas duplicadas
+para la misma revisión de origen no crean trabajo duplicado.
+
+La primera verificación programada establece la revisión actual de la rama. Las
+verificaciones posteriores se comparan a partir de ese punto. Si la rama no ha
+cambiado, o su cambio completo se encuentra fuera de tus rutas observadas,
+Track termina sin abrir una solicitud de extracción.
+
+## Sigue una ejecución
+
+La página Track mantiene cada ejecución de destino visible mientras trabajas en
+otro lugar o cierras el navegador. Una ejecución típica pasa por estos pasos:
+
+1. **Cambio recibido**
+2. **Preparando**
+3. **Escribiendo documentación**
+4. **Verificando la actualización**
+5. **Abriendo solicitud de extracción**
+
+Si Track necesita otro intento, la actividad muestra **Reintentando de forma
+segura**. También muestra el tiempo transcurrido y un objetivo típico de 15
+minutos en lugar de un porcentaje artificial. Puedes abrir los detalles de la
+ejecución para ver el cambio de origen, el intento actual y el resultado final.
+
+## Comprende el resultado
+
+Cada ejecución termina con uno de tres resultados orientados al cliente:
+
+| Resultado               | Qué significa                                                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Lista para revisar**  | Track abrió una solicitud de extracción normal de GitHub. Revísala, edítala, fusiona o ciérrala de la forma habitual. |
+| **Sin cambio de documentación** | Track verificó la revisión de origen y no encontró actualización de documentación para proponer. No se abrió ninguna solicitud de extracción. |
+| **Necesita atención**   | Track se detuvo antes de abrir una solicitud de extracción. Abre los detalles de la ejecución para ver el siguiente paso disponible. |
+
+Track puede actualizar páginas existentes, agregar una página cuando el producto
+introduce un nuevo concepto documentado, o ajustar la navegación necesaria para
+el contenido propuesto. La solicitud de extracción explica la actualización e
+informa si las verificaciones de documentación pasaron; no incluye registros de
+compilación sin procesar.
+
+## Revisa y publica
+
+Para el repositorio de documentación principal del sitio, una solicitud de
+extracción de Track fusionada se publica a través de la misma ruta que cualquier
+otro cambio de documentación revisado. La actualización se pone en vivo solo
+después de que la versión resultante pasa la validación.
+
+Las solicitudes de extracción de superficies de conocimiento utilizan las propias
+verificaciones, vistas previas, revisores y flujo de trabajo de publicación del
+repositorio de destino. Thally no compila ni publica esos repositorios. Las URLs
+de vista previa de Thally administradas se aplican solo al repositorio de
+documentación principal.
+
+Pausar o eliminar un origen de producto afecta los cambios futuros. Las
+solicitudes de extracción existentes permanecen disponibles para que tu equipo
+las revise o cierre.
+
+## Qué esperar
+
+- Track se ejecuta solo para los orígenes de productos y ramas que conectes. Las
+  rutas observadas opcionales deciden qué cambios proceden a la escritura de
+  documentación; una ejecución completamente fuera de esas rutas termina como
+  **Sin cambio de documentación**. Durante una ejecución admitida, Track revisa
+  el origen conectado y el repositorio de documentación actual.
+- Un cambio de origen sin impacto en la documentación no crea solicitud de
+  extracción.
+- Cada superficie de conocimiento habilitada recibe su propia ejecución y resultado
+  independiente de sin cambio o solicitud de extracción.
+- Una ejecución fallida o detenida no puede cambiar el sitio de documentación en vivo.
+- Track abre solicitudes de extracción listas para revisar y nunca las fusiona.
+- Tu repositorio de Git sigue siendo la fuente de verdad para cada cambio publicado.
+
+## Herramientas de autoría autohospedadas
+
+La CLI pública `thally`, el agente de documentación y el servidor MCP también
+pueden ayudar a un desarrollador a preparar documentación localmente. Esas
+herramientas de autoría autogestionadas son separadas del flujo de trabajo de
+Track en Cloud que se describe aquí.
+
+## Próximos pasos
+
+- [Mira cómo funciona Thally](/architecture) para el flujo de trabajo de
+  publicación y actualización orientado al cliente.
+- [Comprende el canal de cambios de productos](/product-change-pipeline).
+- [Usa el agente de documentación localmente](/guides/docs-agent).
+- [Conecta un cliente MCP](/guides/mcp-server).
+- [Revisa proveniencia y frescura](/guides/provenance).

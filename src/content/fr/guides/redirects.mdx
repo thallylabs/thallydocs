@@ -1,0 +1,56 @@
+---
+title: Ajouter des redirections
+navTitle: Redirections
+description: Mappez les anciens chemins vers les nouveaux pour que les pages renommées ou déplacées ne cassent pas les liens existants.
+---
+
+{/* thally:ai-translation locale=fr source-sha=da571c004d5259bc563221d5275f08069ff2bc5fd33771d963e05ba7024baa9d */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Définissez des redirections dans `docs.json` pour rediriger automatiquement les visiteurs des anciennes URL vers les nouvelles. C'est particulièrement utile après une migration ou une réorganisation.
+
+## Configuration
+
+Ajoutez un tableau `redirects` à `docs.json` :
+
+```json
+"redirects": [
+  { "source": "/old-path", "destination": "/new-path", "permanent": false },
+  { "source": "/getting-started", "destination": "/quickstart", "permanent": true }
+]
+```
+
+Les redirections sont lues au moment de la construction et transmises au mécanisme de redirection intégré de Next.js — aucun redémarrage de serveur ou déploiement n'est nécessaire au-delà d'une construction normale.
+
+## Champs
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `source` | `string` | Le chemin à faire correspondre (relatif, sans domaine) |
+| `destination` | `string` | Où envoyer les visiteurs |
+| `permanent` | `boolean` | `true` = 308 (permanent), `false` = 307 (temporaire). Par défaut : `false` |
+
+## Quand utiliser `permanent: true`
+
+Utilisez `permanent: true` quand une page a été déplacée et ne reviendra jamais à l'ancienne URL. Les navigateurs et les moteurs de recherche mettent en cache les redirections 308 de manière agressive, donc utilisez `permanent: false` pendant une période de test de migration et passez à `true` une fois que vous êtes certain.
+
+## Correspondance de motifs
+
+Vous pouvez utiliser la syntaxe de correspondance de chemins de Next.js — incluant les paramètres nommés et les caractères génériques :
+
+```json
+"redirects": [
+  { "source": "/blog/:slug", "destination": "/posts/:slug", "permanent": true },
+  { "source": "/v1/:path*", "destination": "/:path*", "permanent": true }
+]
+```
+
+Consultez la [documentation des redirections Next.js](https://nextjs.org/docs/app/api-reference/config/next-config-js/redirects) pour la syntaxe complète de correspondance.
+
+## Cas d'usage de migration
+
+Lors de la migration depuis Mintlify, la commande `thally migrate` lit automatiquement le champ `redirects` de votre `docs.json` Mintlify et génère des entrées équivalentes dans le `docs.json` de Thally. Elle génère également des redirections pour toutes les pages qui ont été renommées lors de la migration.
+
+<Note type="info" title="Exemple">
+Ce site a deux redirections de démonstration configurées — essayez de visiter `/docs` ou `/getting-started` et vous serez redirigé vers les pages correctes.
+</Note>

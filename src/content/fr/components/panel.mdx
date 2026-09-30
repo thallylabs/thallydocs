@@ -1,0 +1,39 @@
+---
+title: "Panel"
+description: "Un conteneur neutre avec bordure pour regrouper du contenu connexe."
+---
+
+{/* thally:ai-translation locale=fr source-sha=1780d0fec1a7c30259a93982f36cef9f8b67de79041530675e57cde0cfe4fc0a */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`<Panel>` est une section visuellement contenue sans la couleur affirmée des callouts. Utilisez-le pour regrouper du contenu connexe ou mettre en évidence un bloc sans impliquer une urgence.
+
+## Exemple
+
+<Panel title="Configuration">
+  Définissez votre clé API dans le fichier `.env` avant d'exécuter l'application.
+
+  ```bash
+  API_KEY=sk-your-key-here
+  ```
+</Panel>
+
+<Panel>
+  Les panneaux sans titre sont également pris en charge.
+</Panel>
+
+```mdx
+<Panel title="Configuration">
+  Set your API key in the `.env` file.
+</Panel>
+
+<Panel>
+  Content without a title.
+</Panel>
+```
+
+## Props
+
+| Prop | Type | Par défaut | Description |
+|---|---|---|---|
+| `title` | `string` | — | En-tête optionnel affiché au-dessus du contenu |

@@ -1,0 +1,81 @@
+---
+title: Publier avec l'hébergement géré de Thally
+navTitle: Hébergement géré
+description: Publiez la documentation, examinez les aperçus des demandes d'extraction, restaurez une version antérieure et connectez un domaine personnalisé.
+keywords:
+  - Thally managed hosting
+  - documentation deployment
+  - pull request preview
+  - rollback
+  - custom domain
+---
+
+{/* thally:ai-translation locale=fr source-sha=aa3d2d3063dae722b57cbdd9fe99f6948ed1bdf684dc0f9a45f69417d10fbfee */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+L'hébergement géré publie les modifications Git examinées sans vous obliger à exécuter l'infrastructure d'hébergement. Thally valide une modification avant qu'elle ne devienne active, de sorte qu'une publication échouée laisse le site actuel en ligne.
+
+## Ce qui déclenche une publication
+
+- Une poussée vers la branche de production configurée crée un candidat de production.
+- L'ouverture ou la mise à jour d'une demande d'extraction de documentation crée ou actualise un aperçu isolé.
+- La fusion d'une demande d'extraction de documentation Track suit le même chemin de production.
+- La modification d'un paramètre pris en charge ou l'application d'une mise à jour de Thally publie le résultat.
+- **Redéployer le site** republié la version actuelle sans la modifier.
+
+La page **Déploiements** affiche la version de production active, l'aperçu le plus récent, le nombre d'aperçus ouverts, les détails de la validation, l'état et l'historique consultable.
+
+## Comment une modification de production devient active
+
+<Steps>
+  <Step title="Thally sélectionne la révision Git">
+    La page Déploiements affiche la validation en cours de publication, afin que vous puissiez confirmer qu'elle correspond à la modification que vous avez approuvée.
+  </Step>
+  <Step title="Thally construit et valide le site">
+    Le contenu, la navigation, les liens et le site de production sont vérifiés avant que la modification puisse être publiée.
+  </Step>
+  <Step title="La version vérifiée devient active">
+    Si chaque vérification réussit, Thally publie la nouvelle version. Si une vérification échoue, la version active existante reste en place et le déploiement affiche l'échec.
+  </Step>
+</Steps>
+
+## Mises à jour de contenu plus rapides
+
+Les modifications limitées aux pages, à la navigation ou aux extraits peuvent être publiées plus rapidement qu'une modification complète de l'application. Thally valide toujours le résultat avant qu'il ne devienne actif. Lorsqu'une modification nécessite une compilation complète, Thally choisit automatiquement ce chemin.
+
+## Aperçus des demandes d'extraction
+
+Chaque demande d'extraction de documentation ouverte reçoit une adresse d'aperçu pour sa validation la plus récente. Les modifications d'aperçu restent séparées de la production et ne peuvent pas se mettre en direct. La fermeture ou la fusion de la demande d'extraction retire son aperçu.
+
+## Restaurer en toute sécurité
+
+Les propriétaires et les éditeurs peuvent sélectionner une version précédente réussie dans l'historique des déploiements. Une restauration restaure cette version sans réécrire l'historique Git.
+
+Après une restauration, Thally suspend la publication de production automatique pour qu'une modification ultérieure ne puisse pas écraser immédiatement votre choix. Utilisez une publication explicite pour reprendre les mises à jour automatiques après avoir résolu le problème.
+
+## Ajouter un domaine personnalisé
+
+Ouvrez **Paramètres → Domaines**, ajoutez le nom d'hôte et copiez les enregistrements DNS que Thally affiche dans votre fournisseur DNS. Thally provisionne le certificat et connecte le nom d'hôte à votre site.
+
+Gardez l'adresse gérée disponible pendant que le domaine personnalisé est en attente. Attendez que la page Domaines signale le nom d'hôte personnalisé comme vérifié, puis ouvrez-le dans une session de navigateur privée.
+
+## Mettre à jour Thally
+
+Lorsqu'une mise à jour compatible est disponible, **Paramètres → Mises à jour** affiche **Mettre à jour le site**. Examinez et appliquez la modification à partir de là. Thally laisse vos pages, navigation, image de marque et autres fichiers créés inchangés. Si un fichier de framework contient également des modifications locales, Thally l'identifie pour un examen local au lieu de le remplacer.
+
+Pour un projet auto-hébergé, prévisualisez la même mise à jour localement :
+
+```bash
+npx --yes @thallylabs/cli@latest starter update
+npx --yes @thallylabs/cli@latest starter update --apply
+```
+
+La première commande prévisualise la modification. La seconde l'applique.
+
+## Vérifier une publication
+
+1. Confirmez que le déploiement est **Sain** ou que l'aperçu est **Prêt**.
+2. Vérifiez que la validation affichée correspond à la révision attendue.
+3. Ouvrez l'adresse en direct ou d'aperçu et testez une page représentative.
+4. Vérifiez `/llms.txt`, `/api/docs-index` et `/AGENTS.md`.
+5. Si la version a échoué, ouvrez ses détails avant de redéployer ou de modifier les fichiers source.

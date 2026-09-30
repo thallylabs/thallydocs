@@ -1,0 +1,87 @@
+---
+title: "Étendre Thally"
+navTitle: "Étendre Thally"
+description: "Ajoutez des composants MDX personnalisés, du contenu réutilisable, la marque et la configuration du site via des fichiers de projet pris en charge."
+keywords:
+  - "étendre Thally"
+  - "composants personnalisés"
+  - "extraits réutilisables"
+  - "personnalisation"
+---
+
+{/* thally:ai-translation locale=fr source-sha=2b5e47ec98f79dd27a67c60e4c89bec256b04888cb1ed9566c7d7c6a80edfe8d */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Étendez un site Thally via les fichiers dont votre projet est propriétaire. Ces surfaces prises en charge restent séparées du framework qui rend le site, donc les mises à jour normales ne remplacent pas votre contenu ou configuration.
+
+## Ajouter un composant MDX personnalisé
+
+Enregistrez un composant React dans `src/mdx/custom-components.tsx`, puis utilisez-le sur toute page MDX.
+
+<Steps>
+<Step title="Enregistrez le composant">
+
+```tsx
+// src/mdx/custom-components.tsx
+import type { MDXComponents } from 'mdx/types'
+import type { ReactNode } from 'react'
+
+function Highlight({ children }: { children: ReactNode }) {
+  return (
+    <mark className="rounded bg-accent/15 px-1 text-foreground">
+      {children}
+    </mark>
+  )
+}
+
+export const customComponents: MDXComponents = {
+  Highlight,
+}
+```
+
+</Step>
+<Step title="Utilisez-le dans une page">
+
+```mdx
+Thally is <Highlight>yours to customize</Highlight>.
+```
+
+</Step>
+</Steps>
+
+Les composants personnalisés peuvent accepter des props, composer des composants MDX intégrés et utiliser des dépendances installées dans votre projet. Gardez les secrets et les opérations serveur privilégiées en dehors des composants visibles aux lecteurs.
+
+## Ajouter des pages et du contenu réutilisable
+
+- Ajoutez des pages de documentation sous `src/content/` et enregistrez-les dans
+  `docs.json`.
+- Placez les fragments MDX partagés dans `snippets/` et importez-les depuis n'importe quelle page.
+- Stockez les images publiques et les téléchargements dans `public/`.
+
+Voir [Créer et modifier des pages](/guides/writing-content) et [Réutiliser le contenu avec des extraits](/guides/reusable-snippets) pour des exemples concrets.
+
+## Personnaliser le site
+
+\| Ce que vous voulez modifier \| Fichier pris en charge \| \| --- \| --- \| \| Navigation, onglets, redirections et fonctionnalités optionnelles \| `docs.json` \| \| Nom du produit, liens et paramètres par défaut de la marque \| `src/data/site.ts` \| \| Contenu de la page et métadonnées \| `src/content/**/*.mdx` \| \| Composants MDX personnalisés \| `src/mdx/custom-components.tsx` \| \| Contenu partagé \| `snippets/` \| \| Images, logos et téléchargements \| `public/` \|
+
+Utiliser [Marque et thème](/guides/branding-and-theming),
+[Navigation](/guides/configuring-navigation), et la [`docs.json`
+référence](/guides/docs-json-reference) avant d'ajouter du code personnalisé. Un paramètre pris en charge est plus facile à maintenir pour votre équipe.
+
+## Restez dans les limites supportées
+
+Les routes d'application, les composants de rendu et les internals de build en dehors des fichiers ci-dessus appartiennent au framework Thally. Ne les modifiez pas pour ajouter une page personnalisée, un endpoint ou un thème. Ces modifications peuvent être remplacées par une mise à jour du framework et ne sont pas portables entre les projets Thally.
+
+Si les surfaces d'extension prises en charge ne couvrent pas votre cas d'usage, ouvrez une demande de fonctionnalité dans le [référentiel Thally](https://github.com/thallylabs/thally) avec le résultat utilisateur dont vous avez besoin.
+
+## Vérifiez l'extension
+
+Exécutez l'aperçu local et les vérifications de documentation :
+
+```bash
+npm run dev
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+Ouvrez toutes les pages qui utilisent l'extension et vérifiez-les sur mobile et sur ordinateur.

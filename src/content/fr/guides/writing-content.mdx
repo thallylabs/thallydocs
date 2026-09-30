@@ -1,0 +1,250 @@
+---
+title: Créer et modifier des pages
+navTitle: Pages
+description: Créez des pages MDX axées sur les tâches avec un frontmatter, des exemples de code et des composants de documentation intégrés.
+---
+
+{/* thally:ai-translation locale=fr source-sha=b9711e5843d3cf228334feb2f1ae39d54f3da08aea38267960b5536e92bf26ba */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utilisez ce guide pour créer une page MDX complète et choisir les composants intégrés qui facilitent le suivi de sa tâche. Pour la stratégie de contenu, commencez par [Choisir le bon type de contenu](/guides/content-types).
+
+<AgentPrompt
+  title="Copiez une invite complète pour rédiger une page"
+  copyOnly
+>
+
+Créez ou améliorez une page axée sur les tâches dans ce projet Thally à propos de TASK. Vous avez terminé quand un lecteur peut accomplir la tâche sans deviner, la page est placée où il la cherchera, chaque affirmation sur le produit est soutenue par l'implémentation actuelle, et le projet réussit ses vérifications de documentation et sa compilation en production.
+
+Commencez par lire AGENTS.md s'il existe, docs.json, package.json, src/data/site.ts, et les pages renvoyées par une recherche de référentiel pour la tâche, les noms de fonctionnalités, les commandes, les paramètres et le langage utilisateur associé. Inspectez le code source, l'aide CLI, les types de configuration et les tests derrière tout comportement que vous envisagez de documenter. Traitez le code et les tests comme des preuves ; ne transformez pas les hypothèses, les notes de feuille de route, le comportement générique de Next.js ou les conventions d'un autre produit en affirmations Thally.
+
+Préférez améliorer la page existante qui possède la tâche. Créez un seul nouveau fichier MDX sous src/content uniquement quand la tâche a besoin de sa propre URL durable. Ajoutez une nouvelle page au groupe docs.json le plus pertinent, gardez son navTitle assez court pour une seule ligne de barre latérale si pratique, et créez des liens vers les prérequis au lieu de les dupliquer.
+
+Écrivez directement au lecteur dans un langage amical et concret. Incluez le résultat, les prérequis, les étapes ordonnées, les étiquettes exactes de l'interface utilisateur ou les commandes testées, les exemples réalistes, les résultats attendus et le dépannage pour les deux ou trois défaillances les plus probables. Utilisez des clôtures de code avec le langage correct. Utilisez Note, Warning, Steps, Tabs, Cards ou un autre composant intégré uniquement quand cela facilite le scan de la tâche. Ne jamais ajouter un second H1 dans le corps.
+
+Exécutez chaque commande sûre que vous documentez quand l'environnement le permet. Puis exécutez npx --yes @thallylabs/cli@latest check et npm run build. Démarrez un aperçu local, inspectez la page en mode clair et sombre aux largeurs de bureau et étroites, et vérifiez les liens, la navigation, le contraste du code, le débordement et les en-têtes. Corrigez les régressions causées par vos modifications.
+
+Signalez le résultat utilisateur, les fichiers modifiés, les preuves utilisées pour les affirmations sur le produit, les commandes exécutées, les vérifications visuelles effectuées et tous les faits qui nécessitent encore un propriétaire de produit. Ne commitez pas, ne poussez pas, ne déployez pas, ne supprimez pas de contenu ou ne modifiez pas les éléments internes du framework non liés sauf si je vous le demande explicitement.
+
+</AgentPrompt>
+
+## Créer une page
+
+Ajoutez un fichier sous `src/content/`. Son chemin devient l'URL, donc
+`src/content/guides/invite-a-member.mdx` est disponible à
+`/guides/invite-a-member`.
+
+## Bases du MDX
+
+Chaque page de Thally est un fichier `.mdx` — Markdown avec support JSX. Vous pouvez utiliser la syntaxe Markdown standard plus des composants React en ligne.
+
+```mdx
+# Heading
+
+Regular paragraph with **bold**, *italic*, and `inline code`.
+
+- Bullet lists
+- Work as expected
+
+1. Numbered lists too
+```
+
+## Frontmatter
+
+Chaque page a besoin d'un bloc frontmatter en haut :
+
+```yaml
+---
+title: Page Title
+description: A short summary for search results and meta tags.
+---
+```
+
+| Champ | Obligatoire | Objectif |
+| --- | --- | --- |
+| `title` | Oui | En-tête de page et étiquette de barre latérale |
+| `description` | Oui | Description méta et extrait de recherche |
+
+Le titre du frontmatter est automatiquement affiché comme en-tête de page — vous n'avez pas besoin d'ajouter un `# H1` dans le corps.
+
+Consultez la [référence du frontmatter](/guides/frontmatter-reference) pour la recherche,
+la provenance, la visibilité, l'opération API et les champs de mise en page.
+
+## Blocs de code
+
+Les blocs de code clôturés obtiennent la coloration syntaxique automatiquement :
+
+````mdx
+```javascript
+const greeting = 'Hello from Thally!'
+console.log(greeting)
+```
+````
+
+Utilisez l'identifiant de langue `bash`, `typescript`, `python`, `json` ou tout autre langage pris en charge par Shiki.
+
+## Légendes et notes
+
+Utilisez le composant `<Note>` pour mettre en évidence les informations importantes :
+
+```mdx
+<Note type="info" title="Good to know">
+  Notes support **Markdown** inside them.
+</Note>
+
+<Note type="warning" title="Heads up">
+  This is a warning callout.
+</Note>
+```
+
+Types disponibles : `info`, `warning`, `danger`, `tip`.
+
+## Liens
+
+Les liens Markdown standard fonctionnent pour les pages internes et externes :
+
+```mdx
+Check the [Quickstart](/quickstart) guide or visit [GitHub](https://github.com).
+```
+
+## Onglets
+
+Utilisez `<Tabs>` et `<Tab>` pour afficher du contenu spécifique à une plateforme ou des variantes sans blocs de code :
+
+```mdx
+<Tabs>
+
+<Tab title="macOS">
+Install with Homebrew:
+\`\`\`bash
+brew install your-cli
+\`\`\`
+</Tab>
+
+<Tab title="Linux">
+Install with apt:
+\`\`\`bash
+sudo apt install your-cli
+\`\`\`
+</Tab>
+
+</Tabs>
+```
+
+Chaque `<Tab>` prend en charge le contenu MDX complet à l'intérieur — blocs de code, listes, légendes et plus.
+
+## Étapes
+
+Utilisez `<Steps>` et `<Step>` pour les instructions séquentielles avec des cercles numérotés et des lignes de connexion :
+
+```mdx
+<Steps>
+
+<Step title="Install">
+Run the installer:
+\`\`\`bash
+npm install your-package
+\`\`\`
+</Step>
+
+<Step title="Configure">
+Create a config file and add your API key.
+</Step>
+
+</Steps>
+```
+
+## Cartes
+
+Utilisez `<CardGroup>` et `<Card>` pour créer des grilles de cartes cliquables pour les pages de destination ou les sections « étapes suivantes » :
+
+```mdx
+<CardGroup cols="2">
+
+<Card title="Quickstart" href="/quickstart" icon="book-open">
+Get up and running in five minutes.
+</Card>
+
+<Card title="API Reference" href="/api" icon="code-simple">
+Explore the full API.
+</Card>
+
+</CardGroup>
+```
+
+Icônes disponibles : `book-open`, `code-simple`, `grid-round`, `link-simple`, `wrench`, `party-horn`, `telegram`, `envelope`, `x-twitter`, `message`.
+
+## Images et cadres
+
+Placez les images dans le dossier `public/` et référencez-les avec une barre oblique au début :
+
+```mdx
+![Screenshot](/images/image1.jpg)
+```
+
+Enveloppez les images dans un `<Frame>` pour une bordure stylisée avec une légende optionnelle. Les cadres sont cliquables pour zoomer par défaut :
+
+```mdx
+<Frame caption="System architecture overview">
+  ![Screenshot](/images/image1.jpg)
+</Frame>
+```
+
+Désactivez le zoom avec `<Frame zoom={false}>`.
+
+Pour l'organisation des ressources, le texte alternatif, les téléchargements et les conseils d'examen, consultez
+[Ajouter des images et des fichiers téléchargeables](/guides/images-and-files).
+
+## Liens d'ancrage de titre
+
+Chaque en-tête `h2` et `h3` est un lien permanent. Sélectionner l'en-tête copie
+l'URL de la section sans ajouter de marqueur visible à côté, afin que vous puissiez partager une
+réponse spécifique tout en gardant la page visuellement propre.
+
+## Tableaux
+
+Les tableaux Markdown standard s'affichent avec un style approprié :
+
+```mdx
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | /pets | List all pets |
+| POST | /pets | Create a pet |
+```
+
+## Organisation des fichiers
+
+Tout le contenu se trouve dans `src/content/`. Vous pouvez utiliser des sous-répertoires pour organiser les pages associées :
+
+```
+src/content/
+  introduction.mdx          → /introduction (or / for the root)
+  quickstart.mdx             → /quickstart
+  guides/
+    getting-started.mdx      → /guides/getting-started
+    writing-content.mdx      → /guides/writing-content
+```
+
+Le chemin d'URL correspond au chemin du fichier relatif à `src/content/`, moins l'extension `.mdx`.
+
+## Ajouter la page à la navigation
+
+Dans `docs.json`, ajoutez l'ID de page au tableau `pages` du groupe prévu. Pour l'
+exemple ci-dessus, utilisez `"guides/invite-a-member"`. Consultez
+[Organiser votre navigation](/guides/configuring-navigation).
+
+## Vérifier la page
+
+Ouvrez la page dans l'[aperçu local](/guides/preview-locally), suivez ses
+instructions, testez les liens et les composants interactifs, puis exécutez :
+
+```bash
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+## Étapes suivantes
+
+- [Réutiliser le contenu avec des extraits](/guides/reusable-snippets)
+- [Choisir une mise en page de page](/guides/page-modes)
+- [Parcourir la référence des composants](/components/badge)

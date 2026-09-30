@@ -1,0 +1,62 @@
+---
+title: Choisir une mise en page
+navTitle: Mises en page
+description: Contrôlez la mise en page des pages individuelles — deux colonnes par défaut, large, centrée ou entièrement personnalisée.
+---
+
+{/* thally:ai-translation locale=fr source-sha=942f2908f6458ec235d6c1010b10b647591fdc359495011d9c1d8ce43d74077b */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Chaque page peut déclarer un `mode` dans son frontmatter pour remplacer la mise en page par défaut à deux colonnes. Ceci est utile pour les pages d'accueil, les entrées de changelog, les tableaux larges et les pages conçues de manière personnalisée.
+
+## Modes disponibles
+
+### `default` (pas de frontmatter nécessaire)
+
+La mise en page standard : une colonne de contenu principal avec une table des matières à droite. C'est la valeur par défaut pour toutes les pages.
+
+### `wide`
+
+Supprime la colonne de la table des matières. Le contenu s'étend sur toute la largeur disponible — idéal pour les pages avec des tableaux larges, des exemples de code ou du matériel de référence API dense.
+
+```mdx
+---
+title: API Reference
+mode: wide
+---
+```
+
+### `center`
+
+Une seule colonne centrée avec une largeur maximale plus étroite (`max-w-2xl`). Idéal pour les pages riches en prose, les changelogs ou les entrées de style blog.
+
+```mdx
+---
+title: Changelog
+mode: center
+---
+```
+
+### `custom`
+
+Supprime tous les éléments de mise en page — pas de barre latérale, pas de table des matières, pas de fil d'Ariane, pas de pagination. La page ne reçoit que son contenu MDX brut. À utiliser pour des conceptions entièrement sur mesure où vous voulez un contrôle total.
+
+```mdx
+---
+title: Themes Showcase
+mode: custom
+---
+```
+
+## Comparaison
+
+| Mode | Barre latérale | Table des matières | Fil d'Ariane | Pagination |
+| --- | --- | --- | --- | --- |
+| `default` | ✓ | ✓ | ✓ | ✓ |
+| `wide` | ✓ | — | ✓ | ✓ |
+| `center` | ✓ | — | ✓ | ✓ |
+| `custom` | ✓ | — | — | — |
+
+<Note type="info">
+La barre latérale est contrôlée par la structure d'onglets/groupes dans `docs.json` — elle est toujours présente sauf si vous utilisez `mode: "custom"` et la masquez manuellement.
+</Note>

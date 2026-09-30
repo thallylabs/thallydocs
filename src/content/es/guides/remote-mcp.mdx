@@ -1,0 +1,80 @@
+---
+title: Conectarse al servidor MCP remoto
+navTitle: MCP remoto
+description: Conecta un agente compatible con MCP a un sitio Thally implementado para que pueda buscar y leer tu documentación.
+keywords:
+  - MCP
+  - Model Context Protocol
+  - MCP remoto
+  - herramientas de agente
+  - docs legibles por IA
+---
+
+{/* thally:ai-translation locale=es source-sha=c102497dd9c65a652123ebb71a48f010b18323b806f431c3349b644273eb371a */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Un sitio Thally implementado expone un servidor [Model Context Protocol](https://modelcontextprotocol.io)
+remoto en `/api/mcp` cuando MCP está habilitado. Un cliente compatible con MCP puede conectarse
+a través de HTTP para buscar en los documentos, leer páginas, listar el sitio y verificar la Puntuación
+de Preparación del Agente.
+
+Esto es diferente del [servidor MCP local](/guides/mcp-server) (`@thallylabs/mcp`), que opera en un directorio de proyecto en tu máquina. El servidor remoto se ejecuta **dentro de tu sitio implementado** y sirve exactamente lo que el sitio sirve.
+
+## Adjuntarlo
+
+<CodeGroup>
+
+```bash Claude Code
+claude mcp add --transport http thally https://docs.example.com/api/mcp
+```
+
+```bash claude_desktop_config.json
+{
+  "mcpServers": {
+    "thally": {
+      "type": "http",
+      "url": "https://docs.example.com/api/mcp"
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+Reemplaza `https://docs.example.com` con la URL de tu sitio. Eso es todo — sin clave, sin cuenta. En un sitio de documentación público, las herramientas están abiertas a cualquier agente.
+
+## Herramientas
+
+| Herramienta | Argumentos | Qué hace |
+| --- | --- | --- |
+| `search_docs` | `query`, `limit?` | Búsqueda de texto completo en todas las páginas; devuelve títulos, URL y fragmentos. |
+| `read_page` | `pageId` | Devuelve el Markdown completo de una página por su ID o ruta URL. |
+| `list_pages` | — | Lista todas las páginas con su ID, título y URL. |
+| `agent_readiness` | — | Devuelve la Puntuación de Preparación del Agente del sitio con puntuaciones de subsignales. |
+
+<Note>
+Las herramientas son **solo lectura**. La edición de documentos a través de un agente se maneja mediante el [agente de documentos](/guides/cli-reference) a través de solicitudes de extracción revisadas, no por el punto final público.
+</Note>
+
+## Configuración
+
+El punto final está habilitado por defecto. Dos variables de entorno opcionales lo ajustan:
+
+| Variable | Predeterminado | Propósito |
+| --- | --- | --- |
+| `THALLY_MCP_RATE_PER_MIN` | `60` | Límite por IP en llamadas de herramientas por minuto (`0` desactiva). Respaldado por [almacenamiento duradero](/guides/ai-features) cuando se configura. |
+| `THALLY_DATABASE_URL` | — | Apunta a Turso/libSQL para hacer el límite de velocidad duradero y compartido entre instancias sin servidor. |
+
+<Callout type="info">
+`search_docs` se ejecuta en modo **texto completo** en el punto final remoto — nunca incrusta la consulta — por lo que un servidor anónimo y público se mantiene económico. La búsqueda semántica (híbrida) sigue disponible en la aplicación y a través de `/api/search`.
+</Callout>
+
+## Verificarlo
+
+Apunta el [Inspector MCP](https://github.com/modelcontextprotocol/inspector) a tu punto final:
+
+```bash
+npx @modelcontextprotocol/inspector --cli https://docs.example.com/api/mcp --transport http --method tools/list
+```
+
+Deberías ver las cuatro herramientas listadas. El punto final también se anuncia en el `llms.txt`, `ai.txt`, `skill.md` y `/api/docs-index` de tu sitio, para que los agentes puedan descubrirlo por su cuenta.

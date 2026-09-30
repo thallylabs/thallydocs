@@ -1,0 +1,175 @@
+---
+title: Comprendre les serveurs Thally MCP
+navTitle: Aperçu MCP
+description: Choisissez entre le serveur d'édition local de Thally et le point de terminaison MCP en lecture seule publié par chaque site déployé.
+---
+
+{/* thally:ai-translation locale=fr source-sha=a64c129c4a04c77823d0402662ec05f9c6ca6c4806d996e7dca0756a63146ea3 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally fournit deux serveurs Model Context Protocol. Le **serveur local** aide
+un agent de codage IA à travailler sur un référentiel. Le **serveur distant** aide un agent
+à consulter la documentation déjà publiée par un site.
+
+## MCP local et distant
+
+| | Serveur d'édition local | Serveur de site déployé |
+| --- | --- | --- |
+| Point de terminaison | `npx -y @thallylabs/mcp` ou `npx --yes @thallylabs/cli@latest mcp` | `https://docs.example.com/api/mcp` |
+| Transport | stdio | HTTP diffusable |
+| Accès | Votre machine et permissions du système de fichiers | Public par défaut ; lecture seule et limité en débit |
+| Outils | 15 outils de projet et de site | 4 outils de site |
+| À utiliser pour | Créer, éditer, migrer, traduire et valider des docs | Rechercher, lire, lister les pages et vérifier la disponibilité |
+
+## Connecter le serveur local
+
+<Tabs>
+
+<Tab title="Codex">
+
+```bash
+codex mcp add thally -- npx -y @thallylabs/mcp
+```
+
+</Tab>
+
+<Tab title="Claude Code">
+
+```bash
+claude mcp add thally -- npx -y @thallylabs/mcp
+```
+
+</Tab>
+
+<Tab title="Cursor">
+
+```json
+{
+  "mcpServers": {
+    "thally": {
+      "command": "npx",
+      "args": ["-y", "@thallylabs/mcp"]
+    }
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+Redémarrez ou rechargez le client après avoir ajouté la configuration.
+
+## Ce que le serveur local expose
+
+Le paquet local enregistre 15 outils à partir d'un registre partagé :
+
+- **Créer et organiser :** `create_project`, `add_page`, `update_page`,
+  `add_tab`, `list_pages`
+- **Lire et rechercher :** `read_page`, `search_docs`, `get_context`
+- **Migrer et traduire :** `migrate_docs`, `import_docs`, `translate_docs`
+- **Valider et inspecter :** `lint_project`, `semantic_search`,
+  `agent_readiness`
+- **Automatiser les changements de produit :** `sync_from_repo`
+
+La plupart des outils agissent sur un `projectDir` local. `semantic_search` et
+`agent_readiness` interrogent un `siteUrl` déployé. Le serveur retourne des
+erreurs structurées lorsque les chemins ou valeurs requises sont manquants, afin que votre agent puisse corriger l'
+appel au lieu d'inférer un résultat.
+
+<AgentPrompt
+  title="Copier une invite complète pour auditer un projet Thally"
+  copyOnly
+>
+
+Utilisez le serveur Thally MCP local connecté pour auditer le projet de documentation à ABSOLUTE_PROJECT_PATH. Vous avez terminé lorsque j'ai un audit fondé sur des preuves trié par impact lecteur, avec les identifiants exacts des pages ou fichiers pour chaque constatation et sans modifications non approuvées.
+
+Confirmez que ABSOLUTE_PROJECT_PATH est le projet Thally prévu et qu'il contient docs.json et package.json. Lisez AGENTS.md ou les instructions équivalentes du référentiel si présentes. Enregistrez l'état git actuel et ne perturbez pas les travaux sans rapport.
+
+Appelez list_pages en premier. Utilisez search_docs pour tester le langage qu'un nouveau lecteur utiliserait pour la configuration, les tâches courantes, la documentation API, le déploiement, le dépannage, la CLI, MCP et les flux de travail des agents. Utilisez read_page sur les résultats les plus pertinents et sur les pages qui semblent dupliquées, minces, orphelines ou mal placées. Appelez get_context lorsque vous avez besoin de la configuration au niveau du projet plutôt que de deviner. Exécutez lint_project avec les corrections désactivées.
+
+Évaluez la documentation par rapport au projet réel, non par rapport aux conventions de docs génériques. Retracez les réclamations importantes de capacité jusqu'à la configuration du référentiel, la mise en œuvre, la sortie CLI, les tests ou une dépendance externe clairement étiquetée. Distinguez les faits, les recommandations éditoriales raisonnables et les questions qui nécessitent l'approbation du propriétaire du produit.
+
+Rapportez :
+
+- navigation brisée ou pages manquantes ;
+- pages orphelines, frontmatter invalide ou manquant, et liens locaux brisés ;
+- conseils dupliqués, contradictoires, génériques ou non pris en charge ;
+- tâches dénuées de prérequis, de résultats attendus, de dépannage ou d'étape suivante claire ;
+- libellés de barre latérale qui obscurcissent la numérisation ou se chevauchent inutilement ;
+- exemples de code avec langues manquantes, espaces réservés non sûrs ou commandes non pris en charge par le référentiel ;
+- invites d'agent dénuées de contexte, de validation, de permissions ou de critères de réussite ;
+- les cinq améliorations avec le plus d'impact, chacune avec la page affectée, la conséquence lecteur, la preuve et la correction recommandée.
+
+Ne modifiez pas les fichiers, n'exécutez pas le mode correction, n'installez pas de packages, ne commitez pas, ne poussez pas et ne déployez pas. Montrez-moi d'abord l'audit et attendez l'approbation d'un ensemble de modifications spécifique.
+
+</AgentPrompt>
+
+## Connecter un site déployé
+
+Remplacez l'URL d'exemple par l'origine du site de documentation.
+
+<Tabs>
+
+<Tab title="Codex">
+
+```bash
+codex mcp add product-docs --url https://docs.example.com/api/mcp
+```
+
+</Tab>
+
+<Tab title="Claude Code">
+
+```bash
+claude mcp add --transport http product-docs https://docs.example.com/api/mcp
+```
+
+</Tab>
+
+<Tab title="Cursor">
+
+```json
+{
+  "mcpServers": {
+    "product-docs": {
+      "type": "http",
+      "url": "https://docs.example.com/api/mcp"
+    }
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+Le point de terminaison déployé expose `search_docs`, `read_page`, `list_pages`, et
+`agent_readiness`. Il ne peut pas éditer le site. Les propriétaires de site peuvent le désactiver depuis le
+tableau de bord d'administration, et les appels d'outils publics par défaut à une limite par adresse IP de 60 par
+minute.
+
+<AgentPrompt
+  title="Copier une invite complète pour consulter la documentation déployée"
+  copyOnly
+>
+
+Utilisez le serveur Thally MCP en lecture seule connecté pour PRODUCT_DOCS_URL pour répondre à cette question : QUESTION. Vous avez terminé lorsque la réponse est concise, soutenue par la documentation déployée, liée aux pages source exactes, et explicite sur ce que le site n'établit pas.
+
+Confirmez que le serveur MCP appartient à PRODUCT_DOCS_URL. Commencez par list_pages lorsque l'architecture de l'information n'est pas familière, puis utilisez search_docs avec le libellé du lecteur, la terminologie du produit et les synonymes probables. Lisez les pages les plus pertinentes en intégralité avant de répondre. Suivez les liens de prérequis et de référence lorsqu'une réclamation en dépend, mais ne consultez pas les sections sans rapport pour fabriquer la certitude.
+
+Pour chaque réclamation matérielle, citez l'URL exacte de la page retournée par les outils. Séparez les faits de documentation directe de votre inférence et étiquetez l'inférence. Lorsque les pages sont en conflit, rapportez les deux, préférez la source plus spécifique ou récemment mise à jour seulement lorsque les métadonnées le soutiennent, et identifiez la contradiction. Si la documentation ne répond pas à une partie de la question, indiquez ce qui manque et suggérez la page ou le propriétaire du produit qui pourrait le résoudre.
+
+Ne modifiez pas le site, n'invoquez pas d'outils d'édition locaux, ne soumettez pas de formulaires, n'envoyez pas de requêtes API actives et n'utilisez pas les connaissances générales non citées comme si elles provenaient de la documentation du produit. Terminez avec une brève réponse, sources de soutien, hypothèses et lacunes non résolues.
+
+</AgentPrompt>
+
+## Comportement d'écriture sécurisé
+
+Le point de terminaison distant public est toujours en lecture seule. Les outils MCP locaux héritent des
+permissions du processus qui les a démarrés, alors examinez toute demande qui écrit
+des fichiers. `migrate_docs` nécessite une cible nouvelle ou vide ; `import_docs` modifie un
+projet existant et ne doit être utilisé que lorsqu'une fusion sur place est intentionnelle.
+
+Continuez vers la [référence d'outil MCP local](/guides/mcp-server) ou le
+[guide MCP distant](/guides/remote-mcp) pour tous les outils et options.

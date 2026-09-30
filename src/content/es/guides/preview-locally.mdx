@@ -1,0 +1,71 @@
+---
+title: Vista previa de tu documentación localmente
+navTitle: Vista previa local
+description: Ejecuta el servidor de desarrollo, revisa cambios mientras escribes y valida un sitio de Thally antes de publicar.
+---
+
+{/* thally:ai-translation locale=es source-sha=fd24bbb8242879e7000d0ad1237c1350adcd0f822ef1ed8a66d0dc55cc877f73 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Usa la vista previa local para cada cambio de contenido y configuración. Se recarga
+cuando guardas una página, `docs.json`, o `src/data/site.ts`.
+
+## Antes de comenzar
+
+Instala las dependencias del proyecto con `npm install`. Si aún no has creado un
+sitio, completa primero la [Guía de inicio rápido](/quickstart).
+
+## Inicia la vista previa
+
+Desde la raíz del proyecto, ejecuta:
+
+```bash
+npm run dev
+```
+
+Abre la URL impresa en la terminal. Thally se inicia en
+[http://localhost:3040](http://localhost:3040) y usa el siguiente puerto disponible
+cuando 3040 está ocupado.
+
+## Revisa un cambio
+
+1. Edita una página en `src/content/` y guárdala.
+2. Confirma que el cuerpo de la página y la tabla de contenidos se actualicen en el navegador.
+3. Si cambiaste `docs.json`, confirma la pestaña, grupo, orden y título de la página en
+   la barra lateral.
+4. Prueba los enlaces internos y los componentes interactivos.
+5. Verifica tanto el modo claro como el oscuro y reduce el navegador para revisar la
+   navegación móvil.
+
+## Valida antes de publicar
+
+Ejecuta el verificador de contenido en una segunda terminal:
+
+```bash
+npx --yes @thallylabs/cli@latest check
+```
+
+Luego crea la misma compilación optimizada que ejecutará tu host:
+
+```bash
+npm run build
+```
+
+Una página que se ve correcta en desarrollo aún puede fallar una compilación de producción
+debido a MDX inválido, una importación faltante o un error de configuración. Trata ambos
+comandos como parte de la revisión.
+
+## Problemas comunes
+
+| Problema | Qué verificar |
+| --- | --- |
+| El servidor se inicia en otro puerto | Otro proceso está usando 3040; abre la URL impresa por el comando. |
+| Una página devuelve 404 | Añade su ID de página a `docs.json`, o abre la URL que coincide con su ruta en `src/content/`. |
+| La barra lateral no cambió | Confirma que el JSON es válido y que el ID de página omite `src/content/` y `.mdx`. |
+| La compilación de MDX falla | Verifica las etiquetas JSX sin cerrar, el frontmatter mal formado y las vallas anidadas dentro de ejemplos de componentes. |
+
+## Próximos pasos
+
+- [Crear y editar páginas](/guides/writing-content)
+- [Organiza tu navegación](/guides/configuring-navigation)
+- [Valida documentación en CI](/guides/ci-checks)

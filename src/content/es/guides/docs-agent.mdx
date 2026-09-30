@@ -1,0 +1,112 @@
+---
+title: "Borrador de actualizaciones con el agente de documentación"
+navTitle: "Agente de documentación"
+description: "Convierte una instrucción, diff o solicitud de extracción de producto en una solicitud de extracción de documentación revisada con `thally agent`."
+keywords:
+  - "docs agent"
+  - "thally agent"
+  - "Documentación con IA"
+  - "docs-as-code"
+  - "actualizaciones respaldadas por evidencia"
+---
+
+{/* thally:ai-translation locale=es source-sha=3d211eae2d186476bb8b6188c6168f8401238bdc2bf52dcbfbd9c67040b4f62c */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+El **agente de documentación** convierte una instrucción y contexto opcional—un diff de git o solicitud de extracción de producto—en ediciones de documentación. Lee la documentación existente, elabora un cambio enfocado en tu estilo de casa, ejecuta `thally check`, y te proporciona una rama o solicitud de extracción para revisar.
+
+El `thally agent` comando y su flujo de trabajo de GitHub generado se ejecutan en tu entorno con tu clave de Anthropic. Elige [Thally Track](/guides/thally-track)
+en su lugar cuando desees que Thally Cloud gestione la detección de cambios de producto y el flujo de trabajo de elaboración.
+
+## Inicio rápido
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+
+# Preview edits for an instruction (writes nothing):
+thally agent "Document that the swap widget now supports TRON and SOL" --dry-run
+
+# Draft from a merged product PR and open a documentation PR:
+thally agent --from-pr https://github.com/acme/widget/pull/482 --pr
+
+# Draft from a local diff, leaving edits on a branch to review:
+thally agent "Document the new webhook events" --diff HEAD~1
+```
+
+## Cómo funciona
+
+<Steps>
+<Step title="Sandbox">
+El agente requiere un **árbol de trabajo git limpio** y crea una rama nueva fuera de `HEAD`. Tu trabajo sin confirmar nunca se toca — si el árbol está sucio, se niega.
+</Step>
+<Step title="Borrador">
+Explora tu documentación (`list_pages`, `search_docs`, `read_page`), luego edita — prefiriendo actualizar una página existente en lugar de agregar una nueva, coincidiendo con tu voz existente y componentes MDX, y registrando cualquier página nueva en `docs.json`.
+</Step>
+<Step title="Autovalidación">
+Ejecuta `thally check` en su propia salida y obtiene una ronda de reparación para arreglar cualquier cosa que rompió — enlaces rotos, frontmatter faltante, navegación inválida.
+</Step>
+<Step title="Entrega">
+`--dry-run` imprime el diff y lo descarta. El predeterminado deja las ediciones en la rama. `--pr` confirma, envía y abre una solicitud de extracción para que tu equipo revise — el agente nunca fusiona.
+</Step>
+</Steps>
+
+## Opciones
+
+\| Indicador \| Efecto \|\\n\| --- \| --- \|\\n\| `--diff <ref>` \| Usa un diff de git local (por ejemplo, `HEAD~1`, un SHA) como contexto. \|\\n\| `--from-pr <url>` \| Obtén el título, cuerpo y diff de una RP de GitHub como contexto (requiere `gh` autenticado). \|\\n\| `--dry-run` \| Obtén una vista previa del diff y descártalo — no escribe nada. \|\\n\| `--pr` \| Confirma, envía y abre una solicitud de extracción de documentación. \|\\n\| _(predeterminado)_ \| Deja las ediciones en la rama del agente para que las revises. \|
+
+Establece `THALLY_AGENT_MODEL` para elegir el modelo (el predeterminado es un modelo Claude capaz).
+
+## Dirección con AGENTS.md
+
+Coloca un `AGENTS.md` en tu proyecto de documentación para dar al agente reglas de casa — tono, convenciones de estructura, archivos que nunca debe tocar, requisitos de revisión. Se alimenta a cada ejecución:
+
+```markdown
+# AGENTS.md
+- Write in second person, present tense.
+- Never edit files under `src/content/legal/`.
+- New API endpoints go under the "API Reference" tab, not "Guides".
+```
+
+## Automatiza borradores con puerta de revisión
+
+Puedes conectar el agente de documentación a GitHub para que un colaborador solicite un borrador con un `@thally` comentario y tu equipo de documentación pueda revisar la solicitud de extracción resultante.
+
+<Steps>
+<Step title="Estructura el hub">
+En tu repositorio de documentación:
+
+```bash
+thally agent init --repo <owner>/<docs-repo>
+```
+
+Esto escribe `.github/workflows/thally-agent.yml`. Agrega `ANTHROPIC_API_KEY` y
+`THALLY_AGENT_TOKEN` al repositorio de documentación. El token necesita acceso de escritura al repositorio de documentación y acceso de lectura a los repositorios de producto que conectes.
+</Step>
+<Step title="Agrega un remitente a cada repositorio de producto">
+`thally agent init` imprime un `thally-mention.yml`listo para pegar. Agrégalo a un repositorio de producto, luego agrega `THALLY_DISPATCH_TOKEN` con permiso para iniciar el flujo de trabajo de documentación. Un colaborador ahora puede comentar **`@thally
+document this …`** en una solicitud de extracción.
+</Step>
+<Step title="(Opcional) Documenta al fusionar">
+Para repositorios con forma de referencia de API, agrega el remitente de fusión: al fusionar a `main`, si el diff toca rutas monitoreadas, se distribuye automáticamente — sin comentario necesario.
+</Step>
+</Steps>
+
+Declara tus repositorios de producto en `docs.json` para que la configuración sea autodocumentada:
+
+```json
+{
+  "repositories": [
+    { "name": "widget", "repo": "acme/swap-widget", "watch": ["src/**", "openapi.yaml"] }
+  ]
+}
+```
+
+<Note>
+Cada desencadenador — un `@thally` comentario, una RP fusionada, una RP etiquetada con `docs-preview`, el barrido de desvío, o la CLI — produce la misma tarea y aterriza como una **solicitud de extracción revisada**. El agente nunca fusiona; un humano siempre lo hace.
+</Note>
+
+**¿Quieres que las RP de producto fusionadas desencadenen automáticamente el trabajo de documentación?** Usa
+[Thally Track](/guides/thally-track). Conecta fuentes de producto en Thally Cloud; no necesitas configuración de rastreo local de repositorio ni un flujo de trabajo remitente. Agrega la
+`docs-preview` etiqueta cuando desees que el borrador de documentación principal se elabore antes de que se fusione la solicitud de extracción de producto.
+
+**¿Monorepo?** No necesitas ninguna de las tuberías del remitente — el flujo de trabajo ve las RP y diffs de forma nativa. Ejecuta `thally agent init` y apúntalo al mismo repositorio.

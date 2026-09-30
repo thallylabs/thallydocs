@@ -1,0 +1,33 @@
+---
+title: "View"
+description: "Intégrez une démo en direct ou une URL externe à votre documentation."
+---
+
+{/* thally:ai-translation locale=fr source-sha=4c52f97cbaf72d676820384b13322b9c493ef34b99588f9fdd4e7b1f7c5d2d8d */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`<View>` affiche un `<iframe>` en sandbox pour intégrer des démos en direct, des projets CodeSandbox, des instances Storybook ou toute autre URL externe.
+
+## Utilisation
+
+```mdx
+<View src="https://codesandbox.io/embed/your-sandbox-id" height={500} />
+```
+
+## Hauteur personnalisée
+
+```mdx
+<View src="https://example.com/demo" height="600px" title="Interactive demo" />
+```
+
+## Props
+
+| Prop | Type | Défaut | Description |
+|---|---|---|---|
+| `src` | `string` | — | URL à intégrer |
+| `height` | `number \| string` | `500` | Hauteur de l'iframe — un nombre est traité en pixels |
+| `title` | `string` | `"Live preview"` | Titre accessible pour les lecteurs d'écran |
+
+<Note>
+  `<View>` applique `sandbox="allow-scripts allow-same-origin allow-forms allow-popups"`. Le contenu qui nécessite des permissions complètes du navigateur (par ex. écriture dans le presse-papiers, accès à la caméra) ne fonctionnera pas à l'intérieur d'une intégration View.
+</Note>

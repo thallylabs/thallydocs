@@ -1,0 +1,81 @@
+---
+title: Configurar el área de pruebas de API
+navTitle: Área de pruebas de API
+description: Añade servidores OpenAPI y marcadores de posición de autenticación, prueba solicitudes generadas y comprende cómo Thally envía solicitudes de Pruébalo.
+---
+
+{/* thally:ai-translation locale=es source-sha=0e0247345c03d4fef300ea87a5a7eb5757d4634816fdfaa0bdb5edc55cfa6274 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Cada página de operación generada incluye un panel **Pruébalo**. Lee servidores,
+parámetros, cuerpos de solicitud y esquemas de seguridad de tu documento OpenAPI.
+
+## Antes de comenzar
+
+Completa [Generar una referencia de API](/guides/api-reference-setup) y confirma que
+una página de operación aparece en tu vista previa local.
+
+## Añade un servidor de API
+
+El área de pruebas necesita al menos una URL en el array `servers` de OpenAPI:
+
+```yaml
+servers:
+  - url: https://api.example.com/v1
+    description: Production
+```
+
+El primer servidor se selecciona inicialmente. Los lectores pueden cambiarlo en el panel
+antes de enviar una solicitud.
+
+## Describe la autenticación
+
+Define un esquema de seguridad y aplícalo a la API u operación:
+
+```yaml
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+security:
+  - bearerAuth: []
+```
+
+Thally admite rellenados de área de pruebas para esquemas de token HTTP bearer, HTTP basic y clave API en encabezado. Sin un valor configurado, el campo usa un marcador de posición visible
+como `YOUR_API_KEY`.
+
+Para cambiar ese marcador de posición, usa el nombre exacto del esquema de seguridad en `docs.json`:
+
+```json
+{
+  "apiPlayground": {
+    "credentials": {
+      "bearerAuth": "YOUR_API_KEY"
+    }
+  }
+}
+```
+
+<Note type="warning" title="No pongas secretos en docs.json">
+  Esta configuración es parte del sitio de documentación implementado. Usa solo credenciales de ejemplo o sandbox públicas. Los lectores deben introducir su propio secreto en el área de pruebas cuando hagan una solicitud.
+</Note>
+
+## Envía y verifica una solicitud
+
+1. Abre una página de operación generada.
+2. Selecciona **Pruébalo**.
+3. Rellena todos los campos de ruta, consulta, encabezado y cuerpo obligatorios.
+4. Revisa la URL generada y el comando cURL.
+5. Envía la solicitud y confirma el estado, los encabezados y el cuerpo de la respuesta.
+
+Thally envía la solicitud a través de `/api/try-it` en el servidor de documentación para
+evitar restricciones CORS del navegador. El sitio debe ejecutarse en un host capaz de servidor;
+el área de pruebas no puede ejecutar solicitudes desde una exportación completamente estática.
+
+## Próximos pasos
+
+- [Soluciona problemas de una referencia de API](/guides/api-troubleshooting)
+- [Implementa tu documentación](/guides/deploying)
+- [Configuración de la referencia de API](/guides/docs-json-reference#api-reference)

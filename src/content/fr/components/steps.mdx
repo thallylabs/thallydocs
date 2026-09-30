@@ -1,0 +1,54 @@
+---
+title: "Étapes"
+description: "Guides numérotés étape par étape pour le contenu de configuration et de tutoriel."
+---
+
+{/* thally:ai-translation locale=fr source-sha=214b90b2084a7dcef1375fedd1492cef6fb184011fc69c961f29e78f9cb6215f */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utilisez `<Steps>` et `<Step>` pour structurer des instructions séquentielles. Chaque étape s'affiche sous forme d'élément numéroté avec une ligne de connecteur entre les étapes.
+
+## Exemple
+
+<Steps>
+  <Step title="Installer le package">
+    ```bash
+    npm install @company/sdk
+    ```
+  </Step>
+  <Step title="Ajouter votre clé API">
+    Créez un fichier `.env` à la racine de votre projet :
+
+    ```bash
+    API_KEY=sk-your-key-here
+    ```
+  </Step>
+  <Step title="Effectuer votre première requête">
+    ```typescript
+    import { ApiClient } from '@company/sdk'
+
+    const client = new ApiClient({ apiKey: process.env.API_KEY })
+    const result = await client.pets.list()
+    console.log(result)
+    ```
+  </Step>
+</Steps>
+
+```mdx
+<Steps>
+  <Step title="Step one">
+    Content for step one.
+  </Step>
+  <Step title="Step two">
+    Content for step two.
+  </Step>
+</Steps>
+```
+
+## Props
+
+### `<Step>`
+
+| Prop | Type | Description |
+|---|---|---|
+| `title` | `string` | En-tête de l'étape affiché à côté du numéro |

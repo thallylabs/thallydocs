@@ -1,0 +1,35 @@
+---
+title: "Accordion"
+description: "Sections repliables pour les FAQ et la divulgation progressive."
+---
+
+{/* thally:ai-translation locale=fr source-sha=3733aba6e7a2da423768958be4cd122f17c7e1470027d993c1938b3e489518cf */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`<Accordion>` affiche un élément `<details>` repliable. Utilisez-le pour les FAQ, les approfondissements facultatifs ou le contenu qui doit rester caché jusqu'à ce qu'il soit nécessaire.
+
+## Exemple
+
+<Accordion title="Qu'est-ce qu'une clé API ?">
+  Une clé API est un identifiant unique qui authentifie les requêtes de votre application. Gardez-la secrète — traitez-la comme un mot de passe. Ne l'exposez jamais dans le code côté client.
+</Accordion>
+
+<Accordion title="Comment réinitialiser ma clé API ?">
+  Accédez à votre tableau de bord, naviguez jusqu'à **Paramètres → Clés API**, et cliquez sur **Régénérer**. Votre ancienne clé sera immédiatement invalidée.
+</Accordion>
+
+```mdx
+<Accordion title="What is an API key?">
+  An API key authenticates requests from your application.
+</Accordion>
+```
+
+## Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `title` | `string` | L'en-tête cliquable affiché lorsqu'il est replié |
+
+<Note>
+  Pour regrouper plusieurs accordéons, placez-les les uns après les autres — aucun composant wrapper n'est nécessaire. Le contenu migré utilisant `<AccordionGroup>` affiche les enfants directement.
+</Note>

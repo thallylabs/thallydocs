@@ -1,0 +1,56 @@
+---
+title: Créer une page 404 personnalisée
+navTitle: Page 404 personnalisée
+description: Remplacez la page 404 par défaut par du contenu de marque écrit en MDX.
+---
+
+{/* thally:ai-translation locale=fr source-sha=888e8ae6c9d066a24d59f71ad33ea9b07f20d8fde9a2c1f1a0d9678f7edc22c8 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Par défaut, Thally affiche un écran « Page non trouvée » intégré lorsqu'une URL ne correspond à aucun contenu. Vous pouvez le remplacer par votre propre page 404 de marque écrite en MDX.
+
+## Créer une page 404 personnalisée
+
+Créez un fichier à l'adresse `src/content/404.mdx` :
+
+```mdx
+---
+title: Page Not Found
+description: We couldn't find what you were looking for.
+---
+
+# 404 — Page not found
+
+Looks like this page has moved or no longer exists.
+
+<CardGroup>
+  <Card title="Go home" href="/" icon="book-open">
+    Return to the documentation home.
+  </Card>
+  <Card title="Search" href="/quickstart" icon="grid-round">
+    Try searching for what you need.
+  </Card>
+</CardGroup>
+```
+
+Thally détecte automatiquement ce fichier et le rend via le pipeline MDX standard — tous les composants (`<Card>`, `<Note>`, etc.) fonctionnent normalement.
+
+## Comportement de secours
+
+Si `src/content/404.mdx` n'existe pas, Thally affiche son interface 404 intégrée. Vous pouvez toujours supprimer ou renommer `404.mdx` pour revenir à la valeur par défaut.
+
+## Frontmatter
+
+Les champs frontmatter `title` et `description` sont utilisés pour le `<title>` de la page et les métadonnées OG. Le champ `mode` fonctionne également — utilisez `mode: "center"` pour une mise en page centrée et épurée.
+
+```mdx
+---
+title: Page Not Found
+description: We couldn't find that page.
+mode: center
+---
+```
+
+<Note type="info">
+La page 404 n'apparaît pas dans la barre latérale ou le plan du site. Elle reçoit automatiquement une balise robots `noindex`.
+</Note>

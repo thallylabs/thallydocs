@@ -1,0 +1,123 @@
+---
+title: Déployer votre site de documentation
+navTitle: Déploiement
+description: Publiez avec l'hébergement géré Thally ou déployez l'exécution open-source sur Vercel, Cloudflare ou Docker.
+---
+
+{/* thally:ai-translation locale=fr source-sha=8484aef5512d026b119539573fde4abc4b2679fa7059b6367d9bd81a5aaaeebf */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Utilisez l'hébergement géré Thally lorsque vous souhaitez que la publication, les aperçus des pull-requests, les domaines personnalisés et les restaurations soient gérés à partir d'un seul espace de travail. Auto-hébergez-vous lorsque votre équipe doit aussi posséder la couche d'hébergement ainsi que le référentiel.
+
+## Choisir un chemin de déploiement supporté
+
+| Cible | Contrat fourni | Commande ou action de production |
+| --- | --- | --- |
+| Thally Cloud | Build géré, aperçus, versions, routage et restauration | Publiez le site depuis [Thally Cloud](https://app.thally.io/) |
+| Vercel | Build Next.js natif via la CLI Thally | `npx --yes @thallylabs/cli@latest deploy --prod` |
+| Cloudflare Workers | Configuration OpenNext, configuration Wrangler et scripts de projet | `npm run deploy:cloudflare` |
+| Docker ou un hôte de conteneur | La recette server-image documentée | `docker build -t my-docs .` |
+
+<Warning title="Netlify n'est pas une cible de déploiement fournie">
+  Un scaffold non modifié n'a pas de `netlify.toml`, adaptateur Netlify ou contrat de répertoire de publication testé. Ne lancez pas `netlify deploy --build --prod` dessus : la CLI peut signaler un déploiement en direct après avoir chargé la racine du référentiel, tandis que `/` et toutes les routes de documentation retournent 404. Utilisez l'un des chemins supportés ci-dessus, ou possédez et testez une intégration Next.js spécifique à Netlify avant de traiter Netlify comme une cible de production.
+</Warning>
+
+## Publier avec Thally Cloud
+
+Le [quickstart](/quickstart) crée ou connecte un référentiel GitHub et publie le site à une adresse `thally.app`. Après cela :
+
+- les poussées vers la branche de production démarrent une publication ;
+- les pull-requests de documentation reçoivent des aperçus isolés ;
+- les modifications de documentation uniquement peuvent être publiées plus rapidement que les modifications d'application ;
+- une publication échouée laisse la version précédente en ligne ; et
+- la restauration rétablit une version réussie antérieure sans réécrire l'historique Git.
+
+Ouvrez **Deployments** pour la version en direct, les aperçus, l'historique recherchable, les réparations, les redéploiements et la restauration. Consultez [Hébergement géré](/guides/managed-hosting) pour les instructions d'exploitation.
+
+Pour un déploiement auto-hébergé, complétez les vérifications ci-dessous et choisissez le fournisseur qui correspond à vos exigences opérationnelles.
+
+## Avant de déployer
+
+1. Définissez l'origine de la production :
+
+   ```bash
+   THALLY_SITE_URL=https://docs.example.com
+   ```
+
+2. Validez le contenu et la navigation :
+
+   ```bash
+   npx --yes @thallylabs/cli@latest check --ci .
+   ```
+
+3. Créez une build de production :
+
+   ```bash
+   npm run build
+   ```
+
+`THALLY_SITE_URL` fournit les liens canoniques, les métadonnées Open Graph, les sitemaps et les URL accessibles aux agents. Définissez-le dans le fournisseur d'hébergement plutôt que de le valider dans le référentiel.
+
+## Choisir une cible auto-hébergée
+
+<CardGroup cols={3}>
+  <Card title="Déployer sur Vercel" icon="code-simple" href="/guides/deploy-vercel">
+    Importez le référentiel ou déployez-le avec la CLI Thally.
+  </Card>
+  <Card title="Déployer sur Cloudflare" icon="wrench" href="/guides/deploy-cloudflare">
+    Construisez et publiez l'artefact OpenNext Worker.
+  </Card>
+  <Card title="Déployer avec Docker" icon="grid-round" href="/guides/deploy-docker">
+    Exécutez le site sur un hôte de conteneur avec stockage persistant si nécessaire.
+  </Card>
+</CardGroup>
+
+## Choisir l'exécution requise
+
+Utilisez un déploiement capable de serveur pour :
+
+- les requêtes **Try It** API ;
+- les routes de chat IA et MCP distants ;
+- le tableau de bord d'administration et l'ingestion d'analyses ;
+- la documentation protégée par mot de passe ;
+- le retour d'information, la recherche et autres API serveur d'exécution.
+
+Une exportation entièrement statique ne convient que lorsque vous avez besoin de pages de documentation rendues et d'actifs statiques. Les fonctionnalités ci-dessus dépendent des routes serveur et ne fonctionneront pas dans une build `output: 'export'`.
+
+Track est géré par Thally Cloud. Un site géré n'a pas besoin d'héberger un webhook Track ou de stocker les identifiants de l'application GitHub.
+
+## Ajouter la configuration de production
+
+Seul `THALLY_SITE_URL` est requis pour un site public basique. Ajoutez les identifiants et les variables de stockage uniquement pour les fonctionnalités que vous activez. Consultez la [référence complète des variables d'environnement](/guides/environment-variables).
+
+Pour les hôtes sans serveur, configurez le stockage libSQL distant lorsque les analyses, les paramètres, l'état des tâches ou les compteurs de limite de débit doivent survivre aux redéploiements. Un hôte Docker ou un VPS peut plutôt persister le répertoire `.data/` local sur un volume.
+
+## Vérifier le site en direct
+
+Ne traitez pas le message de succès de la CLI du fournisseur comme une preuve que le site fonctionne. Pour un site public, exécutez les requêtes GET contre la page d'accueil, une véritable page imbriquée et un point de terminaison d'agent :
+
+```bash
+DEPLOY_URL=https://docs.example.com
+curl --fail --silent --show-error --location "$DEPLOY_URL/" >/dev/null
+curl --fail --silent --show-error --location "$DEPLOY_URL/quickstart" >/dev/null
+curl --fail --silent --show-error --location "$DEPLOY_URL/llms.txt" >/dev/null
+```
+
+Les trois commandes se terminent avec le statut `0` en cas de succès et échouent sur les réponses HTTP 4xx ou 5xx. Remplacez `/quickstart` par une route imbriquée que votre projet publie réellement. Pour la documentation protégée, effectuez les mêmes requêtes avec l'authentification que vos lecteurs utilisent et vérifiez la réponse non authentifiée séparément.
+
+Ensuite :
+
+1. Ouvrez la page d'accueil et une page imbriquée sur le bureau et mobile.
+2. Suivez les liens de barre latérale, recherche, fil d'Ariane et précédent/suivant.
+3. Vérifiez `/sitemap.xml`, `/robots.txt` et `/llms.txt`.
+4. Testez toute fonctionnalité serveur activée, y compris Try It, chat, retours d'information, administration ou protection d'accès.
+5. Confirmez que les URL canoniques utilisent le domaine de production.
+
+Si le fournisseur signale un succès mais que ces requêtes retournent 404, inspectez le journal de build et l'artefact chargé avant de modifier les routes d'application. Un déploiement qui a chargé la racine du référentiel ou traité `.next/` comme un répertoire statique ordinaire n'a pas publié un artefact serveur Thally exécutable. Suivez le [diagnostic de toutes les routes-404](/guides/troubleshooting#the-provider-reports-success-but-every-route-returns-404).
+
+## Étapes suivantes
+
+- [Exploiter un déploiement géré](/guides/managed-hosting)
+- [Protéger la documentation privée](/guides/private-docs)
+- [Valider la documentation en CI](/guides/ci-checks)
+- [Dépanner un déploiement](/guides/troubleshooting)

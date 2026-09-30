@@ -1,0 +1,81 @@
+---
+title: Publicar con alojamiento administrado de Thally
+navTitle: Alojamiento administrado
+description: Publica documentación, revisa vistas previas de solicitudes de extracción, restaura una versión anterior y conecta un dominio personalizado.
+keywords:
+  - Alojamiento administrado de Thally
+  - implementación de documentación
+  - vista previa de solicitud de extracción
+  - reversión
+  - dominio personalizado
+---
+
+{/* thally:ai-translation locale=es source-sha=aa3d2d3063dae722b57cbdd9fe99f6948ed1bdf684dc0f9a45f69417d10fbfee */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+El alojamiento administrado publica cambios de Git revisados sin requerir que ejecutes la infraestructura de alojamiento. Thally valida un cambio antes de que se active, por lo que una publicación fallida mantiene el sitio actual en línea.
+
+## Qué desencadena una publicación
+
+- Una inserción en la rama de producción configurada crea un candidato de producción.
+- Abrir o actualizar una solicitud de extracción de documentación crea o actualiza una vista previa aislada.
+- Fusionar una solicitud de extracción de documentación de Track sigue la misma ruta de producción.
+- Cambiar una configuración compatible o aplicar una actualización de Thally publica el resultado.
+- **Reimplementar sitio** vuelve a publicar la versión actual sin cambiarla.
+
+La página **Implementaciones** muestra la versión de producción en directo, la vista previa más reciente, el recuento de vistas previas abiertas, detalles de confirmación, estado e historial buscable.
+
+## Cómo un cambio de producción se activa
+
+<Steps>
+  <Step title="Thally selecciona la revisión de Git">
+    La página Implementaciones muestra la confirmación que se está publicando, para que puedas confirmar que coincide con el cambio que aprobaste.
+  </Step>
+  <Step title="Thally construye y valida el sitio">
+    El contenido, navegación, enlaces y el sitio de producción se verifican antes de que el cambio pueda publicarse.
+  </Step>
+  <Step title="La versión verificada se activa">
+    Si todas las verificaciones pasan, Thally publica la nueva versión. Si una verificación falla, la versión actual en directo se mantiene en su lugar y la implementación muestra el error.
+  </Step>
+</Steps>
+
+## Actualizaciones de contenido más rápidas
+
+Los cambios limitados a páginas, navegación o fragmentos pueden publicarse más rápido que un cambio de aplicación completa. Thally aún valida el resultado antes de que se active. Cuando un cambio necesita una compilación completa, Thally elige ese camino automáticamente.
+
+## Vistas previas de solicitudes de extracción
+
+Cada solicitud de extracción de documentación abierta recibe una dirección de vista previa para su confirmación más reciente. Los cambios de vista previa se mantienen separados de la producción y no pueden activarse automáticamente. Cerrar o fusionar la solicitud de extracción retira su vista previa.
+
+## Reversión segura
+
+Los propietarios y editores pueden seleccionar una versión anterior exitosa del historial de implementaciones. Una reversión restaura esa versión sin reescribir el historial de Git.
+
+Después de una reversión, Thally pausa la publicación automática de producción para que un cambio posterior no pueda sobrescribir inmediatamente tu elección. Usa una publicación explícita para reanudar las actualizaciones automáticas después de resolver el problema.
+
+## Añade un dominio personalizado
+
+Abre **Configuración → Dominios**, añade el nombre de host y copia los registros DNS que Thally muestra en tu proveedor de DNS. Thally aprovisiona el certificado y conecta el nombre de host a tu sitio.
+
+Mantén la dirección administrada disponible mientras el dominio personalizado está pendiente. Espera hasta que la página Dominios informe que el nombre de host personalizado está verificado, luego ábrelo en una sesión privada del navegador.
+
+## Actualizar Thally
+
+Cuando una actualización compatible está disponible, **Configuración → Actualizaciones** muestra **Actualizar sitio**. Revisa y aplica el cambio desde allí. Thally deja tus páginas, navegación, marca y otros archivos creados sin cambios. Si un archivo de marco también tiene ediciones locales, Thally lo identifica para revisión local en lugar de sobrescribirlo.
+
+Para un proyecto auto alojado, obtén una vista previa de la misma actualización localmente:
+
+```bash
+npx --yes @thallylabs/cli@latest starter update
+npx --yes @thallylabs/cli@latest starter update --apply
+```
+
+El primer comando obtiene una vista previa del cambio. El segundo lo aplica.
+
+## Verifica una publicación
+
+1. Confirma que la implementación esté **Sana** o que la vista previa esté **Lista**.
+2. Comprueba que la confirmación mostrada coincida con la revisión que esperabas.
+3. Abre la dirección en directo o de vista previa y prueba una página representativa.
+4. Comprueba `/llms.txt`, `/api/docs-index` y `/AGENTS.md`.
+5. Si la versión falló, abre sus detalles antes de reimplementar o cambiar archivos fuente.

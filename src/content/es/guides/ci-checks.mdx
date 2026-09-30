@@ -1,0 +1,51 @@
+---
+title: Validar documentación en CI
+navTitle: Verificaciones en CI
+description: Detecta enlaces rotos, especificaciones OpenAPI inválidas y problemas de contenido antes de que se publiquen.
+keywords:
+  - ci
+  - thally check
+  - broken links
+  - openapi validation
+  - github actions
+---
+
+{/* thally:ai-translation locale=es source-sha=922951056e089b868063ccdfea5e3254597460cd823af48332e3879962eb1374 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`thally check` revisa tu documentación y, con `--ci`, rechaza una solicitud de cambios cuando algo está roto, para que CI detenga el cambio antes de que llegue a producción.
+
+## Qué verifica
+
+- **Contenido** — páginas huérfanas (no en `docs.json`), `title`/`description` faltantes, páginas delgadas, páginas en la navegación sin archivo.
+- **Enlaces internos y anclajes** — cada enlace `/page` se resuelve a una página real, y cada anclaje `#heading` existe. Los enlaces dentro de bloques de código se ignoran (son ejemplos).
+- **OpenAPI** — tu especificación de API se analiza correctamente y tiene la estructura requerida (versión `openapi`, `info`, `paths` válidos).
+
+<Note type="info">
+Los enlaces externos se omiten por defecto para que CI sea determinista y no requiera red. Pasa
+`--external` para verificarlos también.
+</Note>
+
+## Ejecútalo
+
+```bash
+npx --yes @thallylabs/cli@latest check           # human-readable report
+npx --yes @thallylabs/cli@latest check --fix     # auto-add orphan pages to navigation
+npx --yes @thallylabs/cli@latest check --ci .    # GitHub annotations + non-zero exit on errors
+```
+
+El nombre del paquete con alcance es requerido porque el paquete `thally` sin alcance no está publicado. `npx` descarga la CLI actual cuando el proyecto no tiene una copia local.
+
+## En GitHub Actions
+
+Los proyectos nuevos incluyen un verificador fijo bajo `.github/thally-tooling` y lo ejecutan en cada solicitud de cambios. La ruta de CI fija evita descargar un paquete mutable en un flujo de trabajo con credenciales:
+
+```yaml
+- name: Install pinned content tooling
+  run: npm ci --ignore-scripts --prefix .github/thally-tooling
+
+- name: thally check
+  run: .github/thally-tooling/node_modules/.bin/thally check --ci .
+```
+
+Las advertencias (huérfanos, páginas delgadas) se reportan pero no fallan la compilación; los **errores** (enlaces rotos, páginas faltantes, OpenAPI inválido) sí lo hacen.

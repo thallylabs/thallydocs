@@ -1,0 +1,80 @@
+---
+title: Connexion au serveur MCP distant
+navTitle: MCP distant
+description: Connectez un agent compatible MCP à un site Thally déployé pour qu'il puisse rechercher et lire votre documentation.
+keywords:
+  - MCP
+  - Model Context Protocol
+  - remote MCP
+  - agent tools
+  - ai-readable docs
+---
+
+{/* thally:ai-translation locale=fr source-sha=c102497dd9c65a652123ebb71a48f010b18323b806f431c3349b644273eb371a */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Un site Thally déployé expose un serveur [Model Context Protocol](https://modelcontextprotocol.io)
+distant à `/api/mcp` lorsque MCP est activé. Un client compatible MCP peut se connecter
+via HTTP pour rechercher la documentation, lire les pages, lister le site et vérifier le score
+de disponibilité pour les agents.
+
+Ceci est différent du [serveur MCP local](/guides/mcp-server) (`@thallylabs/mcp`), qui fonctionne sur un répertoire de projet sur votre machine. Le serveur distant s'exécute **à l'intérieur de votre site déployé** et sert exactement ce que le site sert.
+
+## Le mettre en place
+
+<CodeGroup>
+
+```bash Claude Code
+claude mcp add --transport http thally https://docs.example.com/api/mcp
+```
+
+```bash claude_desktop_config.json
+{
+  "mcpServers": {
+    "thally": {
+      "type": "http",
+      "url": "https://docs.example.com/api/mcp"
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+Remplacez `https://docs.example.com` par l'URL de votre site. C'est tout — pas de clé, pas de compte. Sur un site de documentation public, les outils sont ouverts à n'importe quel agent.
+
+## Outils
+
+| Outil | Arguments | Ce qu'il fait |
+| --- | --- | --- |
+| `search_docs` | `query`, `limit?` | Recherche en texte intégral sur toutes les pages ; retourne les titres, URLs et extraits. |
+| `read_page` | `pageId` | Retourne le Markdown complet d'une page par son ID ou son chemin d'URL. |
+| `list_pages` | — | Liste toutes les pages avec son ID, titre et URL. |
+| `agent_readiness` | — | Retourne le score de disponibilité pour les agents du site avec les scores partiels par signal. |
+
+<Note>
+Les outils sont **en lecture seule**. La modification de la documentation via un agent est gérée par l'[agent de documentation](/guides/cli-reference) via des demandes de fusion examinées, et non par le point d'accès public.
+</Note>
+
+## Configuration
+
+Le point d'accès est activé par défaut. Deux variables d'environnement optionnelles l'ajustent :
+
+| Variable | Par défaut | Objectif |
+| --- | --- | --- |
+| `THALLY_MCP_RATE_PER_MIN` | `60` | Plafond par IP sur les appels d'outils par minute (`0` désactive). Soutenu par [l'stockage durable](/guides/ai-features) lorsque configuré. |
+| `THALLY_DATABASE_URL` | — | Pointez vers Turso/libSQL pour rendre la limite de débit durable et partagée entre les instances sans serveur. |
+
+<Callout type="info">
+`search_docs` fonctionne en mode **texte intégral** sur le point d'accès distant — il n'intègre jamais la requête — donc un serveur public anonyme reste peu coûteux. La recherche sémantique (hybride) reste disponible dans l'application et via `/api/search`.
+</Callout>
+
+## Le vérifier
+
+Pointez l'[inspecteur MCP](https://github.com/modelcontextprotocol/inspector) vers votre point d'accès :
+
+```bash
+npx @modelcontextprotocol/inspector --cli https://docs.example.com/api/mcp --transport http --method tools/list
+```
+
+Vous devriez voir les quatre outils listés. Le point d'accès est aussi annoncé dans le `llms.txt`, `ai.txt`, `skill.md` et `/api/docs-index` de votre site, donc les agents peuvent le découvrir d'eux-mêmes.

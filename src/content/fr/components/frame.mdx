@@ -1,0 +1,65 @@
+---
+title: "Frame"
+description: "Un conteneur d'image stylisé avec légende optionnelle et zoom au clic."
+---
+
+{/* thally:ai-translation locale=fr source-sha=10f68c275c3aa540cd1ea27a0a220bfc91d3b70f76128e87e3b5c3e47f4b0233 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`<Frame>` enveloppe les images et autres médias dans un conteneur arrondi et bordé. Par défaut, les images sont zoomables — cliquez pour les voir en taille réelle.
+
+## Utilisation basique
+
+<Frame>
+  <img src="/images/image1.jpg" alt="Aperçu du tableau de bord" />
+</Frame>
+
+```mdx
+<Frame>
+  <img src="/images/dashboard.png" alt="Dashboard overview" />
+</Frame>
+```
+
+## Avec légende
+
+<Frame caption="Une vue pittoresque — ajoutez une légende descriptive sous votre image.">
+  <img src="/images/image2.jpg" alt="Tableau de bord analytique" />
+</Frame>
+
+```mdx
+<Frame caption="The analytics dashboard showing daily active users.">
+  <img src="/images/analytics.png" alt="Analytics dashboard" />
+</Frame>
+```
+
+## Désactiver le zoom
+
+Définissez `zoom={false}` lorsque l'image est purement décorative ou que vous souhaitez empêcher l'ouverture de la lightbox :
+
+<Frame zoom={false}>
+  <img src="/images/image3.jpg" alt="Diagramme d'architecture" />
+</Frame>
+
+```mdx
+<Frame zoom={false}>
+  <img src="/images/diagram.png" alt="Architecture diagram" />
+</Frame>
+```
+
+## Variantes claires/sombres
+
+Enveloppez deux images avec un `className` conditionnel pour basculer entre le mode clair et sombre :
+
+```mdx
+<Frame>
+  <img className="block dark:hidden" src="/images/light.png" alt="Light mode" />
+  <img className="hidden dark:block" src="/images/dark.png" alt="Dark mode" />
+</Frame>
+```
+
+## Props
+
+| Prop | Type | Par défaut | Description |
+|---|---|---|---|
+| `caption` | `string` | — | Texte affiché sous le cadre |
+| `zoom` | `boolean` | `true` | Activer le zoom au clic sur le contenu |

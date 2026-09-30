@@ -1,0 +1,78 @@
+---
+title: "Blocs de code"
+description: "Blocs de code avec coloration syntaxique, étiquettes de langage et support de copie."
+---
+
+{/* thally:ai-translation locale=fr source-sha=7b0781621d750bae13541b0e22a1a5bbe6d144bfc2a80047f76b5615cfc66d5d */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Les blocs de code sont rendus automatiquement à partir de la syntaxe Markdown délimitée. Utilisez `<CodeGroup>` pour regrouper plusieurs variantes de langage dans une vue à onglets.
+
+## Bloc de code unique
+
+```typescript
+const client = new ApiClient({ apiKey: process.env.API_KEY })
+const pets = await client.pets.list({ limit: 10 })
+```
+
+Ajoutez un nom de fichier après l'identifiant de langage :
+
+```typescript api-client.ts
+import { ApiClient } from '@company/sdk'
+
+export const client = new ApiClient({
+  apiKey: process.env.API_KEY!,
+})
+```
+
+## CodeGroup
+
+Regroupez des extraits connexes dans plusieurs langages sous un seul bloc à onglets :
+
+<CodeGroup>
+```typescript TypeScript
+import { ApiClient } from '@company/sdk'
+const client = new ApiClient({ apiKey: 'sk-...' })
+```
+
+```python Python
+from company_sdk import ApiClient
+client = ApiClient(api_key="sk-...")
+```
+
+```bash cURL
+curl -X GET https://api.example.com/pets \
+  -H "Authorization: Bearer sk-..."
+```
+</CodeGroup>
+
+````mdx
+<CodeGroup>
+```typescript TypeScript
+const client = new ApiClient({ apiKey: 'sk-...' })
+```
+
+```python Python
+client = ApiClient(api_key="sk-...")
+```
+</CodeGroup>
+````
+
+## Lignes mises en évidence
+
+Utilisez la prop `highlight` pour attirer l'attention sur des lignes spécifiques :
+
+```typescript highlight={2,3}
+const client = new ApiClient()
+// These two lines will be highlighted
+const result = await client.pets.list()
+console.log(result)
+```
+
+## Lignes longues
+
+Ajoutez `wrap` après l'identifiant de langage pour envelopper les longues lignes au lieu de faire défiler :
+
+```bash wrap
+npx create-thally-docs my-docs --template default --yes --install --git
+```

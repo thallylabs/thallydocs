@@ -1,0 +1,27 @@
+---
+title: "Tooltip"
+description: "Infobulle de survol intégrée pour définir des termes ou fournir du contexte."
+---
+
+{/* thally:ai-translation locale=fr source-sha=aa07e2c159874bf77f2d1cd5f1ffa6064149e431caa3158ec642a17fa7c5b781 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+`<Tooltip>` ajoute une infobulle de survol à n'importe quel texte intégré. Le texte enrobé reçoit un trait pointillé indiquant qu'il est interactif.
+
+## Exemple
+
+Le <Tooltip tip="Un jeton Web JSON utilisé pour l'authentification">JWT</Tooltip> est envoyé dans l'en-tête `Authorization` avec chaque requête.
+
+```mdx
+The <Tooltip tip="A JSON Web Token used for authentication">JWT</Tooltip> is sent in the `Authorization` header.
+```
+
+## Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `tip` | `string` | Texte affiché dans l'infobulle au survol |
+
+<Note>
+  `<Tooltip>` utilise l'attribut natif `title` pour une compatibilité maximale. Pour des infobulles plus riches avec du contenu interactif ou le support du markdown, utilisez un composant React personnalisé.
+</Note>

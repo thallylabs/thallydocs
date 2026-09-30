@@ -1,0 +1,152 @@
+---
+title: Personnaliser la barre de navigation et le pied de page
+navTitle: Barre de navigation et pied de page
+description: Ajoutez des liens de navigation, une action principale, des groupes de pied de page et des liens de réseaux sociaux à partir de docs.json.
+---
+
+{/* thally:ai-translation locale=fr source-sha=50bc3d9cf9e440b1da8113919e951e01756e09126ece2dd3592562b620963f62 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+La barre de navigation supérieure et le pied de page sont tous deux configurables à partir de `docs.json`. Aucune modification de code requise — ajoutez un bloc `navbar` ou `footer` et Thally le détecte automatiquement.
+
+## Barre de navigation
+
+Ajoutez un bloc `navbar` à `docs.json` pour contrôler les liens et le bouton CTA dans la barre supérieure.
+
+```json
+"navbar": {
+  "links": [
+    { "label": "GitHub", "href": "https://github.com/your-org/repo", "type": "github" },
+    { "label": "Support", "href": "https://support.example.com" }
+  ],
+  "primary": { "label": "Get started", "href": "/quickstart" }
+}
+```
+
+### `navbar.links`
+
+Un tableau de liens de navigation affichés à gauche du bouton CTA.
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `label` | `string` | Texte du lien |
+| `href` | `string` | URL de destination (interne ou externe) |
+| `type` | `"github"` _(optionnel)_ | Définissez à `"github"` pour afficher l'icône GitHub à côté du libellé |
+
+Quand `type: "github"` est défini, la marque GitHub s'affiche à gauche du libellé :
+
+```json
+{ "label": "GitHub", "href": "https://github.com/your-org/repo", "type": "github" }
+```
+
+Les liens externes s'ouvrent automatiquement dans un nouvel onglet.
+
+### `navbar.primary`
+
+Le bouton CTA principal — affiché comme une pastille accent remplie dans la barre supérieure. Lorsqu'il est défini, il remplace le CTA détecté automatiquement à partir de `siteConfig.links`.
+
+```json
+"primary": { "label": "Get started", "href": "/quickstart" }
+```
+
+<Note type="info" title="Solution de secours">
+Quand `navbar` n'est pas défini dans `docs.json`, Thally revient à la détection automatique d'un lien de support et d'un CTA à partir de `siteConfig.links` dans `src/data/site.ts`. Définissez `navbar` dans `docs.json` lorsque vous souhaitez un contrôle explicite.
+</Note>
+
+---
+
+## Pied de page
+
+Ajoutez un bloc `footer` à `docs.json` pour afficher une grille de liens multi-colonnes et des icônes de réseaux sociaux en bas de chaque page.
+
+```json
+"footer": {
+  "socials": {
+    "github": "https://github.com/your-org",
+    "twitter": "https://twitter.com/yourhandle",
+    "discord": "https://discord.gg/invite"
+  },
+  "links": [
+    {
+      "heading": "Documentation",
+      "items": [
+        { "label": "Quick Start", "href": "/quickstart" },
+        { "label": "Guides", "href": "/guides/getting-started" }
+      ]
+    },
+    {
+      "heading": "Tooling",
+      "items": [
+        { "label": "CLI Reference", "href": "/guides/cli-reference" },
+        { "label": "MCP Server", "href": "/guides/mcp-server" }
+      ]
+    }
+  ]
+}
+```
+
+### `footer.socials`
+
+Une carte de clés de plateformes sociales vers des URL. Clés supportées avec icônes :
+
+| Clé | Icône |
+| --- | --- |
+| `github` | Marque GitHub |
+| `twitter` ou `x` | Marque X (Twitter) |
+| `discord` | Logo Discord |
+| `linkedin` | Logo LinkedIn |
+
+Toute autre clé s'affiche en tant que lien en texte brut.
+
+### `footer.links`
+
+Un tableau de colonnes de liens. Chaque colonne contient :
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `heading` | `string` | En-tête de colonne (affiché en petites majuscules) |
+| `items` | `Array<{ label, href }>` | Liens dans cette colonne |
+
+Les colonnes sont affichées dans une grille responsive — 2 colonnes sur mobile, 3 sur tablette, 4 sur desktop.
+
+<Note type="info" title="Pied de page par défaut">
+Quand `footer` n'est pas défini dans `docs.json`, Thally affiche un pied de page minimal d'une seule ligne avec le nom du site et `siteConfig.links`.
+</Note>
+
+---
+
+## Exemple complet
+
+```json
+{
+  "navbar": {
+    "links": [
+      { "label": "GitHub", "href": "https://github.com/your-org/repo", "type": "github" }
+    ],
+    "primary": { "label": "Get started", "href": "/quickstart" }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/your-org",
+      "twitter": "https://twitter.com/yourhandle"
+    },
+    "links": [
+      {
+        "heading": "Product",
+        "items": [
+          { "label": "Overview", "href": "/" },
+          { "label": "Quick Start", "href": "/quickstart" },
+          { "label": "Changelog", "href": "/changelog" }
+        ]
+      },
+      {
+        "heading": "Developers",
+        "items": [
+          { "label": "API Reference", "href": "/api" },
+          { "label": "CLI", "href": "/guides/cli-reference" }
+        ]
+      }
+    ]
+  }
+}
+```

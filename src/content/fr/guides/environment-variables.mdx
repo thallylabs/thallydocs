@@ -1,0 +1,84 @@
+---
+title: Configurer un site auto-hébergé
+navTitle: Paramètres d'auto-hébergement
+description: Définissez uniquement les variables d'environnement nécessaires pour un site Thally auto-hébergé ou un flux de création local.
+---
+
+{/* thally:ai-translation locale=fr source-sha=c77c190a0ab0a0fdc14cc8f7a3f9afa450aa377579d79d3eccfbef3521054480 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+<Note type="info" title="Vous utilisez Thally Cloud ? Vous pouvez ignorer cette page">
+Les sites gérés reçoivent leur configuration de Thally Cloud. Utilisez les pages
+**Paramètres** du site au lieu d'ajouter des variables d'environnement.
+</Note>
+
+Utilisez cette référence uniquement lorsque vous hébergez vous-même le runtime open-source ou que vous exécutez
+les outils de création AI localement. Stockez les secrets dans `.env.local` pendant le développement
+et dans le gestionnaire de secrets de votre fournisseur d'hébergement en production. Ne validez jamais les vraies
+valeurs.
+
+## Obligatoire pour la production
+
+| Variable | Quand vous en avez besoin | Objectif |
+| --- | --- | --- |
+| `THALLY_SITE_URL` | Chaque site de production auto-hébergé | Définit l'origine publique pour les URL canoniques, les métadonnées sociales, les plans du site et les points de terminaison des agents. |
+
+## Connecter un site auto-hébergé à Thally Cloud
+
+| Variable | Quand vous en avez besoin | Objectif |
+| --- | --- | --- |
+| `THALLY_CLOUD_SITE_TOKEN` | Lorsque vous connectez un site auto-hébergé aux services Cloud | Identifiant réservé au serveur émis une fois à partir de **Paramètres → Connexion**. Ne l'exposez jamais via une variable `NEXT_PUBLIC_`. |
+
+Renouvelez ou révoquez ce jeton à partir de Thally Cloud. Les sites gérés ne l'utilisent pas.
+
+## Protéger la zone d'administration et les documents privés
+
+| Variable | Quand vous en avez besoin | Objectif |
+| --- | --- | --- |
+| `THALLY_ADMIN_PASSWORD` | Accès par mot de passe partagé à `/admin` | Accorde l'accès Propriétaire. Utilisez une valeur aléatoire longue. |
+| `THALLY_ADMIN_SECRET` | Un secret de signature d'administrateur distinct | Facultatif ; par défaut le mot de passe administrateur. |
+| `THALLY_ACCESS_PASSWORD` | Accès visiteur partagé | Oblige les lecteurs à entrer un mot de passe avant d'ouvrir les documents. |
+| `THALLY_AUTH_SECRET` | Connexion de l'équipe OIDC | Signe les sessions d'administrateur. |
+| `THALLY_OIDC_ISSUER` | Connexion de l'équipe OIDC | URL de l'émetteur OpenID Connect. |
+| `THALLY_OIDC_CLIENT_ID` | Connexion de l'équipe OIDC | Identifiant du client OIDC. |
+| `THALLY_OIDC_CLIENT_SECRET` | Connexion de l'équipe OIDC | Secret du client OIDC. |
+
+Voir [Gérer l'administrateur de site intégré](/guides/admin-dashboard) pour la configuration et
+l'URL de rappel.
+
+## Conservez l'état auto-hébergé après un redéploiement
+
+Les systèmes de fichiers sans serveur sont temporaires. Ajoutez un stockage distant avant de dépendre
+des paramètres sauvegardés ou de l'analytique.
+
+| Variable | Quand vous en avez besoin | Objectif |
+| --- | --- | --- |
+| `THALLY_DATABASE_URL` | Paramètres de site durables | URL de base de données libSQL distante. |
+| `THALLY_DATABASE_TOKEN` | Avec `THALLY_DATABASE_URL` | Jeton d'authentification pour la base de données. |
+| `THALLY_ANALYTICS_DB_URL` | Analytique auto-hébergée durable | URL de base de données analytique libSQL distante. |
+| `THALLY_ANALYTICS_DB_TOKEN` | Avec `THALLY_ANALYTICS_DB_URL` | Jeton d'authentification pour la base de données analytique. |
+
+## Exécuter des outils de création AI localement
+
+Ces variables s'appliquent aux commandes locales docs-agent, migration ou traduction.
+Elles ne permettent pas les réponses AI sur un site déployé.
+
+| Variable | Quand vous en avez besoin | Objectif |
+| --- | --- | --- |
+| `ANTHROPIC_API_KEY` | Commandes AI locales | Clé du fournisseur de modèle. Gardez-la dans votre environnement local ou flux de création. |
+| `THALLY_AGENT_MODEL` | Remplacement de modèle optionnel | Sélectionne le modèle utilisé par l'agent docs local. |
+
+L'automatisation GitHub auto-gérée a ses propres secrets de dépôt. Suivez la
+[configuration docs-agent](/guides/docs-agent#automate-review-gated-drafts) au lieu de copier les identifiants de plateforme
+dans le runtime docs.
+
+## Vérifier la modification
+
+Redémarrez le serveur de développement ou redéployez après avoir modifié la configuration. Testez
+la fonctionnalité que vous avez activée, puis vérifiez les journaux du serveur sans imprimer les valeurs secrètes.
+
+## Étapes suivantes
+
+- [Déployer votre documentation](/guides/deploying)
+- [Protéger la documentation privée](/guides/private-docs)
+- [Gérer l'administrateur de site intégré](/guides/admin-dashboard)

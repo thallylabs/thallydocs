@@ -1,0 +1,82 @@
+---
+title: Configurar un sitio autohospedado
+navTitle: Configuración autohospedada
+description: Establece solo las variables de entorno necesarias para un sitio Thally autohospedado o un flujo de trabajo de autoría local.
+---
+
+{/* thally:ai-translation locale=es source-sha=c77c190a0ab0a0fdc14cc8f7a3f9afa450aa377579d79d3eccfbef3521054480 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+<Note type="info" title="¿Usas Thally Cloud? Puedes omitir esta página">
+Los sitios administrados reciben su configuración desde Thally Cloud. Utiliza las
+páginas de **Configuración** en lugar de agregar variables de entorno.
+</Note>
+
+Utiliza esta referencia solo cuando alojas el tiempo de ejecución de código abierto tú mismo o ejecutas
+herramientas de autoría de IA localmente. Almacena secretos en `.env.local` durante el desarrollo
+y en el gestor de secretos de tu proveedor de alojamiento en producción. Nunca confirmes valores reales.
+
+## Requerido para producción
+
+| Variable | Cuándo la necesitas | Propósito |
+| --- | --- | --- |
+| `THALLY_SITE_URL` | Cada sitio de producción autohospedado | Establece el origen público para URLs canónicas, metadatos sociales, mapas del sitio y puntos finales de agentes. |
+
+## Conectar un sitio autohospedado a Thally Cloud
+
+| Variable | Cuándo la necesitas | Propósito |
+| --- | --- | --- |
+| `THALLY_CLOUD_SITE_TOKEN` | Cuando conectas un sitio autohospedado a servicios en la nube | Credencial de solo servidor emitida una sola vez desde **Configuración → Conexión**. Nunca la expongas a través de una variable `NEXT_PUBLIC_`. |
+
+Rota o revoca este token desde Thally Cloud. Los sitios administrados no lo utilizan.
+
+## Proteger el área de administración y documentos privados
+
+| Variable | Cuándo la necesitas | Propósito |
+| --- | --- | --- |
+| `THALLY_ADMIN_PASSWORD` | Acceso con contraseña compartida a `/admin` | Otorga acceso de Propietario. Utiliza un valor aleatorio largo. |
+| `THALLY_ADMIN_SECRET` | Un secreto de firma de administrador separado | Opcional; por defecto es la contraseña de administrador. |
+| `THALLY_ACCESS_PASSWORD` | Acceso de visitante compartido | Requiere que los lectores ingresen una contraseña antes de abrir los documentos. |
+| `THALLY_AUTH_SECRET` | Inicio de sesión del equipo OIDC | Firma sesiones de administrador. |
+| `THALLY_OIDC_ISSUER` | Inicio de sesión del equipo OIDC | URL del emisor OpenID Connect. |
+| `THALLY_OIDC_CLIENT_ID` | Inicio de sesión del equipo OIDC | Identificador del cliente OIDC. |
+| `THALLY_OIDC_CLIENT_SECRET` | Inicio de sesión del equipo OIDC | Secreto del cliente OIDC. |
+
+Consulta [Gestionar el administrador de sitio integrado](/guides/admin-dashboard) para la configuración y
+URL de devolución de llamada.
+
+## Mantener el estado autohospedado después de un redespliegue
+
+Los sistemas de archivos sin servidor son temporales. Agrega almacenamiento remoto antes de depender de
+configuración guardada o análisis.
+
+| Variable | Cuándo la necesitas | Propósito |
+| --- | --- | --- |
+| `THALLY_DATABASE_URL` | Configuración de sitio durable | URL de base de datos libSQL remota. |
+| `THALLY_DATABASE_TOKEN` | Con `THALLY_DATABASE_URL` | Token de autenticación para la base de datos. |
+| `THALLY_ANALYTICS_DB_URL` | Análisis autohospedado durable | URL de base de datos de análisis libSQL remota. |
+| `THALLY_ANALYTICS_DB_TOKEN` | Con `THALLY_ANALYTICS_DB_URL` | Token de autenticación para la base de datos de análisis. |
+
+## Ejecutar herramientas de autoría de IA localmente
+
+Estas variables se aplican a comandos locales de docs-agent, migración o traducción.
+No habilitan respuestas de IA en un sitio desplegado.
+
+| Variable | Cuándo la necesitas | Propósito |
+| --- | --- | --- |
+| `ANTHROPIC_API_KEY` | Comandos locales de IA | Clave del proveedor de modelos. Mantenla en tu entorno local o flujo de trabajo de autoría. |
+| `THALLY_AGENT_MODEL` | Anulación de modelo opcional | Selecciona el modelo utilizado por el agente docs local. |
+
+La automatización de GitHub autogestionada tiene sus propios secretos de repositorio. Sigue la
+[configuración de docs-agent](/guides/docs-agent#automate-review-gated-drafts) en lugar de copiar credenciales de plataforma en el tiempo de ejecución de documentos.
+
+## Verificar el cambio
+
+Reinicia el servidor de desarrollo o realiza un redespliegue después de cambiar la configuración. Prueba
+la función que habilitaste, luego revisa los registros del servidor sin imprimir valores secretos.
+
+## Próximos pasos
+
+- [Desplegar tu documentación](/guides/deploying)
+- [Proteger documentación privada](/guides/private-docs)
+- [Gestionar el administrador de sitio integrado](/guides/admin-dashboard)
