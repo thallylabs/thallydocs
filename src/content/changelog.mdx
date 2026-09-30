@@ -5,8 +5,8 @@ description: Follow product updates and release notes from Thally.
 
 ## Product updates and releases
 
-No changelog entries have been published yet. Product updates and release notes will appear here when they are available. This section is where your team can document new features, improvements, bug fixes, and breaking changes across product versions.
+<Update label="Migration updates" date="2026-09-30">
+  The migration CLI now has dedicated Mintlify, Fern, and Docusaurus repository adapters. This release improves navigation, link, asset, API reference, translated-page, and local component handling across those sources. It also carries supported Docusaurus footer configuration into the generated site.
 
-## Setting up your changelog
-
-When you're ready to publish updates, you can add entries using the `<Update>` component to create versioned release notes with dates and structured change lists. See the [components documentation](/components/update) for examples of how to structure changelog entries effectively.
+  The importer writes `migration-report.json` with warnings and validation results. Review that report and compare the local site with its source before publishing. See the [migration guide](/guides/migrating) and [CLI reference](/guides/cli-reference#migrate-existing-documentation).
+</Update>

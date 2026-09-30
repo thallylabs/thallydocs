@@ -136,7 +136,7 @@ npx --yes @thallylabs/cli@latest migrate <github-or-docs-url> [output-dir] [opti
 
 For repository sources, Thally clones and reads the source content directly. For live sites, it discovers machine-readable indexes, sitemaps, and same-origin documentation navigation. Both paths produce the same ready-to-run Thally project. For a new project, the command also installs dependencies, runs content checks and a production build, and records the outcome in `migration-report.json`; pass `--skip-validation` to import only.
 
-**Dedicated adapters:** Mintlify and Docusaurus. Automatic detection can also
+**Dedicated adapters:** Mintlify, Fern, and Docusaurus. Automatic detection can also
 import repositories with plain Markdown or MDX and crawl a public docs site,
 but it does not promise framework-specific configuration parity for other
 platforms.
@@ -157,6 +157,9 @@ npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs --max-pag
 # Run the same Docusaurus migration without prompts
 npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs --platform docusaurus --max-pages 1000 --yes
 
+# Migrate a Fern source repository without prompts
+npx --yes @thallylabs/cli@latest migrate https://github.com/org/fern-docs fern-docs --platform fern --yes
+
 # Trial a large live site with at most 100 pages
 npx --yes @thallylabs/cli@latest migrate https://docs.example.com example-docs --max-pages 100
 
@@ -172,12 +175,15 @@ npx --yes @thallylabs/cli@latest migrate https://github.com/org/repo --into ./ex
 
 ### What gets migrated
 
-- All `.md` and `.mdx` files are copied and converted to clean MDX
+- Repository pages are copied and converted to MDX; Fern imports pages referenced by its `docs.yml` navigation
 - Live-site pages are discovered from machine-readable indexes, sitemaps, and rendered sidebars within the submitted docs path
-- Navigation structure is detected from rendered Mintlify/Docusaurus navigation, `mint.json`, `docusaurus.config.js`, `docs.json`, or the directory structure
+- Navigation structure is detected from rendered site navigation, Mintlify `docs.json`/`mint.json`, Fern `fern/docs.yml`, Docusaurus configuration, or the directory structure
 - Docusaurus current-version boundaries, case-sensitive routes, redirects, nested docs plugins, callouts, tabs, tables, and highlighted code are preserved
-- OpenAPI spec files (`.json`, `.yaml`) are detected and wired up as an API Reference tab
+- Fern navigation, product sections, default-version pages, and local OpenAPI references are imported where supported
+- Local OpenAPI spec files (`.json`, `.yaml`) are written under `openapi/` and connected to the relevant API tab when they can be resolved
 - Platform-specific MDX components are normalized to Thally equivalents (see [component mapping](#component-mapping) below)
+
+Read `migration-report.json` after every import. It records page and asset counts, validation results, and warnings about skipped content, unsupported components and API formats, and unresolved assets or links.
 
 ### Options
 
@@ -187,7 +193,7 @@ npx --yes @thallylabs/cli@latest migrate https://github.com/org/repo --into ./ex
 | `--into <dir>` | Migrate into an existing Thally project instead of scaffolding a new one |
 | `--branch <name>` | Override the auto-detected git branch |
 | `--docs-dir <path>` | Override the auto-detected docs subdirectory |
-| `--platform <name>` | Select `mintlify`, `docusaurus`, or `auto` |
+| `--platform <name>` | Select `mintlify`, `fern`, `docusaurus`, or `auto` |
 | `--api-key <key>` | Anthropic API key for converting non-Markdown files (e.g. `.rst`). Falls back to `ANTHROPIC_API_KEY` env var |
 | `--skip-validation` | Import only; skip dependency installation, content checks, and the production build |
 | `--yes`, `-y` | Accept defaults and live-site limitations, then skip all prompts |

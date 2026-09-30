@@ -21,7 +21,7 @@ npx --yes @thallylabs/cli@latest migrate https://github.com/example/docs my-docs
 
 <Step title="Elegir la plataforma fuente">
 
-En una migración interactiva, Thally pregunta si Mintlify, Docusaurus u otra plataforma aloja la documentación. Para scripts y CI, usa `--platform mintlify`, `--platform docusaurus` o `--platform auto`.
+En una migración interactiva, Thally pregunta si Mintlify, Fern, Docusaurus u otra plataforma aloja la documentación. Para scripts y CI, usa `--platform mintlify`, `--platform fern`, `--platform docusaurus` o `--platform auto`.
 
 Si eliges la detección automática para una URL pública, la CLI recomienda primero el repositorio de GitHub y permite que lo introduzcas. Solo puedes continuar con la URL después de aceptar que el resultado puede requerir ajustes manuales. Para completar esos ajustes con un agente, usa el [servidor MCP de Thally](/guides/mcp-server) y solicita un PR.
 
@@ -39,7 +39,8 @@ Las importaciones de repositorios reconocen estos archivos:
 |------|-------------------|
 | `docs.json` / `mint.json` | Mintlify |
 | `docusaurus.config.js` + `sidebars.js` | Docusaurus |
-| `book.yaml` | GitBook |
+| `fern/docs.yml` y `fern/fern.config.json` | Fern |
+| `SUMMARY.md` | GitBook |
 | `_meta.json` | Nextra |
 | `vitepress.config.*` | VitePress |
 | `.starlight/` | Starlight |
@@ -51,7 +52,7 @@ El directorio de documentación también se detecta automáticamente: `docs/`, `
 
 <Step title="Importar todos los archivos de documentación">
 
-Las migraciones de repositorios leen cada archivo `.md` y `.mdx`. Las migraciones desde sitios públicos convierten la documentación renderizada a MDX portátil. Se conservan el frontmatter, los encabezados, enlaces, bloques de código, tablas, pestañas y avisos cuando la fuente los expone.
+Las migraciones de repositorios leen los archivos `.md` y `.mdx`; Fern importa las páginas incluidas en `docs.yml`. Las migraciones desde sitios públicos convierten la documentación renderizada a MDX portátil. Se conservan el frontmatter, los encabezados, enlaces, bloques de código, tablas, pestañas y avisos cuando la fuente los expone.
 
 Los archivos que no son Markdown (p. ej. `.rst`) se convierten a MDX usando Claude si proporcionas una clave API de Anthropic.
 
@@ -59,7 +60,7 @@ Los archivos que no son Markdown (p. ej. `.rst`) se convierten a MDX usando Clau
 
 <Step title="Conectar la referencia de API">
 
-Si se encuentra una especificación OpenAPI (`openapi.json`, `openapi.yaml`, `swagger.json`, etc.) en cualquier parte del repositorio, se copia a `public/` y la pestaña de Referencia de API en `docs.json` se configura automáticamente.
+Si se encuentra una especificación OpenAPI local y compatible, se copia a `openapi/` y se conecta a la sección de API correspondiente en `docs.json`. Las especificaciones remotas o no compatibles se indican en `migration-report.json` para su revisión.
 
 </Step>
 
@@ -116,6 +117,14 @@ En repositorios, `sidebars.js` y sus equivalentes TypeScript se analizan de form
 
 El importador se verificó con los conjuntos completos de documentación actual de [Relay](https://relay.dev/), [Algolia DocSearch](https://docsearch.algolia.com/docs/what-is-docsearch) y [Hasura DDN](https://hasura.io/docs/3.0/index/).
 
+### Fern
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/your-org/fern-docs fern-docs --platform fern --yes
+```
+
+Thally lee `fern/docs.yml` y `fern/fern.config.json` sin ejecutarlos. Importa la navegación, los productos, las páginas de la versión predeterminada y las especificaciones OpenAPI locales que pueda resolver. Consulta `migration-report.json` para detectar secciones de API no compatibles o archivos que requieran revisión manual.
+
 ### GitBook
 
 ```bash
@@ -151,7 +160,7 @@ npx --yes @thallylabs/cli@latest migrate https://github.com/your-org/api-docs --
 | `--into <dir>` | Fusionar en un proyecto existente |
 | `--branch <name>` | Anular la rama de git detectada automáticamente |
 | `--docs-dir <path>` | Anular el subdirectorio de documentación detectado automáticamente |
-| `--platform <name>` | Adaptador fuente: `mintlify`, `docusaurus` o `auto` |
+| `--platform <name>` | Adaptador fuente: `mintlify`, `fern`, `docusaurus` o `auto` |
 | `--max-pages <count>` | Máximo de páginas de un sitio público que se importarán (`1`–`1000`) |
 | `--api-key <key>` | Clave API de Anthropic (o establecer `ANTHROPIC_API_KEY`) para conversión de archivos no Markdown |
 | `--yes`, `-y` | Aceptar valores predeterminados y las limitaciones del sitio público, y omitir todos los prompts |
@@ -180,6 +189,8 @@ Una vez completada la migración, inicia el servidor de desarrollo para revisar 
 cd my-docs
 npm run dev
 ```
+
+Compara el sitio local con el original: portada, pestañas, barra lateral, pie de página, rutas de idiomas y versiones, enlaces, tablas, imágenes y controles interactivos. Revisa `migration-report.json` antes de publicar; una compilación correcta no garantiza que el resultado visual y funcional sea idéntico.
 
 Luego ejecuta `thally check` para detectar cualquier problema antes de publicar:
 
