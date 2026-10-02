@@ -1,6 +1,6 @@
 ---
 title: "Code blocks"
-description: "Syntax-highlighted code blocks with language labels and copy support."
+description: "Syntax-highlighted code blocks with line numbers, diff markers, focus, and copy support."
 ---
 
 Code blocks are rendered automatically from fenced Markdown syntax. Use `<CodeGroup>` to group multiple language variants into a tabbed view.
@@ -12,7 +12,7 @@ const client = new ApiClient({ apiKey: process.env.API_KEY })
 const pets = await client.pets.list({ limit: 10 })
 ```
 
-Add a filename after the language identifier:
+Add a filename or title after the language identifier. Multiple bare words are joined into one title:
 
 ```typescript api-client.ts
 import { ApiClient } from '@company/sdk'
@@ -21,6 +21,14 @@ export const client = new ApiClient({
   apiKey: process.env.API_KEY!,
 })
 ```
+
+Use `title="..."` or `filename="..."` for titles that contain reserved words such as `lines` or `wrap`:
+
+````mdx
+```typescript title="Show lines of code"
+const items = await client.list()
+```
+````
 
 ## CodeGroup
 
@@ -57,19 +65,161 @@ client = ApiClient(api_key="sk-...")
 
 ## Highlighted lines
 
-Use the `highlight` prop to draw attention to specific lines:
+Use `{lines}` or `highlight={lines}` to draw attention to specific lines:
 
-```typescript highlight={2,3}
+```typescript {2,3}
 const client = new ApiClient()
 // These two lines will be highlighted
 const result = await client.pets.list()
 console.log(result)
 ```
 
+````mdx
+```typescript {2,3}
+const client = new ApiClient()
+```
+
+```typescript highlight={2,3}
+const client = new ApiClient()
+```
+````
+
+Ranges are supported: `{1,3-5}` highlights lines 1, 3, 4, and 5.
+
+## Focused lines
+
+Use `focus={lines}` to dim everything except the specified lines:
+
+```typescript focus={2,3}
+const client = new ApiClient()
+const result = await client.pets.list()
+console.log(result)
+console.log('done')
+```
+
+````mdx
+```typescript focus={2,3}
+const result = await client.pets.list()
+```
+````
+
+## Line numbers
+
+Add `lines` to show a line-number gutter. The gutter widens automatically for blocks with 100 or more lines.
+
+```typescript lines
+const client = new ApiClient({ apiKey: process.env.API_KEY })
+const pets = await client.pets.list({ limit: 10 })
+for (const pet of pets) {
+  console.log(pet.name)
+}
+```
+
+````mdx
+```typescript lines
+const client = new ApiClient({ apiKey: process.env.API_KEY })
+```
+````
+
+`lines` and `wrap` can be combined. Wrapped continuation lines indent past the gutter instead of starting under the line number.
+
+## Diff notation
+
+Add Shiki-style `[!code ++]` and `[!code --]` comments to mark added and removed lines. The markers are stripped from the rendered block and from copied text. Added lines show a `+` glyph and removed lines show a `-` glyph so the distinction does not rely on color alone.
+
+```typescript
+export const config = {
+  apiKey: process.env.API_KEY, // [!code --]
+  apiKey: process.env.COMPANY_API_KEY, // [!code ++]
+  timeout: 5000,
+}
+```
+
+````mdx
+```typescript
+export const config = {
+  apiKey: process.env.API_KEY, // [!code --]
+  apiKey: process.env.COMPANY_API_KEY, // [!code ++]
+}
+```
+````
+
+The notation works after any common comment leader: `//`, `#`, `--`, `/* */`, `<!-- -->`, and the JSX form `{/* */}`.
+
+A trailing `:N` applies the marker to the current line and the next N-1 lines:
+
+````mdx
+```python
+# [!code ++:2]
+import os
+import sys
+```
+````
+
+A line that contains only a marker comment is removed from the output and marks the following line.
+
+`[!code highlight]` and `[!code focus]` work the same way and can be combined with the fence-level `highlight` and `focus` attributes.
+
+## Expandable blocks
+
+Add `expandable` to collapse blocks longer than 10 lines. An Expand/Collapse button appears at the bottom of the block.
+
+```typescript expandable
+import { ApiClient } from '@company/sdk'
+
+const client = new ApiClient({
+  apiKey: process.env.API_KEY!,
+})
+
+async function listPets() {
+  const pets = await client.pets.list({ limit: 10 })
+  for (const pet of pets) {
+    console.log(pet.name, pet.species)
+  }
+  return pets
+}
+
+listPets()
+```
+
+When a highlighted, focused, or diff-marked line falls below the fold, the block starts expanded so the marked line is visible.
+
+## Hide copy button
+
+Add `nocopy` to hide the copy button on a code block:
+
+```bash nocopy
+echo "This block has no copy button"
+```
+
+Inside a `<CodeGroup>`, `nocopy` applies per tab. Use `nocopy="false"` to re-enable copying on a tab that would otherwise inherit the flag.
+
+## Icons
+
+Add `icon="name"` to show an icon next to the title in the block header. Inside a `<CodeGroup>`, the icon also appears on the tab.
+
+````mdx
+```python icon="python"
+print("Hello")
+```
+````
+
 ## Long lines
 
-Add `wrap` after the language identifier to soft-wrap long lines instead of scrolling:
+Add `wrap` to soft-wrap long lines instead of scrolling:
 
 ```bash wrap
 npx create-thally-docs my-docs --template default --yes --install --git
 ```
+
+## Combining options
+
+Flags and attributes can be used together in any order:
+
+````mdx
+```typescript title="server.ts" lines expandable highlight={3}
+import express from 'express'
+const app = express()
+app.listen(3000)
+```
+````
