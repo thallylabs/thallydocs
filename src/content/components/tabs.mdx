@@ -37,12 +37,32 @@ description: "Switch between platform-specific or language-specific content vari
     pnpm add @company/sdk
     ```
   </Tab>
+  <Tab title="yarn">
+    ```bash
+    yarn add @company/sdk
+    ```
+  </Tab>
 </Tabs>
 ````
 
 ## Rich tab content
 
 Tabs can contain any MDX content including callouts, code groups, and images:
+
+<Tabs>
+  <Tab title="macOS">
+    <Steps>
+      <Step title="Install Homebrew">
+        ```bash
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Windows">
+    Download the installer from the releases page.
+  </Tab>
+</Tabs>
 
 ````mdx
 <Tabs>

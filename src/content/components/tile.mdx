@@ -19,10 +19,10 @@ description: "Larger image-capable cards for feature overviews and product landi
 ```mdx
 <TileGroup cols={2}>
   <Tile title="REST API" icon="code-simple" href="/api">
-    Full CRUD operations over HTTP.
+    Full CRUD operations over HTTP. Supports pagination, filtering, and bulk operations out of the box.
   </Tile>
   <Tile title="CLI" icon="wrench" href="/guides/cli-overview">
-    Official client libraries for multiple languages.
+    Official client libraries for TypeScript, Python, Go, and Ruby with generated types.
   </Tile>
 </TileGroup>
 ```
@@ -42,11 +42,11 @@ Add a top image to tiles for visual product showcases. The image scales on hover
 
 ```mdx
 <TileGroup cols={2}>
-  <Tile title="Analytics Dashboard" img="/images/dashboard.png" href="/quickstart">
-    Monitor users and conversion rates.
+  <Tile title="Analytics Dashboard" img="/images/image1.jpg" href="/quickstart">
+    Monitor active users, conversion rates, and retention in a single view.
   </Tile>
-  <Tile title="API Explorer" img="/images/explorer.png" href="/api">
-    Send live requests from the docs.
+  <Tile title="API Explorer" img="/images/image2.jpg" href="/api">
+    Send live requests directly from the docs with your own API key.
   </Tile>
 </TileGroup>
 ```
@@ -68,13 +68,13 @@ Add a top image to tiles for visual product showcases. The image scales on hover
 ```mdx
 <TileGroup cols={3}>
   <Tile title="API reference" icon="telegram" href="/guides/api-reference-setup">
-    Real-time event notifications.
+    Receive real-time event notifications via HTTP POST to your endpoint.
   </Tile>
   <Tile title="Private docs" icon="envelope" href="/guides/private-docs">
-    OAuth 2.0, API keys, or JWT.
+    Secure your API with OAuth 2.0, API keys, or JWT bearer tokens.
   </Tile>
   <Tile title="Navigation" icon="grid-round" href="/guides/configuring-navigation">
-    Cursor-based for large datasets.
+    Cursor-based pagination for large datasets with consistent performance.
   </Tile>
 </TileGroup>
 ```

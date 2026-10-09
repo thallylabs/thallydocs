@@ -25,10 +25,16 @@ Use `<Card>` for individual feature or navigation cards, and `<CardGroup>` to la
 ```mdx
 <CardGroup cols="2">
   <Card title="Quickstart" icon="party-horn" href="/quickstart">
-    Get running in five minutes.
+    Get your docs site running in under five minutes.
   </Card>
   <Card title="API Reference" icon="code-simple" href="/api">
-    Explore every endpoint.
+    Explore every endpoint with live examples and generated types.
+  </Card>
+  <Card title="Guides" icon="book-open" href="/guides/getting-started">
+    In-depth walkthroughs for common configuration scenarios.
+  </Card>
+  <Card title="GitHub" icon="link-simple" href="https://github.com/your-org/your-docs">
+    Browse the source, open issues, and contribute.
   </Card>
 </CardGroup>
 ```
@@ -48,11 +54,11 @@ Cards can include a top image — useful for showcasing screenshots, product pre
 
 ```mdx
 <CardGroup cols="2">
-  <Card title="Analytics Dashboard" img="/images/dashboard.png" href="/quickstart">
-    Monitor active users and conversion rates.
+  <Card title="Analytics Dashboard" img="/images/image1.jpg" href="/quickstart">
+    Monitor active users, conversion rates, and retention in real time.
   </Card>
-  <Card title="API Explorer" img="/images/explorer.png" href="/api">
-    Send live requests from the docs.
+  <Card title="API Explorer" img="/images/image2.jpg" href="/api">
+    Send live requests directly from the docs with your own API key.
   </Card>
 </CardGroup>
 ```
@@ -74,13 +80,13 @@ Cards can include a top image — useful for showcasing screenshots, product pre
 ```mdx
 <CardGroup cols={3}>
   <Card title="Redirects" icon="link-simple" href="/guides/redirects">
-    Map old paths to new ones.
+    Map old paths to new ones so existing links never break.
   </Card>
   <Card title="Custom Fonts" icon="book-open" href="/guides/custom-fonts">
-    Switch fonts from docs.json.
+    Switch to any Google Font from docs.json — no code changes.
   </Card>
   <Card title="Site Banner" icon="party-horn" href="/guides/site-banner">
-    Announce launches and notices.
+    Announce launches and deprecations with a dismissible top banner.
   </Card>
 </CardGroup>
 ```

@@ -34,14 +34,26 @@ description: "Document response object properties returned by API endpoints."
 
 ```mdx
 <ResponseField name="id" type="string" required>
-  Unique identifier.
+  Unique identifier for the pet. Format: `pet_xxxxxxxx`
+</ResponseField>
+
+<ResponseField name="name" type="string" required>
+  The pet's display name.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status. One of `available`, `pending`, or `sold`.
 </ResponseField>
 
 <ResponseField name="tags" type="Tag[]">
-  Associated tags.
+  Array of tags associated with the pet.
+
   <Expandable title="Tag properties">
+    <ResponseField name="id" type="integer">
+      Tag identifier.
+    </ResponseField>
     <ResponseField name="name" type="string">
-      Tag name.
+      Tag display name.
     </ResponseField>
   </Expandable>
 </ResponseField>

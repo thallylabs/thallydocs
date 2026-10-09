@@ -22,8 +22,16 @@ description: "Place content side by side in a responsive multi-column layout."
 
 ```mdx
 <Columns cols={2}>
-  <div>Left content</div>
-  <div>Right content</div>
+  <div>
+    **Left column**
+
+    Use this for comparison tables, side-by-side code snippets, or multi-panel diagrams. Both columns stack vertically on mobile.
+  </div>
+  <div>
+    **Right column**
+
+    Each column can contain any MDX content — paragraphs, lists, code blocks, callouts, or nested components.
+  </div>
 </Columns>
 ```
 
@@ -49,9 +57,21 @@ description: "Place content side by side in a responsive multi-column layout."
 
 ```mdx
 <Columns cols={3}>
-  <div>**Setup** — Install and run.</div>
-  <div>**Configure** — Edit docs.json.</div>
-  <div>**Deploy** — Push to GitHub.</div>
+  <div>
+    **Setup**
+
+    Install the package, add your API key, and run `npm run dev`.
+  </div>
+  <div>
+    **Configure**
+
+    Edit `docs.json` to define your navigation, branding, and integrations.
+  </div>
+  <div>
+    **Deploy**
+
+    Push to GitHub and connect your repo to Vercel or any static host.
+  </div>
 </Columns>
 ```
 
@@ -82,10 +102,26 @@ description: "Place content side by side in a responsive multi-column layout."
 
 ```mdx
 <Columns cols={4}>
-  <div>**TypeScript**</div>
-  <div>**Python**</div>
-  <div>**Go**</div>
-  <div>**Ruby**</div>
+  <div>
+    **TypeScript**
+
+    Strongly typed SDK with full IntelliSense support.
+  </div>
+  <div>
+    **Python**
+
+    Async-first client compatible with FastAPI and Django.
+  </div>
+  <div>
+    **Go**
+
+    Lightweight, zero-dependency module for Go 1.21+.
+  </div>
+  <div>
+    **Ruby**
+
+    Idiomatic gem with ActiveSupport extensions.
+  </div>
 </Columns>
 ```
 
@@ -105,10 +141,10 @@ Columns work well with `<Frame>` for side-by-side image comparisons:
 ```mdx
 <Columns cols={2}>
   <Frame caption="Before">
-    <img src="/images/before.png" alt="Before" />
+    <img src="/images/image1.jpg" alt="Before" />
   </Frame>
   <Frame caption="After">
-    <img src="/images/after.png" alt="After" />
+    <img src="/images/image2.jpg" alt="After" />
   </Frame>
 </Columns>
 ```

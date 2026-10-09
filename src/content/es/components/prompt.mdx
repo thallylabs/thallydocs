@@ -18,6 +18,19 @@ Usa `<Prompt>` con `<PromptUser>` y `<PromptAssistant>` para mostrar sesiones de
   </PromptAssistant>
 </Prompt>
 
+```mdx
+<Prompt>
+  <PromptUser>npx create-thally-docs my-docs --yes</PromptUser>
+  <PromptAssistant>
+    ✓ Scaffolded my-docs/
+    ✓ Installed 312 packages
+    ✓ Initialized git repository
+
+    → Run `cd my-docs && npm run dev` to get started
+  </PromptAssistant>
+</Prompt>
+```
+
 ## Ejemplo de conversación con IA
 
 <Prompt>
@@ -29,8 +42,10 @@ Usa `<Prompt>` con `<PromptUser>` y `<PromptAssistant>` para mostrar sesiones de
 
 ```mdx
 <Prompt>
-  <PromptUser>npm run build</PromptUser>
-  <PromptAssistant>✓ Build complete in 2.4s</PromptAssistant>
+  <PromptUser>¿Cuál es el límite de velocidad para la API?</PromptUser>
+  <PromptAssistant>
+    El límite de velocidad predeterminado es 1,000 solicitudes por minuto por clave de API. Los planes Enterprise admiten límites más altos — contacta a soporte para actualizar.
+  </PromptAssistant>
 </Prompt>
 ```
 

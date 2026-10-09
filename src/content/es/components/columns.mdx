@@ -22,8 +22,16 @@ description: "Coloca contenido lado a lado en un diseño de varias columnas resp
 
 ```mdx
 <Columns cols={2}>
-  <div>Left content</div>
-  <div>Right content</div>
+  <div>
+    **Columna izquierda**
+
+    Úsala para tablas de comparación, fragmentos de código lado a lado o diagramas de múltiples paneles. Ambas columnas se apilan verticalmente en dispositivos móviles.
+  </div>
+  <div>
+    **Columna derecha**
+
+    Cada columna puede contener cualquier contenido MDX — párrafos, listas, bloques de código, llamadas de atención o componentes anidados.
+  </div>
 </Columns>
 ```
 
@@ -49,9 +57,21 @@ description: "Coloca contenido lado a lado en un diseño de varias columnas resp
 
 ```mdx
 <Columns cols={3}>
-  <div>**Setup** — Install and run.</div>
-  <div>**Configure** — Edit docs.json.</div>
-  <div>**Deploy** — Push to GitHub.</div>
+  <div>
+    **Configuración**
+
+    Instala el paquete, agrega tu clave API y ejecuta `npm run dev`.
+  </div>
+  <div>
+    **Configurar**
+
+    Edita `docs.json` para definir tu navegación, marca e integraciones.
+  </div>
+  <div>
+    **Desplegar**
+
+    Haz push a GitHub y conecta tu repositorio a Vercel o cualquier host estático.
+  </div>
 </Columns>
 ```
 
@@ -82,10 +102,26 @@ description: "Coloca contenido lado a lado en un diseño de varias columnas resp
 
 ```mdx
 <Columns cols={4}>
-  <div>**TypeScript**</div>
-  <div>**Python**</div>
-  <div>**Go**</div>
-  <div>**Ruby**</div>
+  <div>
+    **TypeScript**
+
+    SDK con tipado estricto y soporte completo de IntelliSense.
+  </div>
+  <div>
+    **Python**
+
+    Cliente con async como prioridad, compatible con FastAPI y Django.
+  </div>
+  <div>
+    **Go**
+
+    Módulo ligero y sin dependencias para Go 1.21+.
+  </div>
+  <div>
+    **Ruby**
+
+    Gema idiomática con extensiones de ActiveSupport.
+  </div>
 </Columns>
 ```
 
@@ -104,11 +140,11 @@ Las columnas funcionan bien con `<Frame>` para comparaciones de imágenes lado a
 
 ```mdx
 <Columns cols={2}>
-  <Frame caption="Before">
-    <img src="/images/before.png" alt="Before" />
+  <Frame caption="Antes">
+    <img src="/images/image1.jpg" alt="Before" />
   </Frame>
-  <Frame caption="After">
-    <img src="/images/after.png" alt="After" />
+  <Frame caption="Después">
+    <img src="/images/image2.jpg" alt="After" />
   </Frame>
 </Columns>
 ```

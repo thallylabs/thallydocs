@@ -1,5 +1,6 @@
 ---
-title: "RequestExample & ResponseExample"
+title: "Request & Response Example"
+navTitle: "Request/Response example"
 description: "Styled wrappers that visually distinguish request and response code blocks."
 ---
 
@@ -33,13 +34,20 @@ curl -X POST https://api.example.com/pets \
 \`\`\`bash cURL
 curl -X POST https://api.example.com/pets \
   -H "Authorization: Bearer sk-..." \
+  -H "Content-Type: application/json" \
   -d '{"name": "Buddy", "species": "dog"}'
 \`\`\`
 </RequestExample>
 
 <ResponseExample>
 \`\`\`json 201 Created
-{ "id": "a1b2c3d4", "name": "Buddy", "status": "available" }
+{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "name": "Buddy",
+  "species": "dog",
+  "status": "available",
+  "created_at": "2025-01-15T10:30:00Z"
+}
 \`\`\`
 </ResponseExample>
 ```
@@ -47,6 +55,18 @@ curl -X POST https://api.example.com/pets \
 ## With CodeGroup
 
 Wrap a `<CodeGroup>` inside `<RequestExample>` to show the same request in multiple languages:
+
+<RequestExample>
+  <CodeGroup>
+  ```typescript TypeScript
+  await client.pets.create({ name: 'Buddy', species: 'dog' })
+  ```
+
+  ```python Python
+  client.pets.create(name="Buddy", species="dog")
+  ```
+  </CodeGroup>
+</RequestExample>
 
 ```mdx
 <RequestExample>
