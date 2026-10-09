@@ -28,14 +28,20 @@ description: "Una sección en línea contraíble para propiedades de API anidada
 
 ```mdx
 <ResponseField name="address" type="object">
-  Shipping address.
+  La dirección de envío del usuario.
 
   <Expandable title="address properties">
     <ResponseField name="line1" type="string" required>
-      Street address line 1.
+      Línea 1 de la dirección postal.
+    </ResponseField>
+    <ResponseField name="line2" type="string">
+      Línea 2 de la dirección postal (apartamento, suite, etc.).
     </ResponseField>
     <ResponseField name="city" type="string" required>
-      City name.
+      Nombre de la ciudad.
+    </ResponseField>
+    <ResponseField name="postal_code" type="string" required>
+      Código postal o ZIP.
     </ResponseField>
   </Expandable>
 </ResponseField>

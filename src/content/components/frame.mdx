@@ -13,7 +13,7 @@ description: "A styled image wrapper with optional caption and click-to-zoom."
 
 ```mdx
 <Frame>
-  <img src="/images/dashboard.png" alt="Dashboard overview" />
+  <img src="/images/image1.jpg" alt="Dashboard overview" />
 </Frame>
 ```
 
@@ -24,8 +24,8 @@ description: "A styled image wrapper with optional caption and click-to-zoom."
 </Frame>
 
 ```mdx
-<Frame caption="The analytics dashboard showing daily active users.">
-  <img src="/images/analytics.png" alt="Analytics dashboard" />
+<Frame caption="A scenic view — add any descriptive caption below your image.">
+  <img src="/images/image2.jpg" alt="Analytics dashboard" />
 </Frame>
 ```
 
@@ -39,7 +39,7 @@ Set `zoom={false}` when the image is purely decorative or you want to prevent th
 
 ```mdx
 <Frame zoom={false}>
-  <img src="/images/diagram.png" alt="Architecture diagram" />
+  <img src="/images/image3.jpg" alt="Architecture diagram" />
 </Frame>
 ```
 
@@ -47,10 +47,15 @@ Set `zoom={false}` when the image is purely decorative or you want to prevent th
 
 Wrap two images with conditional `className` to swap between light and dark mode:
 
+<Frame>
+  <img className="block dark:hidden" src="/images/image1.jpg" alt="Light mode" />
+  <img className="hidden dark:block" src="/images/image2.jpg" alt="Dark mode" />
+</Frame>
+
 ```mdx
 <Frame>
-  <img className="block dark:hidden" src="/images/light.png" alt="Light mode" />
-  <img className="hidden dark:block" src="/images/dark.png" alt="Dark mode" />
+  <img className="block dark:hidden" src="/images/image1.jpg" alt="Light mode" />
+  <img className="hidden dark:block" src="/images/image2.jpg" alt="Dark mode" />
 </Frame>
 ```
 

@@ -15,6 +15,16 @@ flowchart LR
     C -->|Invalid| E[401 Error]
 `}</Mermaid>
 
+```mdx
+<Mermaid>{`
+flowchart LR
+    A[Client] -->|Request| B(API Gateway)
+    B --> C{Auth}
+    C -->|Valid| D[Service]
+    C -->|Invalid| E[401 Error]
+`}</Mermaid>
+```
+
 ## Sequence diagram
 
 <Mermaid>{`
@@ -30,8 +40,14 @@ sequenceDiagram
 
 ```mdx
 <Mermaid>{`
-flowchart LR
-    A[Start] --> B[Process] --> C[End]
+sequenceDiagram
+    participant U as User
+    participant A as API
+    participant D as Database
+    U->>A: POST /login
+    A->>D: SELECT user WHERE email=?
+    D-->>A: user row
+    A-->>U: 200 OK + JWT
 `}</Mermaid>
 ```
 

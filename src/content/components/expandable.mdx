@@ -28,14 +28,20 @@ description: "A collapsible inline section for nested API properties."
 
 ```mdx
 <ResponseField name="address" type="object">
-  Shipping address.
+  The user's shipping address.
 
   <Expandable title="address properties">
     <ResponseField name="line1" type="string" required>
       Street address line 1.
     </ResponseField>
+    <ResponseField name="line2" type="string">
+      Street address line 2 (apartment, suite, etc.).
+    </ResponseField>
     <ResponseField name="city" type="string" required>
       City name.
+    </ResponseField>
+    <ResponseField name="postal_code" type="string" required>
+      Postal or ZIP code.
     </ResponseField>
   </Expandable>
 </ResponseField>

@@ -31,16 +31,31 @@ Usa `<Steps>` y `<Step>` para estructurar instrucciones secuenciales. Cada paso 
   </Step>
 </Steps>
 
-```mdx
+````mdx
 <Steps>
-  <Step title="Step one">
-    Content for step one.
+  <Step title="Install the package">
+    ```bash
+    npm install @company/sdk
+    ```
   </Step>
-  <Step title="Step two">
-    Content for step two.
+  <Step title="Add your API key">
+    Crea un archivo `.env` en la raíz de tu proyecto:
+
+    ```bash
+    API_KEY=sk-your-key-here
+    ```
+  </Step>
+  <Step title="Make your first request">
+    ```typescript
+    import { ApiClient } from '@company/sdk'
+
+    const client = new ApiClient({ apiKey: process.env.API_KEY })
+    const result = await client.pets.list()
+    console.log(result)
+    ```
   </Step>
 </Steps>
-```
+````
 
 ## Props
 
