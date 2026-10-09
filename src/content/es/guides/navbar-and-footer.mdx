@@ -45,9 +45,49 @@ El botón CTA principal — renderizado como una píldora de acento rellena en l
 "primary": { "label": "Get started", "href": "/quickstart" }
 ```
 
+Establece `primary` en `null` para eliminar completamente el botón CTA, incluso cuando `siteConfig.links` normalmente proporcionaría uno:
+
+```json
+"primary": null
+```
+
 <Note type="info" title="Alternativa">
 Cuando `navbar` no está definido en `docs.json`, Thally recurre a detectar automáticamente un enlace de soporte y CTA desde `siteConfig.links` en `src/data/site.ts`. Define `navbar` en `docs.json` cuando quieras un control explícito.
 </Note>
+
+### `navbar.logo`
+
+Controla la imagen del logotipo y la visualización del nombre del sitio en la barra superior. Estos ajustes proporcionan un respaldo controlado por fuente cuando no hay logotipo administrado o de admin configurado.
+
+```json
+"navbar": {
+  "logo": {
+    "light": "/brand/logo-light.svg",
+    "dark": "/brand/logo-dark.svg",
+    "showTitle": true,
+    "rightText": "Docs"
+  }
+}
+```
+
+| Campo | Tipo | Descripción |
+| --- | --- | --- |
+| `light` | `string` | Ruta al recurso del logotipo en modo claro |
+| `dark` | `string` _(opcional)_ | Ruta a una variante en modo oscuro. Si se omite, se usa `light` |
+| `showTitle` | `boolean` _(opcional)_ | Muestra el nombre del sitio junto al logotipo. Por defecto es `true`; establece `false` para ocultar el nombre del sitio |
+| `rightText` | `string` _(opcional)_ | Texto secundario que se muestra después del nombre del sitio |
+
+Cuando `logo` se omite por completo, Thally muestra la imagen del logotipo predeterminado y agrega el sufijo "Docs" después del nombre del sitio.
+
+Las rutas del logotipo deben apuntar a archivos dentro de `public/`. Se rechazan URLs externas, traversal de rutas, cadenas de consulta y barras invertidas. Cuando se configura un objeto `logo`, el sufijo "Docs" aparece solo si se proporciona `rightText`.
+
+Establece `logo` en `null` para usar solo texto sin logotipo ni sufijo "Docs":
+
+```json
+"navbar": {
+  "logo": null
+}
+```
 
 ---
 
@@ -105,6 +145,18 @@ Un arreglo de columnas de enlaces. Cada columna tiene:
 
 Las columnas se muestran en una cuadrícula responsiva — 2 columnas en móvil, 3 en tableta, 4 en escritorio.
 
+### `footer.copyright`
+
+Reemplaza la línea de copyright predeterminada con un texto personalizado. Usa `{year}` como marcador de posición para el año actual:
+
+```json
+"footer": {
+  "copyright": "Copyright {year} Acme Inc."
+}
+```
+
+Cuando se omite, el pie de página muestra "© AAAA NombreDelSitio. All rights reserved." usando el nombre de `siteConfig`.
+
 <Note type="info" title="Pie de página predeterminado">
 Cuando `footer` no está definido en `docs.json`, Thally renderiza un pie de página mínimo de una sola línea con el nombre del sitio y `siteConfig.links`.
 </Note>
@@ -119,9 +171,16 @@ Cuando `footer` no está definido en `docs.json`, Thally renderiza un pie de pá
     "links": [
       { "label": "GitHub", "href": "https://github.com/your-org/repo", "type": "github" }
     ],
-    "primary": { "label": "Get started", "href": "/quickstart" }
+    "primary": { "label": "Get started", "href": "/quickstart" },
+    "logo": {
+      "light": "/brand/logo-light.svg",
+      "dark": "/brand/logo-dark.svg",
+      "showTitle": true,
+      "rightText": "Docs"
+    }
   },
   "footer": {
+    "copyright": "Copyright {year} Tu Empresa.",
     "socials": {
       "github": "https://github.com/your-org",
       "twitter": "https://twitter.com/yourhandle"

@@ -196,15 +196,22 @@ npx create-thally-docs translate --locale es --pages guides/getting-started --fo
 
 When a source page exists but its translation is missing, Thally shows the source-language content with an informative banner. A translation left behind after its source page is deleted returns 404.
 
-**Missing translation** — the page hasn't been translated for that locale yet:
+**Missing translation**: the page hasn't been translated for that locale yet.
 
 > ⚠️ This page hasn't been translated to **Español** yet. Showing the original **English** version.
 
-**Stale translation**, where a generated translation's recorded source hash differs from the current source content:
+**Stale translation**: a managed AI translation's recorded source hash differs from the current source.
 
 > This translation may be outdated. [View original →]
 
-Both banners appear only on secondary-locale routes. The primary route is never affected.
+Both banners appear only on secondary-locale routes. The primary route is never affected. Human-authored or unmarked translations are not labeled stale from deployment timestamps; review their freshness manually.
+
+### Heading anchors in translated pages
+
+Heading anchor IDs preserve non-Latin characters. A translated heading such as
+"Überblick" produces the anchor `#überblick`, and "日本語 API" becomes
+`#日本語-api`. This means section links within translated pages use the
+translated text, not transliterated ASCII.
 
 For a managed site, select **Refresh translations** in **Site settings →
 Languages**. For a local CLI workflow, run the translate command for that page:
@@ -212,6 +219,42 @@ Languages**. For a local CLI workflow, run the translate command for that page:
 ```bash
 npx create-thally-docs translate --locale es --pages guides/getting-started
 ```
+
+---
+
+## Locale-specific navigation
+
+By default, every locale shares the root `tabs` navigation. To provide
+translated sidebar labels or a different page structure for a locale, add a
+`navigation` map under `i18n`:
+
+```json
+{
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": [
+      { "code": "en", "label": "English" },
+      { "code": "es", "label": "Español" }
+    ],
+    "navigation": {
+      "es": [
+        {
+          "tab": "Empezar",
+          "groups": [
+            { "group": "Inicio", "pages": ["introduction", "quickstart"] }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+Use page IDs without a locale prefix; Thally adds the locale to navigation URLs.
+
+Each entry uses the same `tabs` array structure as the root. When a locale has
+no entry in `navigation`, Thally falls back to the root `tabs`. Locale-specific
+navigation is reflected in the sidebar, breadcrumbs, and previous/next links.
 
 ---
 

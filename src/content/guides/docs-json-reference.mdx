@@ -49,7 +49,9 @@ examples.
 
 ## API reference
 
-Add `api` to the tab that should generate endpoint navigation:
+Add `api` to any tab that should generate endpoint navigation. A site can have
+multiple API-bound tabs, each with its own spec. The first keeps the default
+`/api/default/...` routes; additional tabs route at `/api/<tabId>/...`.
 
 ```json
 {
@@ -91,15 +93,57 @@ Operation keys use `METHOD /path` exactly as written in the specification.
 | Root field | Purpose |
 | --- | --- |
 | `theme` | Structural theme: `default`, `maple`, `sharp`, or `minimal`. |
+| `appearance` | Reader color mode and toggle control (see below). |
+| `background` | Site-wide background image and decoration (see below). |
 | `banner` | `content` plus optional `dismissible`. Markdown links are supported. |
-| `navbar` | Secondary `links` and an optional primary action. |
-| `footer` | Social URLs and columns of links. |
+| `navbar` | Secondary `links`, an optional primary action, and a portable `logo` fallback. |
+| `favicon` | Source-controlled favicon fallback: `{ "light": "...", "dark": "..." }`. Used when no managed or admin favicon is configured. Paths must reference files inside `public/`. |
+| `footer` | Social URLs, columns of links, and an optional `copyright` string. |
 | `fonts` | Google Font `family` and optional `weight` arrays for `body` and `heading`. |
 | `customScripts` | External script `src` plus optional loading `strategy`. |
 
+### Appearance
+
+```json
+{
+  "appearance": {
+    "default": "system",
+    "showToggle": true,
+    "contentIcons": "accent"
+  }
+}
+```
+
+| Field | Default | Purpose |
+| --- | --- | --- |
+| `appearance.default` | `"system"` | Initial reader color mode: `"system"`, `"light"`, or `"dark"`. |
+| `appearance.showToggle` | `true` | Show the theme toggle. Set `false` to lock readers into the mode set by `default`. |
+| `appearance.contentIcons` | `"accent"` | Card and tile icon treatment: `"accent"` or `"neutral"`. |
+
+### Background
+
+```json
+{
+  "background": {
+    "image": "/images/bg-light.webp",
+    "imageDark": "/images/bg-dark.webp",
+    "decoration": "grid"
+  }
+}
+```
+
+| Field | Default | Purpose |
+| --- | --- | --- |
+| `background.image` | — | Background image for light mode. Path inside `public/` (PNG, JPG, JPEG, WebP), or a credential-free HTTPS URL. HTTPS URLs do not require a file extension. |
+| `background.imageDark` | — | Background image for dark mode. Falls back to `image` when omitted. |
+| `background.decoration` | `"none"` | Overlay decoration: `"none"`, `"grid"`, or `"gradient"`. |
+
 Navbar links contain `label`, `href`, and optional `type: "github"`. A primary
-action contains `label` and `href`. Footer columns contain a `heading` and an
-`items` array of `{ "label", "href" }` objects.
+action contains `label` and `href`, or `null` to disable the CTA entirely. `navbar.logo` accepts an object with `light`
+(required), `dark`, `showTitle`, and `rightText` fields, or `null` for a
+text-only wordmark that hides the logo image and "Docs" suffix. When omitted,
+the default logo and suffix are shown. Footer columns contain a `heading` and an
+`items` array of `{ "label", "href" }` objects. Set `footer.copyright` to a custom string with an optional `{year}` placeholder.
 
 ## Redirects and indexing
 
@@ -173,6 +217,37 @@ reader-facing site, so use placeholders or public sandbox credentials only.
   }
 }
 ```
+
+To provide locale-specific navigation trees, add a `navigation` map under
+`i18n`. Each key is a locale code, and its value is an array of tabs with the
+same structure as the root `tabs`:
+
+```json
+{
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": [
+      { "code": "en", "label": "English" },
+      { "code": "es", "label": "Español" }
+    ],
+    "navigation": {
+      "es": [
+        {
+          "tab": "Empezar",
+          "groups": [
+            { "group": "Inicio", "pages": ["introduction", "quickstart"] }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+Use page IDs without a locale prefix; Thally adds the locale to navigation URLs.
+
+When a locale has no entry in `navigation`, Thally falls back to the root
+`tabs`.
 
 See [Publish multiple languages](/guides/multi-language) for content paths and
 fallback behavior.

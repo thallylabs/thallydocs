@@ -46,9 +46,49 @@ The primary CTA button — rendered as a filled accent pill in the top bar. When
 "primary": { "label": "Get started", "href": "/quickstart" }
 ```
 
+Set `primary` to `null` to remove the CTA button entirely, even when `siteConfig.links` would normally supply one:
+
+```json
+"primary": null
+```
+
 <Note type="info" title="Fallback">
 When `navbar` is not defined in `docs.json`, Thally falls back to auto-detecting a support link and CTA from `siteConfig.links` in `src/data/site.ts`. Define `navbar` in `docs.json` when you want explicit control.
 </Note>
+
+### `navbar.logo`
+
+Control the logo image and site name display in the top bar. These settings provide a source-controlled fallback when no managed or admin logo is configured.
+
+```json
+"navbar": {
+  "logo": {
+    "light": "/brand/logo-light.svg",
+    "dark": "/brand/logo-dark.svg",
+    "showTitle": true,
+    "rightText": "Docs"
+  }
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `light` | `string` | Path to the light-mode logo asset |
+| `dark` | `string` _(optional)_ | Path to a dark-mode variant. Falls back to `light` when omitted |
+| `showTitle` | `boolean` _(optional)_ | Show the site name next to the logo. Defaults to `true`; set to `false` to hide the site name |
+| `rightText` | `string` _(optional)_ | Secondary text shown after the site name |
+
+When `logo` is omitted entirely, Thally shows the default logo image and appends a "Docs" suffix after the site name.
+
+Logo paths must point to files inside `public/`. External URLs, path traversal, query strings, and backslashes are rejected. When a logo object is configured, the "Docs" suffix appears only if you supply `rightText`.
+
+Set `logo` to `null` for a text-only wordmark that hides the logo image and the "Docs" suffix:
+
+```json
+"navbar": {
+  "logo": null
+}
+```
 
 ---
 
@@ -106,6 +146,18 @@ An array of link columns. Each column has:
 
 Columns are displayed in a responsive grid — 2 columns on mobile, 3 on tablet, 4 on desktop.
 
+### `footer.copyright`
+
+Override the default copyright line with a custom string. Use `{year}` as a placeholder for the current year:
+
+```json
+"footer": {
+  "copyright": "Copyright {year} Acme Inc."
+}
+```
+
+When omitted, the footer shows "© YYYY SiteName. All rights reserved." using the name from `siteConfig`.
+
 <Note type="info" title="Default footer">
 When `footer` is not defined in `docs.json`, Thally renders a minimal single-line footer with the site name and `siteConfig.links`.
 </Note>
@@ -120,9 +172,16 @@ When `footer` is not defined in `docs.json`, Thally renders a minimal single-lin
     "links": [
       { "label": "GitHub", "href": "https://github.com/your-org/repo", "type": "github" }
     ],
-    "primary": { "label": "Get started", "href": "/quickstart" }
+    "primary": { "label": "Get started", "href": "/quickstart" },
+    "logo": {
+      "light": "/brand/logo-light.svg",
+      "dark": "/brand/logo-dark.svg",
+      "showTitle": true,
+      "rightText": "Docs"
+    }
   },
   "footer": {
+    "copyright": "Copyright {year} Your Company.",
     "socials": {
       "github": "https://github.com/your-org",
       "twitter": "https://twitter.com/yourhandle"

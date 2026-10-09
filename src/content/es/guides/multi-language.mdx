@@ -11,7 +11,7 @@ En Thally Cloud, selecciona los idiomas en **Configuración del sitio → Idioma
 **Por qué traducciones en tiempo de compilación:**
 
 - Los archivos MDX traducidos están bajo control de versiones — revisables y editables como cualquier otro contenido
-- Cada locale obtiene URLs reales e indexables (p. ej. `/es/introduction`) — máximo valor SEO
+- Cada traducción publicada obtiene una URL propia (p. ej. `/es/introduction`). Los fallbacks sin traducción no son indexables.
 - Funciona con cualquier hosting sin infraestructura edge
 - Sin almacén KV, sin llamadas API en tiempo de ejecución, sin costo por solicitud
 
@@ -120,11 +120,49 @@ Cuando existe una página fuente pero falta su traducción, Thally muestra el co
 
 > ⚠️ Esta página aún no ha sido traducida a **es**. Mostrando la versión original en **EN**.
 
-Si el hash de la fuente registrado en una traducción generada difiere del contenido fuente actual, Thally muestra un banner de antigüedad:
+Si el hash de origen registrado en una traducción gestionada por IA difiere del contenido actual, Thally muestra un banner de antigüedad:
 
 > Esta traducción puede estar desactualizada. [Ver original →]
 
-Ambos banners solo aparecen en rutas de locales secundarios — la ruta principal nunca se ve afectada.
+Ambos banners solo aparecen en rutas de locales secundarios, la ruta principal nunca se ve afectada. Las traducciones humanas o sin marcador de origen no se consideran antiguas a partir de las fechas del despliegue; revisa su vigencia manualmente.
+
+### Anclas de encabezado en páginas traducidas
+
+Los IDs de las anclas de encabezado conservan los caracteres no latinos. Un
+encabezado traducido como "Überblick" produce el ancla `#überblick`, y
+"日本語 API" se convierte en `#日本語-api`. Esto significa que los enlaces a
+secciones dentro de las páginas traducidas usan el texto traducido, no ASCII
+transliterado.
+
+---
+
+## Navegación específica por idioma
+
+Por defecto, todos los idiomas comparten la navegación del `tabs` raíz. Para proporcionar etiquetas traducidas o una estructura de páginas diferente, agrega un mapa `navigation` bajo `i18n`:
+
+```json
+{
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": [
+      { "code": "en", "label": "English" },
+      { "code": "es", "label": "Español" }
+    ],
+    "navigation": {
+      "es": [
+        {
+          "tab": "Empezar",
+          "groups": [
+            { "group": "Inicio", "pages": ["introduction", "quickstart"] }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+Cada entrada usa la misma estructura de array `tabs` que la raíz. Usa IDs de páginas sin prefijo de idioma: Thally agrega el locale a las rutas. Cuando un idioma no tiene entrada en `navigation`, Thally recurre al `tabs` raíz. Esta navegación se refleja en la barra lateral, las migas de pan y los enlaces anterior/siguiente.
 
 ---
 

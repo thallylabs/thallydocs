@@ -35,7 +35,8 @@ verifiedVersion: 2.4.0
 | `lastVerified` | date string | None | Date a person last confirmed the instructions against the product. |
 | `verifiedVersion` | string | None | Product version used during that verification. |
 | `openapi` | string | None | OpenAPI operation key, such as `GET /users/{id}`. |
-| `hidden` | boolean | `false` | Hides the page from generated navigation while keeping its route available. |
+| `descriptionPlacement` | string | Header | Controls where the description appears. Set to `body` to suppress the subtitle line from the page header so the description is used only for metadata and search. |
+| `hidden` | boolean | `false` | Hides the page from the sidebar, previous/next links, and sitemap while keeping its route available. |
 | `noindex` | boolean | `false` | Excludes the page from public indexing surfaces. |
 | `mode` | string | `default` | Page layout: `default`, `wide`, `custom`, `center`, or `home`. |
 

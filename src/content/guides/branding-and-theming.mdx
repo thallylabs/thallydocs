@@ -23,7 +23,7 @@ and version-controlled. Do not edit framework-owned components to change the
 brand.
 </Note>
 
-The dashboard overrides the structural theme, the **brand accent** (and its focus ring), the logo, and the favicon. The rest of the palette (backgrounds, borders, sidebar tokens) is defined in the source files described below.
+The dashboard overrides the structural theme, colors (accent, primary, and background), the logo, and the favicon. When a custom background color is set, secondary surfaces — muted backgrounds, borders, form inputs, and secondary text — automatically harmonize with that background. Tokens not covered by a dashboard override are defined in the source files described below.
 
 ## Site configuration
 
@@ -62,14 +62,25 @@ const brandPreset: BrandPresetKey = 'primary'  // or 'secondary'
 
 ## Brand accent (the color picker)
 
-The fastest managed path is **Settings → Branding** in Thally Cloud. Choose the
-accent for light and dark mode, review the preview, and save. Thally publishes
-the updated portable configuration. On a self-hosted site,
-`/admin/branding` provides the equivalent runtime override.
+For a managed site, use **Settings → Branding** in Thally Cloud to choose
+separate light and dark accents, review the preview, and save. Saved changes
+publish through the managed release workflow; configuration changes require a
+build, and uploaded assets publish from their saved repository revision. On a
+self-hosted site, `/admin/branding` provides supported runtime overrides.
 
-This overrides the accent and focus ring. The rest of the palette—backgrounds,
-borders, and sidebar tokens—comes from the source-file presets below. Use the
-dashboard for a live adjustment and the files as the versioned baseline.
+This overrides the accent and focus ring. A custom background color, if set separately, overrides the page canvas, sidebar, and card surfaces and derives harmonized values for muted, input, border, and muted-foreground. Tokens not covered by a managed override come from the source-file presets below. Use the dashboard for a live adjustment and the files as the versioned baseline.
+
+Card and tile icons use the brand accent by default. To make them neutral,
+merge this setting into `docs.json`:
+
+```json
+"appearance": {
+  "contentIcons": "neutral"
+}
+```
+
+Use `iconColor="accent"` or `iconColor="neutral"` on an individual Card or Tile
+to override the site-wide choice.
 
 ## Custom colors
 
@@ -95,22 +106,126 @@ To define your own palette, edit the `brandPresets` object in `site.ts`. Each pr
 
 Most colors are hex values (e.g. `#10B981`) which are auto-converted to HSL. Optional tokens fall back to their nearest core surface, so existing palettes remain valid. The sidebar state tokens (`sidebarActiveBg`, `sidebarActiveText`) may also use raw HSL strings with opacity (e.g. `'152 60% 88% / 0.55'`) for translucent effects.
 
-## Dark mode
+## Site background colors
 
-Dark mode is handled automatically by `next-themes`. Users toggle it with the theme switch in the top bar. Your brand palette defines both light and dark variants, so both themes stay on-brand.
+In **Settings → Branding → Site background** in Thally Cloud, choose a separate
+background color for light and dark mode. Review the previews and contrast
+readouts before saving. The override covers the page canvas, header, sidebar,
+and cards, and derives companion muted, input, border, and secondary-text tones.
+Primary text and other semantic colors retain their existing palette, so check
+readability in both themes. Choose **Use site default** to remove an override
+and return to the palette in `src/data/site.ts`. Changes apply in the next
+published version; upgrade older runtimes before using background overrides.
+
+## Dark mode and appearance locking
+
+Dark mode is handled automatically. By default, readers toggle it with the theme switch in the top bar. Your brand palette defines both light and dark variants, so both themes stay on-brand.
+
+You can control the initial color mode and whether readers can change it by adding `appearance` settings to `docs.json`:
+
+```json
+{
+  "appearance": {
+    "default": "dark",
+    "showToggle": false,
+    "contentIcons": "accent"
+  }
+}
+```
+
+| Key | Type | Default | Purpose |
+| --- | --- | --- | --- |
+| `default` | `"system"`, `"light"`, or `"dark"` | `"system"` | Initial color mode for new readers. |
+| `showToggle` | boolean | `true` | Show the theme toggle in the top bar. When `false`, the mode set by `default` is enforced and the toggle is hidden. |
+| `contentIcons` | `"neutral"` or `"accent"` | `"accent"` | Card and tile icon treatment. |
+
+When `showToggle` is `false`, a flash-free pre-paint script runs in the document head so the locked mode is applied before the page renders. Reader preferences stored from a previous visit are ignored while the toggle is hidden.
+
+With `"default": "system"` and the toggle hidden, the site follows OS theme
+changes. Thally Cloud managed sites can override these settings per field under
+**Settings → Branding**, taking effect in the next published version.
+
+## Background images and decoration
+
+Add a site-wide background behind the document surface with the `background` object in `docs.json`:
+
+```json
+{
+  "background": {
+    "image": "/images/bg-light.webp",
+    "imageDark": "/images/bg-dark.webp",
+    "decoration": "grid"
+  }
+}
+```
+
+| Key | Type | Default | Purpose |
+| --- | --- | --- | --- |
+| `image` | string | — | Background image for light mode. A path under `public/` or an HTTPS URL. Public paths must use PNG, JPG, JPEG, or WebP. HTTPS URLs need no file extension. |
+| `imageDark` | string | — | Background image for dark mode. Falls back to `image` when omitted. |
+| `decoration` | `"none"`, `"grid"`, or `"gradient"` | `"none"` | Overlay decoration rendered on top of the background image. |
+
+The background image is rendered as a fixed, full-viewport layer behind the page. When a background image is active, content and sidebar surfaces become translucent to keep text legible over the imagery. Omit the `background` object entirely (or set all fields to their defaults) to leave the site surfaces unchanged.
+
+HTTPS images load directly in the reader’s browser and cannot include URL
+credentials. Public-relative paths cannot contain traversal segments; local SVG
+backgrounds are unsupported. A dark image without a shared image appears only
+in dark mode. Decorations also work without an image.
+
+Thally Cloud managed sites can supply background images and decoration under
+**Settings → Branding**, with managed values taking per-field precedence over
+the repository config in the next published version. Upgrade older runtimes
+before using these options.
 
 ## Logo & favicon (light and dark)
 
 For a managed site, upload the logo and favicon under **Settings → Branding**.
-For a self-hosted runtime override, use `/admin/branding`. The accepted upload
-limit and formats are shown beside the control; validate both light and dark
-previews before saving.
+The accepted formats and upload limits are shown beside each control. Saved
+assets take effect in the next published version. For a self-hosted runtime
+override, use `/admin/branding`.
 
 You can upload **separate assets for light and dark mode** — both a logo and a favicon per mode. The site serves the variant that matches the viewer's theme; if you upload only the light-mode asset, dark mode falls back to it, so a single upload still works. This is how a wordmark that reads on a white header can be swapped for a light-on-dark version at night.
 
-When no uploaded asset is configured, the runtime uses its built-in mark and
-the name from `siteConfig`. Keep framework-owned logo components unchanged;
-use the branding controls or user-owned configuration instead.
+### Source-controlled fallbacks in docs.json
+
+When no managed or admin asset is configured, Thally checks `docs.json` for
+portable logo and favicon paths before falling back to the built-in defaults.
+
+**Logo.** Set `navbar.logo` to control the logo image, site name visibility,
+and the right-of-logo label:
+
+```json
+"navbar": {
+  "logo": {
+    "light": "/brand/logo-light.svg",
+    "dark": "/brand/logo-dark.svg",
+    "showTitle": true,
+    "rightText": "Docs"
+  }
+}
+```
+
+Set `showTitle` to `false` to hide the site name text beside the logo (the
+Cloud control is **Hide site name text**).
+
+See [Customize the navbar and footer](/guides/navbar-and-footer) for all options.
+
+**Favicon.** Set `favicon` at the root level of `docs.json`:
+
+```json
+{
+  "favicon": {
+    "light": "/brand/favicon-light.svg",
+    "dark": "/brand/favicon-dark.svg"
+  }
+}
+```
+
+Paths must point to files inside `public/`. External URLs, path traversal,
+query strings, and backslashes are rejected. When no source is configured at
+any level, the runtime uses its built-in mark and the name from `siteConfig`.
+Keep framework-owned logo components unchanged; use the branding controls or
+the docs.json configuration instead.
 
 ## Fonts
 
@@ -148,7 +263,7 @@ The switcher is hidden when fewer than two versions are defined.
 
 ## Edit on GitHub
 
-When `repoUrl` in `siteConfig` points to a real GitHub repository, every doc page shows an "Edit this page on GitHub" link at the bottom. This links directly to the MDX source file on the `main` branch.
+When `repoUrl` in `siteConfig` points to a real GitHub repository, doc pages can show "Edit this page" and "Report an issue" links in the page-actions rail (beside the table of contents, or below the article on centered and wide layouts). Managed sites show each link only when its corresponding **Settings → Feedback** option (edit suggestions or issue reporting) is enabled. The edit link opens the MDX source file on the `main` branch; the issue link opens a pre-titled GitHub issue.
 
 ```ts
 export const siteConfig: SiteConfig = {
@@ -161,7 +276,8 @@ export const siteConfig: SiteConfig = {
 
 Structural themes control the shape and density of the UI — border radius, sidebar active item style, and navigation tab appearance. They are independent of brand colors, so any color preset works with any structural theme.
 
-Set the baseline theme in `docs.json` (or switch it live from the dashboard under **Branding → Structural theme**, no rebuild):
+Set the baseline theme in `docs.json`, or choose it under **Settings → Branding**
+in Thally Cloud and publish the updated configuration:
 
 ```json
 {

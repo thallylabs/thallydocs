@@ -82,6 +82,41 @@ Cada página de operación de API incluye un botón "Try It" que abre un panel d
 
 No se necesita configuración — funciona automáticamente desde tu especificación.
 
+## Varias especificaciones de API
+
+Un sitio que documenta más de una API puede vincular una especificación OpenAPI
+diferente a cada pestaña. La primera pestaña con API mantiene las rutas
+predeterminadas en `/api/default/...`; cada pestaña adicional enruta sus operaciones
+bajo `/api/<tabId>/...`, donde `tabId` es la versión slug de la etiqueta de la
+pestaña.
+
+```json
+{
+  "tabs": [
+    {
+      "tab": "REST API",
+      "api": {
+        "source": "openapi.yaml",
+        "tagsOrder": ["Users", "Orders"]
+      }
+    },
+    {
+      "tab": "Admin API",
+      "api": {
+        "source": "admin-openapi.yaml",
+        "defaultGroup": "Admin"
+      }
+    }
+  ]
+}
+```
+
+En este ejemplo, las operaciones REST aparecen bajo `/api/default/...` y las operaciones
+Admin bajo `/api/admin-api/...`. Cada pestaña genera su propia
+navegación en la barra lateral y cada especificación se analiza de forma
+independiente, por lo que las etiquetas, sobreescrituras y grupos se limitan a la
+pestaña que los posee.
+
 ## Reemplazar la especificación de ejemplo
 
 La plantilla incluye un ejemplo de JSONPlaceholder. Para usar tu propia API:

@@ -63,6 +63,11 @@ A tab that auto-generates pages from an OpenAPI spec:
 }
 ```
 
+Multiple tabs can each bind their own spec. The first API tab routes at
+`/api/default/...`; additional API tabs route at `/api/<tabId>/...`. See
+[Multiple API specifications](/guides/api-reference-setup#multiple-api-specifications)
+for a complete example.
+
 ### Link tab
 
 A tab that links to an internal route or external URL:
@@ -135,9 +140,15 @@ Available icon names:
 | `x-twitter` | X / Twitter |
 | `message` | Chat / message |
 
-## Hiding groups and tabs
+## Hiding pages, groups, and tabs
 
-Set `hidden: true` on a group or tab to exclude it from the sidebar while keeping its pages accessible by URL:
+Pages with `hidden: true` in their frontmatter are automatically removed from
+the sidebar, previous/next links, and sitemaps. They remain reachable by direct
+URL. If every page in a group is hidden, the group itself is suppressed from the
+sidebar.
+
+Set `hidden: true` on a group or tab in `docs.json` to exclude an entire
+section while keeping its pages accessible by URL:
 
 ```json
 {
@@ -155,8 +166,7 @@ Set `hidden: true` on a group or tab to exclude it from the sidebar while keepin
 }
 ```
 
-Hidden pages remain reachable by direct URL, but they do not appear in
-navigation or sitemaps. See [Control search and page visibility](/guides/seo-and-visibility)
+See [Control search and page visibility](/guides/seo-and-visibility)
 for more indexing controls.
 
 ## Nested groups
