@@ -134,11 +134,11 @@ Migrates a public documentation URL or GitHub documentation repository into a Th
 npx --yes @thallylabs/cli@latest migrate <github-or-docs-url> [output-dir] [options]
 ```
 
-For repository sources, Thally clones and reads the source content directly. For live sites, it discovers machine-readable indexes, sitemaps, and same-origin documentation navigation. Both paths produce the same ready-to-run Thally project. For a new project, the command also installs dependencies, runs content checks and a production build, and records the outcome in `migration-report.json`; pass `--skip-validation` to import only.
+For repository sources, Thally clones and reads the source content directly. For live sites, it discovers machine-readable indexes, sitemaps, and same-origin documentation navigation. Both paths scaffold a Thally project; review importer warnings and validation results before publishing. Validation executes imported MDX and components locally, so use sources you own or trust. For a new project, the command also installs dependencies, runs content checks and a production build, and records the outcome in `migration-report.json`; pass `--skip-validation` to import only.
 
-**Dedicated adapters:** Mintlify, Fern, and Docusaurus. Automatic detection can also
-import repositories with plain Markdown or MDX and crawl a public docs site,
-but it does not promise framework-specific configuration parity for other
+**Dedicated adapters:** Mintlify, Docusaurus, and Fern. Automatic detection can
+also import repositories with plain Markdown or MDX and crawl a public docs
+site, but it does not promise framework-specific configuration parity for other
 platforms.
 
 <Note type="info" title="Use the repository for auto-detection">
@@ -157,8 +157,8 @@ npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs --max-pag
 # Run the same Docusaurus migration without prompts
 npx --yes @thallylabs/cli@latest migrate https://relay.dev/ relay-docs --platform docusaurus --max-pages 1000 --yes
 
-# Migrate a Fern source repository without prompts
-npx --yes @thallylabs/cli@latest migrate https://github.com/org/fern-docs fern-docs --platform fern --yes
+# Migrate a Fern documentation repository
+npx --yes @thallylabs/cli@latest migrate https://github.com/fern-api/docs-starter --platform fern
 
 # Trial a large live site with at most 100 pages
 npx --yes @thallylabs/cli@latest migrate https://docs.example.com example-docs --max-pages 100
@@ -177,7 +177,7 @@ npx --yes @thallylabs/cli@latest migrate https://github.com/org/repo --into ./ex
 
 - Repository pages are copied and converted to MDX; Fern imports pages referenced by its `docs.yml` navigation
 - Live-site pages are discovered from machine-readable indexes, sitemaps, and rendered sidebars within the submitted docs path
-- Navigation structure is detected from rendered site navigation, Mintlify `docs.json`/`mint.json`, Fern `fern/docs.yml`, Docusaurus configuration, or the directory structure
+- Navigation structure is detected from Mintlify/Docusaurus/Fern configuration (`mint.json`, `docusaurus.config.js`, `docs.yml`), rendered navigation, `docs.json`, or the directory structure
 - Docusaurus current-version boundaries, case-sensitive routes, redirects, nested docs plugins, callouts, tabs, tables, and highlighted code are preserved
 - Fern navigation, product sections, default-version pages, and local OpenAPI references are imported where supported
 - Local OpenAPI spec files (`.json`, `.yaml`) are written under `openapi/` and connected to the relevant API tab when they can be resolved
@@ -193,7 +193,7 @@ Read `migration-report.json` after every import. It records page and asset count
 | `--into <dir>` | Migrate into an existing Thally project instead of scaffolding a new one |
 | `--branch <name>` | Override the auto-detected git branch |
 | `--docs-dir <path>` | Override the auto-detected docs subdirectory |
-| `--platform <name>` | Select `mintlify`, `fern`, `docusaurus`, or `auto` |
+| `--platform <name>` | Select `mintlify`, `docusaurus`, `fern`, or `auto` |
 | `--api-key <key>` | Anthropic API key for converting non-Markdown files (e.g. `.rst`). Falls back to `ANTHROPIC_API_KEY` env var |
 | `--skip-validation` | Import only; skip dependency installation, content checks, and the production build |
 | `--yes`, `-y` | Accept defaults and live-site limitations, then skip all prompts |
@@ -222,12 +222,22 @@ syntax that does not share the same component name:
 | Docusaurus `:::warning` / `:::caution` | `<Warning>` |
 | Docusaurus `:::danger` | `<Error>` |
 | Docusaurus `<TabItem>` | `<Tab>` |
+| Fern `<CodeBlocks>` | `<CodeGroup>` |
+| Fern `<Cards>` | `<CardGroup>` |
+| Fern `<ParameterField>` | `<ParamField>` |
+| Fern `<Callout intent="info">` | `<Note>` |
+| Fern `<Callout intent="warning">` | `<Warning>` |
+| Fern `<Callout intent="success">` / `<Callout intent="tip">` | `<Tip>` |
+| Fern `<Callout intent="error">` / `<Callout intent="danger">` | `<Error>` |
+| Fern `<Success>` | `<Tip>` |
+| Fern `<Launch>` | `<Note>` |
+| Fern `<Files>` | stripped (children kept) |
 
 <Note type="info" title="Non-Markdown files">
 Files in `.rst` or other formats require an Anthropic API key to convert. Set `ANTHROPIC_API_KEY` in your environment or pass `--api-key`. Plain `.md` and `.mdx` files are migrated for free.
 </Note>
 
-See [Migrate and publish existing documentation](/guides/migrating) for the complete workflow from a live site to a managed Thally Cloud deployment.
+See [Migrate to Thally](/guides/migrating) for the end-to-end guide for each source platform, from the first command to a site running locally, and for publishing the result.
 
 ---
 

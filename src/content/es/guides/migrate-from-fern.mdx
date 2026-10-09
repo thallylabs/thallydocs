@@ -1,0 +1,35 @@
+---
+title: Migrar desde Fern
+navTitle: Fern
+description: Importa un repositorio de documentación Fern a Thally y revísalo en local.
+---
+
+Thally detecta Fern cuando `docs.yml` y `fern.config.json` están en el mismo directorio, normalmente `fern/`. Prefiere el repositorio fuente para conservar la navegación y los componentes originales.
+
+## Migra y ejecuta en local
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/example/product --platform fern --yes
+cd product-docs
+npm run dev
+```
+
+El comando crea un proyecto nuevo, instala dependencias, ejecuta las comprobaciones y una compilación de producción, y crea un commit inicial de Git. La validación ejecuta MDX y componentes importados en tu equipo: usa fuentes propias o de confianza. Lee `migration-report.json` y resuelve los errores antes de publicar; los archivos importados se conservan si falla la validación.
+
+Abre la URL que indique el servidor, normalmente [http://localhost:3040](http://localhost:3040).
+
+## Qué revisar
+
+- **Navegación.** Se importan las páginas referenciadas, secciones anidadas, pestañas, productos y la versión predeterminada. Revisa `slug`, `skip-slug` y los slugs del frontmatter. Las páginas sin referencias quedan fuera de la importación.
+- **Referencia de API.** Las secciones de API resuelven fuentes OpenAPI mediante `generators.yml`, incluido `api-name`. Las especificaciones locales se copian a `openapi/`; las referencias OpenAPI remotas se descargan y validan cuando es posible. El informe incluye las descargas fallidas y las fuentes Fern Definition, AsyncAPI u OpenRPC no compatibles.
+- **Componentes.** Se copian los componentes React locales que se pueden resolver. Los componentes propios de Fern se convierten a equivalentes de Thally; consulta el [mapeo de componentes](/guides/cli-reference#component-mapping). Revisa imports y dependencias pendientes.
+- **Marca y enlaces.** Revisa colores, logotipos, favicon, enlaces de navegación y redirecciones importados; completa los ajustes de tema no compatibles.
+
+Después de editar, ejecuta `npx --yes @thallylabs/cli@latest check` y `npm run build`.
+
+Con el [servidor MCP de Thally](/guides/mcp-server), omite `platform` para detectar Fern automáticamente. Su parámetro explícito `platform` acepta actualmente `mintlify` y `docusaurus`; usa la CLI para forzar Fern.
+
+## Próximos pasos
+
+- [Publicar el sitio](/es/guides/migrating#publicar)
+- [Solución de problemas](/guides/migrating#troubleshooting)

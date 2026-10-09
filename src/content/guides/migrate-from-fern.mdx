@@ -1,0 +1,35 @@
+---
+title: Migrate from Fern
+navTitle: Fern
+description: Import a Fern documentation repository into Thally and review it locally.
+---
+
+Thally detects Fern when `docs.yml` and `fern.config.json` are in the same directory, commonly `fern/`. Prefer the source repository to preserve authored navigation and components.
+
+## Migrate and run locally
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/example/product --platform fern --yes
+cd product-docs
+npm run dev
+```
+
+The command scaffolds a new project, installs dependencies, runs content checks and a production build, and creates an initial Git commit. Validation executes imported MDX and components locally, so use sources you own or trust. Read `migration-report.json` and resolve failures before publishing; imported files are retained when validation fails.
+
+Open the URL printed by the dev server, normally [http://localhost:3040](http://localhost:3040).
+
+## What to check
+
+- **Navigation.** Referenced pages, nested sections, tabs, products, and the default version are imported. Review `slug`, `skip-slug`, and frontmatter slug overrides. Unreferenced pages are outside the import.
+- **API references.** API sections resolve OpenAPI sources through `generators.yml`, including `api-name`. Local specifications are copied to `openapi/`; remote OpenAPI references are downloaded and validated when possible. Failed downloads and unsupported Fern Definition, AsyncAPI, or OpenRPC sources appear in the report.
+- **Components.** Resolvable local React components are copied. Fern-specific components are normalized to Thally equivalents; see the [component mapping](/guides/cli-reference#component-mapping). Review missing imports and package dependencies.
+- **Branding and links.** Review imported colors, logos, favicon, navbar links, and redirects; complete unsupported theme settings.
+
+After edits, run `npx --yes @thallylabs/cli@latest check` and `npm run build`.
+
+With the [Thally MCP server](/guides/mcp-server), omit `platform` to auto-detect Fern. Its explicit `platform` parameter currently accepts `mintlify` and `docusaurus`; use the CLI above to force Fern.
+
+## Next steps
+
+- [Publish the site](/guides/migrating#publish)
+- [Troubleshoot a migration](/guides/migrating#troubleshooting)

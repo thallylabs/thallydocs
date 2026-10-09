@@ -3,9 +3,19 @@ title: Marca y Temas
 description: Personaliza colores, fuentes e identidad del sitio para que coincidan con tu producto.
 ---
 
+## Dónde configurar tu marca
+
+Thally admite tres superficies de configuración:
+
+1. **Thally Cloud → Configuración → Marca** — los cambios de un sitio administrado se publican mediante el flujo de versiones administradas. Los cambios de configuración requieren una compilación; los recursos subidos se publican desde su revisión guardada en el repositorio.
+2. **`/admin/branding`** — overrides de runtime compatibles para un sitio autohospedado.
+3. **`src/data/site.ts` y `docs.json`** — valores portátiles y versionados que sirven como base.
+
+Los overrides administrados incluyen tema, colores (acento, primario y fondo), logotipo y favicon. Un fondo personalizado también armoniza fondos secundarios, bordes, campos de formulario y texto secundario. Los tokens restantes provienen de los presets del sitio.
+
 ## Configuración del sitio
 
-Todos los ajustes a nivel de sitio se encuentran en `src/data/site.ts`. Edita este archivo para establecer el nombre, la descripción y los enlaces de tu producto:
+La identidad y los enlaces versionados se encuentran en `src/data/site.ts`. Los ajustes compatibles guardados en Cloud pueden reemplazarlos en la versión publicada. Edita este archivo para establecer el nombre, la descripción y los enlaces de tu producto:
 
 ```ts
 export const siteConfig: SiteConfig = {
@@ -35,6 +45,12 @@ Cambia entre ellos modificando la variable `brandPreset`:
 const brandPreset: BrandPresetKey = 'primary'  // or 'secondary'
 ```
 
+## Acento de marca
+
+En **Configuración → Marca** de Thally Cloud, elige el acento para los modos claro y oscuro, revisa la vista previa y guarda para publicar la configuración. En sitios autohospedados, usa `/admin/branding` para los overrides de runtime compatibles.
+
+Los iconos de tarjetas y mosaicos usan el acento de marca por defecto. Define `appearance.contentIcons` como `"neutral"` en `docs.json` para hacerlos neutros. En una Card o Tile individual, `iconColor="accent"` o `iconColor="neutral"` reemplaza esa elección.
+
 ## Colores personalizados
 
 Para definir tu propia paleta, edita el objeto `brandPresets` en `site.ts`. Cada preset tiene variantes `light` y `dark` con estos tokens:
@@ -53,45 +69,121 @@ Para definir tu propia paleta, edita el objeto `brandPresets` en `site.ts`. Cada
 
 La mayoría de los colores son valores hexadecimales (p. ej. `#10B981`) que se convierten automáticamente a HSL. Los tokens de la barra lateral (`sidebarActiveBg`, `sidebarActiveText`) usan cadenas HSL sin procesar con opacidad (p. ej. `'152 60% 88% / 0.55'`) para efectos translúcidos.
 
-## Modo oscuro
+## Colores de fondo del sitio
 
-El modo oscuro es gestionado automáticamente por `next-themes`. Los usuarios lo activan con el interruptor de tema en la barra superior. Tu paleta de marca define las variantes tanto clara como oscura, por lo que ambos temas mantienen la identidad de marca.
+En **Configuración → Marca → Fondo del sitio** de Thally Cloud, elige un color
+para cada modo. Revisa las vistas previas y las medidas de contraste antes de
+guardar. El override cubre el fondo de página, encabezado, barra lateral y
+tarjetas, y deriva tonos para fondos secundarios, campos, bordes y texto
+secundario. El texto principal y otros colores semánticos conservan su paleta;
+comprueba la legibilidad en ambos modos. **Use site default** elimina el
+override y restaura el preset de `src/data/site.ts`. Los cambios se aplican en
+la siguiente versión publicada; actualiza los runtimes antiguos primero.
 
-## Logotipo
+## Modo oscuro y bloqueo de apariencia
 
-El componente de logotipo se encuentra en `src/components/layout/logo.tsx`. Reemplaza el SVG con el tuyo propio:
+El modo oscuro se gestiona automáticamente. Por defecto, los usuarios lo activan con el interruptor de tema en la barra superior. Tu paleta de marca define las variantes tanto clara como oscura, por lo que ambos temas mantienen la identidad de marca.
 
-```tsx
-export function Logo({ className, showText = true }: LogoProps) {
-  return (
-    <div className={cn('inline-flex items-center gap-2', className)}>
-      {/* Replace this SVG with your logo */}
-      <img src="/logo.svg" alt="Logo" width={32} height={32} />
-      {showText ? (
-        <span className="text-lg font-bold tracking-tight text-foreground">
-          Your Product
-        </span>
-      ) : null}
-    </div>
-  )
+Puedes controlar el modo de color inicial y si los lectores pueden cambiarlo añadiendo configuración de `appearance` en `docs.json`:
+
+```json
+{
+  "appearance": {
+    "default": "dark",
+    "showToggle": false,
+    "contentIcons": "accent"
+  }
 }
 ```
 
+| Clave | Tipo | Predeterminado | Propósito |
+| --- | --- | --- | --- |
+| `default` | `"system"`, `"light"` o `"dark"` | `"system"` | Modo de color inicial para nuevos lectores. |
+| `showToggle` | boolean | `true` | Muestra el interruptor de tema en la barra superior. Cuando es `false`, se aplica el modo definido en `default` y el interruptor se oculta. |
+| `contentIcons` | `"neutral"` o `"accent"` | `"accent"` | Tratamiento de iconos en tarjetas y mosaicos. |
+
+Cuando `showToggle` es `false`, un script de pre-renderizado se ejecuta en el encabezado del documento para aplicar el modo bloqueado antes de que la página se renderice, evitando destellos de color. Las preferencias guardadas de visitas anteriores se ignoran mientras el interruptor está oculto. Con `"default": "system"`, el sitio sigue los cambios del tema del sistema operativo.
+
+Los sitios administrados pueden reemplazar cada campo en **Configuración → Marca** de Thally Cloud. Los cambios se aplican en la siguiente versión publicada.
+
+## Imágenes de fondo y decoración
+
+Añade un fondo a nivel de sitio detrás de la superficie del documento con el objeto `background` en `docs.json`:
+
+```json
+{
+  "background": {
+    "image": "/images/bg-light.webp",
+    "imageDark": "/images/bg-dark.webp",
+    "decoration": "grid"
+  }
+}
+```
+
+| Clave | Tipo | Predeterminado | Propósito |
+| --- | --- | --- | --- |
+| `image` | string | — | Imagen de fondo para modo claro. Una ruta dentro de `public/` o una URL HTTPS. Las rutas locales deben usar PNG, JPG, JPEG o WebP. Las URLs HTTPS no requieren extensión. |
+| `imageDark` | string | — | Imagen de fondo para modo oscuro. Si se omite, usa `image`. |
+| `decoration` | `"none"`, `"grid"` o `"gradient"` | `"none"` | Decoración superpuesta sobre la imagen de fondo. |
+
+La imagen de fondo se renderiza como una capa fija a pantalla completa detrás de la página. Cuando hay una imagen de fondo activa, las superficies de contenido y barra lateral se vuelven translúcidas para mantener la legibilidad del texto sobre la imagen.
+
+Las imágenes HTTPS se cargan directamente en el navegador del lector y no pueden incluir credenciales en la URL. Las rutas locales no admiten traversal ni fondos SVG. Una imagen oscura sin imagen compartida aparece solo en modo oscuro. La decoración también funciona sin imagen. Omite `background` para mantener las superficies existentes.
+
+Los sitios administrados pueden definir imágenes y decoración en **Configuración → Marca**. Los valores administrados tienen precedencia por campo y se aplican en la siguiente versión publicada. Actualiza los runtimes antiguos antes de usar estas opciones.
+
+## Logotipo y favicon
+
+Para un sitio administrado, sube el logotipo y favicon en **Configuración → Marca**.
+Los recursos guardados se aplican en la siguiente versión publicada. Los controles indican los formatos y límites admitidos. Para un override en runtime autohospedado, usa `/admin/branding`.
+
+Cuando no hay un recurso administrado o de admin configurado, Thally busca en
+`docs.json` rutas portátiles de logotipo y favicon antes de usar los valores
+predeterminados integrados.
+
+**Logotipo.** Establece `navbar.logo` para controlar la imagen, la visibilidad del nombre del sitio y la etiqueta a la derecha del logotipo:
+
+```json
+"navbar": {
+  "logo": {
+    "light": "/brand/logo-light.svg",
+    "dark": "/brand/logo-dark.svg",
+    "showTitle": true,
+    "rightText": "Docs"
+  }
+}
+```
+
+Define `showTitle` como `false` para ocultar el nombre del sitio junto al logotipo (control **Hide site name text** en Cloud).
+
+**Favicon.** Establece `favicon` en el nivel raíz de `docs.json`:
+
+```json
+{
+  "favicon": {
+    "light": "/brand/favicon-light.svg",
+    "dark": "/brand/favicon-dark.svg"
+  }
+}
+```
+
+Las rutas deben apuntar a archivos dentro de `public/`. Se rechazan URLs
+externas, traversal de rutas, cadenas de consulta y barras invertidas.
+
 ## Fuentes
 
-Las fuentes se configuran en `src/app/layout.tsx` usando `next/font/google`. Los valores predeterminados son:
+Las fuentes del cuerpo y los encabezados se configuran en `docs.json`:
 
-- **Sans**: Inter
-- **Mono**: JetBrains Mono
-
-Para cambiarlas, reemplaza las importaciones de fuentes:
-
-```ts
-import { Outfit, Fira_Code } from 'next/font/google'
-
-const fontSans = Outfit({ subsets: ['latin'], variable: '--font-sans' })
-const fontMono = Fira_Code({ subsets: ['latin'], variable: '--font-mono' })
+```json
+{
+  "fonts": {
+    "body": { "family": "Plus Jakarta Sans", "weight": ["400", "500", "600", "700"] },
+    "heading": { "family": "Outfit", "weight": ["600", "700"] }
+  }
+}
 ```
+
+Los valores predeterminados son **Inter** para el cuerpo y **JetBrains Mono** para código. Consulta [Fuentes personalizadas](/guides/custom-fonts).
 
 ## Scripts de analítica de terceros
 
@@ -140,7 +232,7 @@ El selector se oculta cuando hay menos de dos versiones definidas.
 
 ## Editar en GitHub
 
-Cuando `repoUrl` en `siteConfig` apunta a un repositorio real de GitHub, cada página de documentación muestra un enlace "Editar esta página en GitHub" al final. Este enlace apunta directamente al archivo fuente MDX en la rama `main`.
+Cuando `repoUrl` en `siteConfig` apunta a un repositorio real de GitHub, las páginas de documentación pueden mostrar los enlaces "Edit this page" y "Report an issue" en el rail de acciones de página (junto a la tabla de contenidos, o debajo del artículo en diseños centrados y anchos). En sitios administrados, cada enlace depende de su opción correspondiente en **Configuración → Feedback** (sugerencias de edición o reporte de incidencias). El enlace de edición abre el archivo fuente MDX en la rama `main`; el enlace de incidencia abre un issue de GitHub con título predefinido.
 
 ```ts
 export const siteConfig: SiteConfig = {

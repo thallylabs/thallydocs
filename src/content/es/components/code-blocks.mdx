@@ -1,6 +1,6 @@
 ---
 title: "Bloques de código"
-description: "Bloques de código con resaltado de sintaxis, etiquetas de lenguaje y soporte para copiar."
+description: "Bloques de código con números de línea, marcadores diff, enfoque y soporte para copiar."
 ---
 
 Los bloques de código se renderizan automáticamente a partir de la sintaxis Markdown con cercas. Usa `<CodeGroup>` para agrupar múltiples variantes de lenguaje en una vista con pestañas.
@@ -12,7 +12,7 @@ const client = new ApiClient({ apiKey: process.env.API_KEY })
 const pets = await client.pets.list({ limit: 10 })
 ```
 
-Agrega un nombre de archivo después del identificador de lenguaje:
+Agrega un nombre de archivo o título después del identificador de lenguaje. Varias palabras sueltas se unen en un solo título:
 
 ```typescript api-client.ts
 import { ApiClient } from '@company/sdk'
@@ -21,6 +21,14 @@ export const client = new ApiClient({
   apiKey: process.env.API_KEY!,
 })
 ```
+
+Usa `title="..."` o `filename="..."` para títulos que contengan palabras reservadas como `lines` o `wrap`:
+
+````mdx
+```typescript title="Show lines of code"
+const items = await client.list()
+```
+````
 
 ## CodeGroup
 
@@ -57,19 +65,161 @@ client = ApiClient(api_key="sk-...")
 
 ## Líneas resaltadas
 
-Usa la prop `highlight` para llamar la atención sobre líneas específicas:
+Usa `{líneas}` o `highlight={líneas}` para llamar la atención sobre líneas específicas:
 
-```typescript highlight={2,3}
+```typescript {2,3}
 const client = new ApiClient()
 // These two lines will be highlighted
 const result = await client.pets.list()
 console.log(result)
 ```
 
+````mdx
+```typescript {2,3}
+const client = new ApiClient()
+```
+
+```typescript highlight={2,3}
+const client = new ApiClient()
+```
+````
+
+Se admiten rangos: `{1,3-5}` resalta las líneas 1, 3, 4 y 5.
+
+## Líneas enfocadas
+
+Usa `focus={líneas}` para atenuar todo excepto las líneas indicadas:
+
+```typescript focus={2,3}
+const client = new ApiClient()
+const result = await client.pets.list()
+console.log(result)
+console.log('done')
+```
+
+````mdx
+```typescript focus={2,3}
+const result = await client.pets.list()
+```
+````
+
+## Números de línea
+
+Agrega `lines` para mostrar un margen con números de línea. El margen se amplía automáticamente en bloques con 100 o más líneas.
+
+```typescript lines
+const client = new ApiClient({ apiKey: process.env.API_KEY })
+const pets = await client.pets.list({ limit: 10 })
+for (const pet of pets) {
+  console.log(pet.name)
+}
+```
+
+````mdx
+```typescript lines
+const client = new ApiClient({ apiKey: process.env.API_KEY })
+```
+````
+
+`lines` y `wrap` se pueden combinar. Las líneas continuadas se indentan después del margen en lugar de comenzar debajo del número de línea.
+
+## Notación diff
+
+Agrega comentarios `[!code ++]` y `[!code --]` de estilo Shiki para marcar líneas añadidas y eliminadas. Los marcadores se eliminan del bloque renderizado y del texto copiado. Las líneas añadidas muestran un glifo `+` y las eliminadas un glifo `-`, de modo que la distinción no depende solo del color.
+
+```typescript
+export const config = {
+  apiKey: process.env.API_KEY, // [!code --]
+  apiKey: process.env.COMPANY_API_KEY, // [!code ++]
+  timeout: 5000,
+}
+```
+
+````mdx
+```typescript
+export const config = {
+  apiKey: process.env.API_KEY, // [!code --]
+  apiKey: process.env.COMPANY_API_KEY, // [!code ++]
+}
+```
+````
+
+La notación funciona con cualquier líder de comentario común: `//`, `#`, `--`, `/* */`, `<!-- -->` y la forma JSX `{/* */}`.
+
+Un `:N` final aplica el marcador a la línea actual y a las siguientes N-1 líneas:
+
+````mdx
+```python
+# [!code ++:2]
+import os
+import sys
+```
+````
+
+Una línea que contiene solo un comentario marcador se elimina de la salida y marca la línea siguiente.
+
+`[!code highlight]` y `[!code focus]` funcionan de la misma manera y se pueden combinar con los atributos `highlight` y `focus` a nivel de cerca.
+
+## Bloques expandibles
+
+Agrega `expandable` para colapsar bloques de más de 10 líneas. Un botón Expand/Collapse aparece en la parte inferior del bloque.
+
+```typescript expandable
+import { ApiClient } from '@company/sdk'
+
+const client = new ApiClient({
+  apiKey: process.env.API_KEY!,
+})
+
+async function listPets() {
+  const pets = await client.pets.list({ limit: 10 })
+  for (const pet of pets) {
+    console.log(pet.name, pet.species)
+  }
+  return pets
+}
+
+listPets()
+```
+
+Cuando una línea resaltada, enfocada o con marcador diff queda debajo del pliegue, el bloque comienza expandido para que la línea marcada sea visible.
+
+## Ocultar botón de copiar
+
+Agrega `nocopy` para ocultar el botón de copiar en un bloque de código:
+
+```bash nocopy
+echo "This block has no copy button"
+```
+
+Dentro de un `<CodeGroup>`, `nocopy` se aplica por pestaña. Establece `nocopy` en cada pestaña donde quieras ocultar la copia; omítelo en las pestañas que deben permitir copiar.
+
+## Iconos
+
+Agrega `icon="nombre"` para mostrar un icono junto al título en el encabezado del bloque. Dentro de un `<CodeGroup>`, el icono también aparece en la pestaña.
+
+````mdx
+```python icon="python"
+print("Hello")
+```
+````
+
 ## Líneas largas
 
-Agrega `wrap` después del identificador de lenguaje para ajustar automáticamente las líneas largas en lugar de desplazarse horizontalmente:
+Agrega `wrap` para ajustar automáticamente las líneas largas en lugar de desplazarse horizontalmente:
 
 ```bash wrap
 npx create-thally-docs my-docs --template default --yes --install --git
 ```
+
+## Combinar opciones
+
+Las opciones se pueden usar juntas en cualquier orden:
+
+````mdx
+```typescript title="server.ts" lines expandable highlight={3}
+import express from 'express'
+const app = express()
+app.listen(3000)
+```
+````
