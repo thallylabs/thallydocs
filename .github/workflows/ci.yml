@@ -15,7 +15,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  plan:
+    name: Plan validation
+    runs-on: ubuntu-latest
+    outputs:
+      full: ${{ steps.plan.outputs.full }}
+      canary: ${{ steps.plan.outputs.canary }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Plan validation from changed paths
+        id: plan
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+        run: node .github/scripts/plan-managed-ci.mjs "$BASE_SHA"
+
   cli-contract:
+    needs: plan
+    if: needs.plan.outputs.canary == 'true'
     name: Fresh scaffold · CLI check
     runs-on: ubuntu-latest
     steps:
@@ -37,24 +58,29 @@ jobs:
         run: npx --yes @thallylabs/cli@latest check --ci .
 
   verify:
+    needs: plan
+    # A failed planner must fail the required check, never skip it successfully.
+    if: always()
     name: Test · Build
     runs-on: ubuntu-latest
     steps:
+      - name: Require a successful validation plan
+        env:
+          PLAN_RESULT: ${{ needs.plan.result }}
+          PLAN_FULL: ${{ needs.plan.outputs.full }}
+        run: |
+          test "$PLAN_RESULT" = success
+          test "$PLAN_FULL" = true || test "$PLAN_FULL" = false
+
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Plan validation from changed paths
-        id: plan
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: node .github/scripts/plan-managed-ci.mjs "$BASE_SHA"
-
       - name: Read pinned runtime provenance
         id: runtime
-        if: steps.plan.outputs.full == 'true'
+        if: needs.plan.outputs.full == 'true'
         shell: bash
         run: |
           node <<'NODE'
@@ -70,7 +96,7 @@ jobs:
           NODE
 
       - name: Checkout pinned Thally runtime
-        if: steps.plan.outputs.full == 'true'
+        if: needs.plan.outputs.full == 'true'
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: thallylabs/thally
@@ -80,7 +106,7 @@ jobs:
           persist-credentials: false
 
       - name: Prove runtime revision is on protected main
-        if: steps.plan.outputs.full == 'true'
+        if: needs.plan.outputs.full == 'true'
         env:
           RUNTIME_SHA: ${{ steps.runtime.outputs.sha }}
         run: |
@@ -89,7 +115,7 @@ jobs:
           git -C runtime-source merge-base --is-ancestor "$RUNTIME_SHA" origin/main
 
       - name: Verify generated runtime snapshot
-        if: steps.plan.outputs.full == 'true'
+        if: needs.plan.outputs.full == 'true'
         run: >-
           node runtime-source/.github/scripts/starter-runtime-contract.mjs check
           --starter-dir .
@@ -98,7 +124,7 @@ jobs:
       # The protected runtime checkout is verification input, not part of the
       # standalone app. Remove it before Next.js scans the workspace for types.
       - name: Remove runtime checkout
-        if: steps.plan.outputs.full == 'true'
+        if: needs.plan.outputs.full == 'true'
         run: >-
           node -e "require('node:fs').rmSync('runtime-source',
           { recursive: true, force: true })"
@@ -113,6 +139,9 @@ jobs:
       - name: Install pinned content tooling
         run: npm ci --ignore-scripts --prefix .github/thally-tooling
 
+      - name: Verify CI planning policy
+        run: node --test .github/scripts/plan-managed-ci.test.mjs .github/scripts/ci-workflow.test.mjs
+
       - name: Verify Knowledge-surface documentation contract
         run: node --test .github/scripts/knowledge-surface-docs-contract.test.mjs
 
@@ -123,15 +152,15 @@ jobs:
         run: .github/thally-tooling/node_modules/.bin/thally check --ci .
 
       - name: Install dependencies
-        if: steps.plan.outputs.full == 'true'
+        if: needs.plan.outputs.full == 'true'
         run: npm ci --ignore-scripts
 
       - name: Test
-        if: steps.plan.outputs.full == 'true'
+        if: needs.plan.outputs.full == 'true'
         run: npm test
 
       - name: Build managed runtime and content assets
-        if: steps.plan.outputs.full == 'true'
+        if: needs.plan.outputs.full == 'true'
         run: npm run build:cloudflare
         env:
           # Managed releases keep customer-authored content in immutable
@@ -144,5 +173,5 @@ jobs:
           THALLY_SITE_URL: https://example.com
 
       - name: Verify managed content artifact
-        if: steps.plan.outputs.full == 'true'
+        if: needs.plan.outputs.full == 'true'
         run: node .github/scripts/verify-managed-content-assets.mjs

@@ -1,0 +1,38 @@
+name: Published scaffold compatibility
+
+permissions:
+  contents: read
+
+on:
+  schedule:
+    - cron: '17 5 * * 1'
+  # The package release coordinator dispatches after publishing verified bytes.
+  # This event carries no build artifacts, credentials, or candidate source.
+  repository_dispatch:
+    types: [published-package-compatibility]
+  workflow_dispatch:
+
+concurrency:
+  group: published-scaffold-compatibility
+  cancel-in-progress: false
+
+jobs:
+  cli-contract:
+    name: Fresh scaffold · CLI check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+          package-manager-cache: false
+
+      - name: Create a clean project
+        run: >-
+          npx --yes create-thally-docs@latest
+          "$RUNNER_TEMP/thally-cli-contract"
+          --yes --no-install
+
+      - name: Run the documented first check
+        working-directory: ${{ runner.temp }}/thally-cli-contract
+        run: npx --yes @thallylabs/cli@latest check --ci .

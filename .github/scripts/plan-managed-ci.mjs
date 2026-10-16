@@ -29,24 +29,38 @@ export function createManagedCiPlan(paths) {
   };
 }
 
-export function changedPaths(baseSha) {
+export function changedPaths(baseSha, run = execFileSync) {
   if (!/^[a-f0-9]{40}$/i.test(baseSha)) {
     return [];
   }
-  return execFileSync("git", ["diff", "--name-only", `${baseSha}...HEAD`], {
-    encoding: "utf8",
-  })
-    .split("\n")
-    .map((path) => path.trim())
-    .filter(Boolean);
+  try {
+    // NUL delimiters preserve unusual filenames; missing history fails closed.
+    return run("git", ["diff", "--name-only", "--no-renames", "-z", `${baseSha}...HEAD`], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).split("\0").filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+/** Select onboarding and tool/source contracts for the public-package canary. */
+export function needsFreshScaffoldCanary(paths) {
+  return paths.length === 0 || paths.some((path) =>
+    /^src\/content\/(?:[a-z]{2}\/)?(?:quickstart\.mdx|guides\/(?:getting-started|cli-[^/]+|troubleshooting|migrat[^/]*|migrate-[^/]+)\.mdx|components\/agent-prompt\.mdx)$/.test(path) ||
+    /^\.github\/thally-tooling\//.test(path) ||
+    /^\.github\/scripts\/.*(?:contract|plan-managed-ci).*\.mjs$/.test(path) ||
+    /^\.github\/workflows\/(?:ci|scaffold-compatibility)\.yml$/.test(path) ||
+    /^(?:package(?:-lock)?\.json|starter-release\.json|README\.md)$/.test(path));
 }
 
 export function main() {
-  const plan = createManagedCiPlan(changedPaths(process.argv[2] ?? ""));
+  const paths = changedPaths(process.argv[2] ?? "");
+  const plan = { ...createManagedCiPlan(paths), canary: needsFreshScaffoldCanary(paths) };
   if (process.env.GITHUB_OUTPUT) {
     appendFileSync(
       process.env.GITHUB_OUTPUT,
-      `full=${plan.full}\nmode=${plan.mode}\nchanged_count=${plan.changedCount}\n`,
+      `canary=${plan.canary}\nfull=${plan.full}\nmode=${plan.mode}\nchanged_count=${plan.changedCount}\n`,
     );
   }
   if (process.env.GITHUB_STEP_SUMMARY) {
