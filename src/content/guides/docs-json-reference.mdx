@@ -94,6 +94,7 @@ Operation keys use `METHOD /path` exactly as written in the specification.
 | --- | --- |
 | `theme` | Structural theme: `default`, `maple`, `sharp`, or `minimal`. |
 | `appearance` | Reader color mode and toggle control (see below). |
+| `colors` | Portable light/dark overrides for button, accent, and background colors (see below). |
 | `background` | Site-wide background image and decoration (see below). |
 | `banner` | `content` plus optional `dismissible`. Markdown links are supported. |
 | `navbar` | Secondary `links`, an optional primary action, and a portable `logo` fallback. |
@@ -120,6 +121,30 @@ Operation keys use `METHOD /path` exactly as written in the specification.
 | `appearance.showToggle` | `true` | Show the theme toggle. Set `false` to lock readers into the mode set by `default`. |
 | `appearance.contentIcons` | `"accent"` | Card and tile icon treatment: `"accent"` or `"neutral"`. |
 
+### Colors per mode
+
+Set each mode independently with six-digit hex colors:
+
+```json
+{
+  "colors": {
+    "light": { "primary": "#2F76EF", "accent": "#2F76EF", "background": "#FFFFFF" },
+    "dark": { "primary": "#60A5FA", "accent": "#60A5FA", "background": "#09090B" }
+  }
+}
+```
+
+| Field | Purpose |
+| --- | --- |
+| `colors.light.primary`, `colors.dark.primary` | Button fill. |
+| `colors.light.accent`, `colors.dark.accent` | Links and highlights. |
+| `colors.light.background`, `colors.dark.background` | Page canvas. |
+
+Every color and either mode may be omitted. Omitted values retain their existing
+defaults; managed or admin overrides can take precedence. Use
+[`src/data/site.ts`](/guides/branding-and-theming#custom-colors) for the full
+semantic palette, including borders and active sidebar states.
+
 ### Background
 
 ```json
@@ -144,6 +169,13 @@ action contains `label` and `href`, or `null` to disable the CTA entirely. `navb
 text-only wordmark that hides the logo image and "Docs" suffix. When omitted,
 the default logo and suffix are shown. Footer columns contain a `heading` and an
 `items` array of `{ "label", "href" }` objects. Set `footer.copyright` to a custom string with an optional `{year}` placeholder.
+
+### Footer social keys
+
+`footer.socials` maps platform names to URLs. The keys `github`, `twitter`, `x`,
+`discord`, and `linkedin` have built-in icons. Other keys render their name as a
+text link. Use `footer.links` when you want a custom label such as "Website".
+See [Navbar and footer](/guides/navbar-and-footer) for examples.
 
 ## Redirects and indexing
 

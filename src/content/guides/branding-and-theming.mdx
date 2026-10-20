@@ -227,6 +227,16 @@ any level, the runtime uses its built-in mark and the name from `siteConfig`.
 Keep framework-owned logo components unchanged; use the branding controls or
 the docs.json configuration instead.
 
+The header and generated social-preview cards use the configured logo. The
+browser tab and chat avatar use the configured favicon. Each surface follows
+the reader's light or dark mode and falls back to the light asset when a dark
+variant is omitted. Set `navbar.logo` to `null` for a text-only header and
+social-preview card; the favicon remains independent.
+
+Social-preview cards support local SVG, PNG, JPEG, WebP, and GIF logos. SVGs must
+contain no scripts, event handlers, or external resource references. Keep these
+assets in `public/`; replacing the bundled default files is unnecessary.
+
 ## Fonts
 
 The body and heading fonts are set from a `fonts` block in `docs.json` — any Google Font, no code changes:

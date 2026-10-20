@@ -4,13 +4,22 @@ navTitle: Cloudflare Workers
 description: Build, smoke-test, and publish a Thally site as an OpenNext Cloudflare Worker.
 ---
 
-The Thally project includes an OpenNext adapter and `wrangler.jsonc` for a
-server-capable Cloudflare Workers deployment.
+The Thally project includes portable configuration and scripts for a
+server-capable Cloudflare Workers deployment. Install the optional OpenNext
+and Wrangler tooling when you choose this hosting provider.
 
 ## Before you begin
 
-Install dependencies and authenticate Wrangler with the Cloudflare account
-that owns the target Worker.
+Install the project's dependencies, then enable its Cloudflare profile:
+
+```bash
+npm run setup:cloudflare
+```
+
+This adds pinned OpenNext and Wrangler dependencies to your project and lockfile.
+Authenticate Wrangler with the Cloudflare account that owns the target Worker.
+Thally Cloud managed hosting supplies its own deployment tools and does not
+require this setup command.
 
 Set `THALLY_SITE_URL` and any optional secrets in the Worker environment. Do
 not commit production secrets to `wrangler.jsonc`.
