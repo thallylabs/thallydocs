@@ -20,6 +20,22 @@ Coloca tu archivo de especificación OpenAPI 3.x en la raíz del proyecto como `
 
 La pestaña de Referencia de API generará automáticamente una página para cada operación en tu especificación.
 
+## Navegar por un endpoint
+
+Cada endpoint muestra su método HTTP, como `GET` o `POST`, antes del nombre en
+la barra lateral y el menú móvil. Thally lo obtiene de los metadatos de la
+operación; no hace falta añadirlo al título. Las páginas MDX vinculadas con
+frontmatter `openapi` o descritas con frontmatter `api` también muestran el método.
+
+En pantallas amplias, los parámetros aparecen junto a tarjetas separadas de
+solicitud y respuesta. En pantallas más estrechas, las tarjetas pasan encima de
+los parámetros. La barra del endpoint permite copiar la URL o abrir **Try it**.
+
+El lenguaje elegido en la tarjeta se comparte con los grupos compatibles y la
+ventana Try it. Las pestañas de respuesta muestran los estados documentados en
+la especificación. Al pasar el cursor o enfocar un parámetro o una línea vinculada,
+se resaltan los nombres de campo correspondientes en la documentación y los ejemplos.
+
 ## Opciones de configuración
 
 | Campo | Requerido | Descripción |
@@ -71,16 +87,22 @@ Por defecto, las operaciones se agrupan por sus `tags` de OpenAPI. El array `tag
 
 Las etiquetas no listadas en `tagsOrder` aparecen después de las listadas, en el orden en que aparecen por primera vez en la especificación.
 
-## Panel Pruébalo
+## Ventana Try it
 
-Cada página de operación de API incluye un botón "Try It" que abre un panel de solicitudes interactivo. Este:
+Cada página de operación de API incluye un botón **Try it** que abre una ventana modal interactiva. Esta:
 
 - Rellena previamente los parámetros desde el esquema OpenAPI
+- Marca valores obligatorios ausentes y tipos inválidos antes de enviar, y enfoca el primer campo con error
 - Envía solicitudes a través de un proxy del lado del servidor para evitar problemas de CORS
 - Muestra la respuesta con el código de estado, encabezados y cuerpo
 - Genera un comando cURL que puedes copiar
 
-No se necesita configuración — funciona automáticamente desde tu especificación.
+En teléfonos, la ventana ocupa toda la pantalla y mantiene **Send** accesible en
+la parte inferior. Pulsa Escape o el botón de cierre para volver al endpoint.
+
+La especificación debe incluir al menos una URL de servidor. Las solicitudes se
+envían al servidor seleccionado y pueden modificar sus datos. Usa credenciales
+adecuadas para ese servidor; la ventana no crea un entorno de pruebas simulado.
 
 ## Varias especificaciones de API
 

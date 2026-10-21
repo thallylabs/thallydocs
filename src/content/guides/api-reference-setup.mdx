@@ -42,6 +42,22 @@ Place your OpenAPI 3.x spec file in the project root as `openapi.yaml` (or `open
 
 The API Reference tab will auto-generate a page for every operation in your spec.
 
+## Navigate an endpoint
+
+Each endpoint shows its HTTP method, such as `GET` or `POST`, before its name in
+the sidebar and mobile menu. Thally reads the method from the operation metadata;
+you do not need to add it to the title. Authored pages linked with `openapi`
+frontmatter or described with `api` frontmatter also receive method tags.
+
+On wide screens, parameter documentation sits beside separate request and
+response cards. On narrower screens, the cards move above the parameters. The
+endpoint bar lets you copy the URL or open **Try it**.
+
+Choose a request language from the card header; compatible code groups and the
+Try it modal share that choice. Response tabs switch between the statuses
+documented in your specification. Hover or focus a parameter or a linked code
+line to highlight matching field names across the documentation and examples.
+
 ## Configuration options
 
 | Field | Required | Description |
@@ -97,16 +113,20 @@ By default, operations are grouped by their OpenAPI `tags`. The `tagsOrder` arra
 
 Tags not listed in `tagsOrder` appear after the listed ones, in the order they first appear in the spec.
 
-## Try It panel
+## Try it modal
 
-Every API operation page includes a **Try It** button that opens an interactive request panel. It:
+Every API operation page includes a **Try it** button that opens an interactive request modal. It:
 
 - Prefills parameters from the OpenAPI schema
+- Marks missing required values and invalid field types before sending, then focuses the first invalid field
 - Sends requests through a server-side proxy to avoid CORS issues
 - Displays the response with status code, headers, and body
 - Generates a cURL command you can copy
 
-Try It is ready when the specification provides at least one server URL. Add
+The modal fills the screen on phones and keeps **Send** accessible at the bottom.
+Press Escape or use the close button to return to the endpoint.
+
+Try it is ready when the specification provides at least one server URL. Add
 authentication placeholders only when your API requires them; readers can
 enter their own credentials before sending a request.
 

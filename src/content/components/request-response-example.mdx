@@ -1,96 +1,96 @@
 ---
 title: "Request & Response Example"
 navTitle: "Request/Response example"
-description: "Styled wrappers that visually distinguish request and response code blocks."
+description: "Show separate request and response code cards with language selection and response status tabs."
 ---
 
-Use `<RequestExample>` and `<ResponseExample>` to frame HTTP request/response pairs in MDX-written API docs. They add a labeled header bar — blue for requests, green for responses — matching the style used by the auto-generated API Reference pages.
+Use `<RequestExample>` and `<ResponseExample>` to present HTTP examples as
+separate labeled cards. Put each fenced sample directly inside its wrapper.
+Request variants appear in a language menu; response variants appear as status tabs.
 
-## Example
+## Request languages and response statuses
 
 <RequestExample>
 ```bash cURL
 curl -X POST https://api.example.com/pets \
-  -H "Authorization: Bearer sk-..." \
   -H "Content-Type: application/json" \
   -d '{"name": "Buddy", "species": "dog"}'
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.example.com/pets",
+    json={"name": "Buddy", "species": "dog"},
+)
 ```
 </RequestExample>
 
 <ResponseExample>
 ```json 201 Created
-{
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "name": "Buddy",
-  "species": "dog",
-  "status": "available",
-  "created_at": "2025-01-15T10:30:00Z"
-}
+{ "id": "pet_123", "name": "Buddy", "species": "dog" }
+```
+
+```json 400 Bad Request
+{ "error": "A pet name is required." }
 ```
 </ResponseExample>
 
-```mdx
+````mdx
 <RequestExample>
-\`\`\`bash cURL
+```bash cURL
 curl -X POST https://api.example.com/pets \
-  -H "Authorization: Bearer sk-..." \
   -H "Content-Type: application/json" \
   -d '{"name": "Buddy", "species": "dog"}'
-\`\`\`
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.example.com/pets",
+    json={"name": "Buddy", "species": "dog"},
+)
+```
 </RequestExample>
 
 <ResponseExample>
-\`\`\`json 201 Created
-{
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "name": "Buddy",
-  "species": "dog",
-  "status": "available",
-  "created_at": "2025-01-15T10:30:00Z"
-}
-\`\`\`
+```json 201 Created
+{ "id": "pet_123", "name": "Buddy", "species": "dog" }
+```
+
+```json 400 Bad Request
+{ "error": "A pet name is required." }
+```
 </ResponseExample>
-```
+````
 
-## With CodeGroup
+Label each request fence with its language, such as `cURL` or `Python`. The
+selected language is shared with compatible code groups, generated API request
+cards, and the Try it modal. If a group does not offer that language, it keeps a compatible earlier choice
+or shows its first sample. The preference survives a reload when browser storage is available.
 
-Wrap a `<CodeGroup>` inside `<RequestExample>` to show the same request in multiple languages:
+Label response fences with the status code and optional description, such as
+`201 Created` or `400 Bad Request`. Readers can select a status tab or move
+between tabs with the arrow keys. Changing the status does not change the
+request language. On small screens, tabs keep the status code visible and hide
+the longer description.
 
-<RequestExample>
-  <CodeGroup>
-  ```typescript TypeScript
-  await client.pets.create({ name: 'Buddy', species: 'dog' })
-  ```
+These authored responses are examples from your documentation. To display an
+actual API response, use [Try it](/guides/api-playground).
 
-  ```python Python
-  client.pets.create(name="Buddy", species="dog")
-  ```
-  </CodeGroup>
-</RequestExample>
+## Link fields to examples
 
-```mdx
-<RequestExample>
-  <CodeGroup>
-  \`\`\`typescript TypeScript
-  await client.pets.create({ name: 'Buddy', species: 'dog' })
-  \`\`\`
+On an API endpoint page, hovering or focusing a parameter row or a linked code
+line highlights matching field names across the documentation and samples.
+Use the same names in your `ParamField` and `ResponseField` entries and in the
+example keys. Links are inferred from recognized field-name positions, such
+as JSON keys, rather than arbitrary matching text.
 
-  \`\`\`python Python
-  client.pets.create(name="Buddy", species="dog")
-  \`\`\`
-  </CodeGroup>
-</RequestExample>
-```
+## Next steps
 
-## See it in action
-
-The API Reference pages are auto-generated from your OpenAPI spec and render using the same visual components — `ParamField`, `ResponseField`, `Expandable`, `RequestExample`, and `ResponseExample`. Open any endpoint to see them all in context:
-
-<CardGroup cols="2">
-  <Card title="List pets" icon="book-open" href="/api/default/pets/get">
-    `GET /pets` — query parameters, paginated response schema with nested expandable fields.
-  </Card>
-  <Card title="Create a pet" icon="code-simple" href="/api/default/pets/post">
-    `POST /pets` — request body params, full response schema, and live cURL example.
-  </Card>
-</CardGroup>
+- [Code blocks and language groups](/components/code-blocks)
+- [Document request parameters](/components/param-field)
+- [Document response fields](/components/response-field)
+- [Generate an API reference](/guides/api-reference-setup)

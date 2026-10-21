@@ -3,7 +3,11 @@ title: "Bloques de código"
 description: "Bloques de código con números de línea, marcadores diff, enfoque y soporte para copiar."
 ---
 
-Los bloques de código se renderizan automáticamente a partir de la sintaxis Markdown con cercas. Usa `<CodeGroup>` para agrupar múltiples variantes de lenguaje en una vista con pestañas.
+Los bloques de código se renderizan automáticamente a partir de la sintaxis Markdown con cercas. Usa `<CodeGroup>` para ofrecer ejemplos relacionados en un menú de lenguajes.
+
+Las tarjetas mantienen el título y los controles legibles en pantallas pequeñas.
+Las líneas largas se desplazan dentro de la tarjeta; agrega `wrap` si prefieres
+ajustarlas al ancho disponible.
 
 ## Bloque de código simple
 
@@ -53,7 +57,12 @@ const items = await client.list()
 
 ## CodeGroup
 
-Agrupa fragmentos relacionados en múltiples lenguajes bajo un único bloque con pestañas:
+Agrupa fragmentos relacionados en múltiples lenguajes bajo una sola tarjeta:
+
+Elige un lenguaje en el encabezado. Los demás grupos, las tarjetas de solicitud
+generadas y la ventana Try it siguen esa preferencia cuando ofrecen un ejemplo
+compatible. Si no hay coincidencia, conservan una elección anterior compatible o muestran el primer ejemplo. La elección se
+conserva al recargar cuando el almacenamiento del navegador está disponible.
 
 <CodeGroup>
 ```typescript TypeScript
@@ -266,11 +275,11 @@ echo "This block has no copy button"
 ```
 ````
 
-Dentro de un `<CodeGroup>`, `nocopy` se aplica por pestaña. Establece `nocopy` en cada pestaña donde quieras ocultar la copia; omítelo en las pestañas que deben permitir copiar.
+Dentro de un `<CodeGroup>`, `nocopy` se aplica por ejemplo. Establécelo en cada ejemplo donde quieras ocultar la copia; omítelo en los ejemplos que deben permitir copiar.
 
 ## Iconos
 
-Agrega `icon="nombre"` para mostrar un icono junto al título en el encabezado del bloque. Dentro de un `<CodeGroup>`, el icono también aparece en la pestaña.
+Agrega `icon="nombre"` para mostrar un icono junto al título en el encabezado del bloque. Dentro de un `<CodeGroup>`, el encabezado muestra el icono del ejemplo seleccionado.
 
 ```python icon="python"
 print("Hello")

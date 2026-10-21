@@ -1,96 +1,97 @@
 ---
 title: "Request & Response Example"
 navTitle: "Request/Response example"
-description: "Envoltorios con estilo que distinguen visualmente los bloques de código de solicitud y respuesta."
+description: "Tarjetas separadas de solicitud y respuesta con selección de lenguaje y pestañas de estado."
 ---
 
-Usa `<RequestExample>` y `<ResponseExample>` para enmarcar pares de solicitud/respuesta HTTP en documentación de API escrita en MDX. Añaden una barra de encabezado etiquetada — azul para solicitudes, verde para respuestas — que coincide con el estilo utilizado por las páginas de Referencia de API generadas automáticamente.
+Usa `<RequestExample>` y `<ResponseExample>` para presentar ejemplos HTTP en
+tarjetas separadas con encabezados. Coloca cada bloque de código directamente
+dentro de su componente. Las solicitudes ofrecen un menú de lenguajes y las
+respuestas muestran pestañas de estado.
 
-## Ejemplo
+## Lenguajes de solicitud y estados de respuesta
 
 <RequestExample>
 ```bash cURL
 curl -X POST https://api.example.com/pets \
-  -H "Authorization: Bearer sk-..." \
   -H "Content-Type: application/json" \
   -d '{"name": "Buddy", "species": "dog"}'
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.example.com/pets",
+    json={"name": "Buddy", "species": "dog"},
+)
 ```
 </RequestExample>
 
 <ResponseExample>
 ```json 201 Created
-{
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "name": "Buddy",
-  "species": "dog",
-  "status": "available",
-  "created_at": "2025-01-15T10:30:00Z"
-}
+{ "id": "pet_123", "name": "Buddy", "species": "dog" }
+```
+
+```json 400 Bad Request
+{ "error": "A pet name is required." }
 ```
 </ResponseExample>
 
-```mdx
+````mdx
 <RequestExample>
-\`\`\`bash cURL
+```bash cURL
 curl -X POST https://api.example.com/pets \
-  -H "Authorization: Bearer sk-..." \
   -H "Content-Type: application/json" \
   -d '{"name": "Buddy", "species": "dog"}'
-\`\`\`
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.example.com/pets",
+    json={"name": "Buddy", "species": "dog"},
+)
+```
 </RequestExample>
 
 <ResponseExample>
-\`\`\`json 201 Created
-{
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "name": "Buddy",
-  "species": "dog",
-  "status": "available",
-  "created_at": "2025-01-15T10:30:00Z"
-}
-\`\`\`
+```json 201 Created
+{ "id": "pet_123", "name": "Buddy", "species": "dog" }
+```
+
+```json 400 Bad Request
+{ "error": "A pet name is required." }
+```
 </ResponseExample>
-```
+````
 
-## Con CodeGroup
+Etiqueta cada bloque de solicitud con su lenguaje, como `cURL` o `Python`. La
+selección se comparte con los grupos compatibles, las tarjetas de solicitud
+generadas y la ventana Try it. Si un grupo no ofrece ese lenguaje, conserva una elección anterior compatible
+o muestra el primer ejemplo. La preferencia se conserva al recargar cuando el almacenamiento
+del navegador está disponible.
 
-Envuelve un `<CodeGroup>` dentro de `<RequestExample>` para mostrar la misma solicitud en múltiples lenguajes:
+Etiqueta cada respuesta con el código y una descripción opcional, como
+`201 Created` o `400 Bad Request`. Puedes elegir una pestaña o usar las teclas
+de flecha para cambiar de estado. El estado no cambia el lenguaje de solicitud.
+En pantallas pequeñas, las pestañas conservan el código y ocultan la descripción.
 
-<RequestExample>
-  <CodeGroup>
-  ```typescript TypeScript
-  await client.pets.create({ name: 'Buddy', species: 'dog' })
-  ```
+Estas respuestas son ejemplos de tu documentación. Para ver una respuesta real
+de la API, usa Try it desde una página de operación.
 
-  ```python Python
-  client.pets.create(name="Buddy", species="dog")
-  ```
-  </CodeGroup>
-</RequestExample>
+## Vincular campos con ejemplos
 
-```mdx
-<RequestExample>
-  <CodeGroup>
-  \`\`\`typescript TypeScript
-  await client.pets.create({ name: 'Buddy', species: 'dog' })
-  \`\`\`
+En una página de endpoint, al pasar el cursor o enfocar un parámetro o una línea
+vinculada, se resaltan los nombres correspondientes en la documentación y los
+ejemplos. Usa los mismos nombres en `ParamField`, `ResponseField` y las claves
+de los ejemplos. Los vínculos se deducen de posiciones reconocidas, como claves
+JSON, en lugar de coincidencias con cualquier texto.
 
-  \`\`\`python Python
-  client.pets.create(name="Buddy", species="dog")
-  \`\`\`
-  </CodeGroup>
-</RequestExample>
-```
+## Próximos pasos
 
-## Véalo en acción
-
-Las páginas de Referencia de API se generan automáticamente a partir de tu especificación OpenAPI y se renderizan usando los mismos componentes visuales — `ParamField`, `ResponseField`, `Expandable`, `RequestExample` y `ResponseExample`. Abre cualquier endpoint para verlos todos en contexto:
-
-<CardGroup cols="2">
-  <Card title="Listar mascotas" icon="book-open" href="/api/default/pets/get">
-    `GET /pets` — parámetros de consulta, esquema de respuesta paginada con campos expandibles anidados.
-  </Card>
-  <Card title="Crear una mascota" icon="code-simple" href="/api/default/pets/post">
-    `POST /pets` — parámetros del cuerpo de la solicitud, esquema de respuesta completo y ejemplo cURL en vivo.
-  </Card>
-</CardGroup>
+- [Bloques y grupos de código](/es/components/code-blocks)
+- [Documentar parámetros](/es/components/param-field)
+- [Documentar campos de respuesta](/es/components/response-field)
+- [Generar una referencia de API](/es/guides/api-reference-setup)

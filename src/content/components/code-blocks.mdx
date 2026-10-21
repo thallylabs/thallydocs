@@ -3,7 +3,10 @@ title: "Code blocks"
 description: "Syntax-highlighted code blocks with line numbers, diff markers, focus, and copy support."
 ---
 
-Code blocks are rendered automatically from fenced Markdown syntax. Use `<CodeGroup>` to group multiple language variants into a tabbed view.
+Code blocks are rendered automatically from fenced Markdown syntax. Use `<CodeGroup>` to offer related samples in a language menu.
+
+Code cards keep their title and controls readable on small screens. Long source
+lines scroll inside the card; add `wrap` when you prefer soft wrapping.
 
 ## Single code block
 
@@ -53,7 +56,12 @@ const items = await client.list()
 
 ## CodeGroup
 
-Group related snippets in multiple languages under a single tabbed block:
+Group related snippets in multiple languages under a single card:
+
+Choose a language from the card header. Other code groups, generated API request
+cards, and the Try it modal follow that preference when they offer a matching
+sample. Groups without a match keep a compatible earlier choice or use their first sample. Your choice survives a
+reload when browser storage is available.
 
 <CodeGroup>
 ```typescript TypeScript
@@ -266,11 +274,11 @@ echo "This block has no copy button"
 ```
 ````
 
-Inside a `<CodeGroup>`, `nocopy` applies per tab. Set `nocopy` on each tab where copying should be hidden; omit it on tabs that should allow copying.
+Inside a `<CodeGroup>`, `nocopy` applies per sample. Set it on each sample where copying should be hidden; omit it on samples that should allow copying.
 
 ## Icons
 
-Add `icon="name"` to show an icon next to the title in the block header. Inside a `<CodeGroup>`, the icon also appears on the tab.
+Add `icon="name"` to show an icon next to the title in the block header. Inside a `<CodeGroup>`, the header shows the selected sample's icon.
 
 ```python icon="python"
 print("Hello")

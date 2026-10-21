@@ -1,11 +1,14 @@
 ---
 title: Configure the API playground
 navTitle: API playground
-description: Add OpenAPI servers and authentication placeholders, test generated requests, and understand how Thally sends Try It requests.
+description: Configure servers and authentication, validate request fields, and send real API requests from the Try it modal.
 ---
 
-Every generated operation page includes a **Try It** panel. It reads servers,
+Select **Try it** on a generated operation page to open the request modal. It reads servers,
 parameters, request bodies, and security schemes from your OpenAPI document.
+
+The form and request/response cards sit side by side on wide screens. On phones,
+the modal fills the screen and keeps **Send** at the bottom.
 
 ## Before you begin
 
@@ -22,8 +25,9 @@ servers:
     description: Production
 ```
 
-The first server is selected initially. Readers can change it in the panel
-before sending a request.
+The first server is selected initially. Readers can change it in the modal
+before sending a request. These are your actual configured servers; choosing one
+does not create a simulated sandbox. A write request can change data on that server.
 
 ## Describe authentication
 
@@ -65,10 +69,18 @@ To change that placeholder, use the exact security-scheme name in `docs.json`:
 ## Send and verify a request
 
 1. Open a generated operation page.
-2. Select **Try It**.
+2. Select **Try it**.
 3. Fill every required path, query, header, and body field.
-4. Review the generated URL and cURL command.
+4. Review the generated URL and request sample. Choose a language in the request card to change the sample; compatible cards on the endpoint share that choice.
 5. Send the request and confirm the status, headers, and response body.
+
+Missing required values and invalid declared field types are marked before the
+request is sent, with focus moved to the first invalid field. Hover or focus a
+field or linked code line to highlight matching names in the request sample.
+
+You can also send with Command+Enter on macOS or Ctrl+Enter on other platforms.
+DELETE requests require a second confirmation. Close the modal with Escape or
+the close button; focus returns to the control that opened it.
 
 Thally sends the request through `/api/try-it` on the documentation server to
 avoid browser CORS restrictions. The site must run on a server-capable host;
