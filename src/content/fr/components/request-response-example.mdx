@@ -1,79 +1,101 @@
 ---
-title: "RequestExample & ResponseExample"
-description: "Wrappers stylisés qui distinguent visuellement les blocs de code de requête et de réponse."
+title: "Exemples de requêtes et de réponses"
+navTitle: "Exemples requête/réponse"
+description: "Affichez les requêtes et les réponses dans des cartes de code distinctes, avec un choix de langage et des onglets de statut."
 ---
 
-{/* thally:ai-translation locale=fr source-sha=c20bc8b9c94f9a939e5a46a8d572885dc0d421f16c3d3177ae8a21d21c798ca6 */}
-{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+Utilisez `<RequestExample>` et `<ResponseExample>` pour présenter vos exemples HTTP
+dans des cartes distinctes et étiquetées. Placez chaque bloc de code directement
+dans son composant. Les variantes de requête apparaissent dans un menu de
+langages et les variantes de réponse dans des onglets de statut.
 
-Utilisez `<RequestExample>` et `<ResponseExample>` pour encadrer les paires de requêtes/réponses HTTP dans la documentation API écrite en MDX. Ils ajoutent une barre d'en-tête étiquetée — bleue pour les requêtes, verte pour les réponses — correspondant au style utilisé par les pages de référence API générées automatiquement.
-
-## Exemple
+## Langages de requête et statuts de réponse
 
 <RequestExample>
 ```bash cURL
 curl -X POST https://api.example.com/pets \
-  -H "Authorization: Bearer sk-..." \
   -H "Content-Type: application/json" \
   -d '{"name": "Buddy", "species": "dog"}'
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.example.com/pets",
+    json={"name": "Buddy", "species": "dog"},
+)
 ```
 </RequestExample>
 
 <ResponseExample>
 ```json 201 Created
-{
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "name": "Buddy",
-  "species": "dog",
-  "status": "available",
-  "created_at": "2025-01-15T10:30:00Z"
-}
+{ "id": "pet_123", "name": "Buddy", "species": "dog" }
+```
+
+```json 400 Bad Request
+{ "error": "A pet name is required." }
 ```
 </ResponseExample>
 
-```mdx
+````mdx
 <RequestExample>
-\`\`\`bash cURL
+```bash cURL
 curl -X POST https://api.example.com/pets \
-  -H "Authorization: Bearer sk-..." \
+  -H "Content-Type: application/json" \
   -d '{"name": "Buddy", "species": "dog"}'
-\`\`\`
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.example.com/pets",
+    json={"name": "Buddy", "species": "dog"},
+)
+```
 </RequestExample>
 
 <ResponseExample>
-\`\`\`json 201 Created
-{ "id": "a1b2c3d4", "name": "Buddy", "status": "available" }
-\`\`\`
+```json 201 Created
+{ "id": "pet_123", "name": "Buddy", "species": "dog" }
+```
+
+```json 400 Bad Request
+{ "error": "A pet name is required." }
+```
 </ResponseExample>
-```
+````
 
-## Avec CodeGroup
+Indiquez le langage de chaque bloc de requête, par exemple `cURL` ou `Python`.
+Le langage sélectionné est partagé avec les groupes de code compatibles, les
+cartes de requête API générées et la fenêtre Try it. Si un groupe ne propose pas
+ce langage, il conserve un choix précédent compatible ou affiche son premier
+exemple. Cette préférence est conservée après un rechargement lorsque le
+stockage du navigateur est disponible.
 
-Enveloppez un `<CodeGroup>` à l'intérieur de `<RequestExample>` pour afficher la même requête dans plusieurs langages :
+Indiquez le code de statut et, si nécessaire, une description pour chaque bloc
+de réponse, par exemple `201 Created` ou `400 Bad Request`. Vous pouvez
+sélectionner un onglet de statut ou passer d'un onglet à l'autre avec les touches
+fléchées. Le changement de statut ne modifie pas le langage de requête. Sur les
+petits écrans, les onglets gardent le code de statut visible et masquent la
+description plus longue.
 
-```mdx
-<RequestExample>
-  <CodeGroup>
-  \`\`\`typescript TypeScript
-  await client.pets.create({ name: 'Buddy', species: 'dog' })
-  \`\`\`
+Ces réponses sont des exemples rédigés dans votre documentation. Pour afficher
+une réponse réelle de l'API, utilisez [Try it](/fr/guides/api-playground).
 
-  \`\`\`python Python
-  client.pets.create(name="Buddy", species="dog")
-  \`\`\`
-  </CodeGroup>
-</RequestExample>
-```
+## Relier les champs aux exemples
 
-## Voir en action
+Sur la page d'un endpoint API, survoler ou sélectionner au clavier une ligne de
+paramètre ou une ligne de code liée met en évidence les noms de champs
+correspondants dans la documentation et les exemples. Utilisez les mêmes noms
+dans vos composants `ParamField` et `ResponseField` et dans les clés des exemples.
+Les liens sont déduits des emplacements reconnus de noms de champs, comme les
+clés JSON, plutôt que de toute occurrence du même texte.
 
-Les pages de référence API sont générées automatiquement à partir de votre spécification OpenAPI et s'affichent à l'aide des mêmes composants visuels — `ParamField`, `ResponseField`, `Expandable`, `RequestExample` et `ResponseExample`. Ouvrez n'importe quel endpoint pour les voir tous en contexte :
+## Étapes suivantes
 
-<CardGroup cols="2">
-  <Card title="Lister les animaux" icon="book-open" href="/api/default/pets/get">
-    `GET /pets` — paramètres de requête, schéma de réponse paginé avec champs extensibles imbriqués.
-  </Card>
-  <Card title="Créer un animal" icon="code-simple" href="/api/default/pets/post">
-    `POST /pets` — paramètres du corps de la requête, schéma de réponse complet et exemple cURL en direct.
-  </Card>
-</CardGroup>
+- [Blocs de code et groupes de langages](/fr/components/code-blocks)
+- [Documenter les paramètres de requête](/fr/components/param-field)
+- [Documenter les champs de réponse](/fr/components/response-field)
+- [Générer une référence API](/fr/guides/api-reference-setup)
