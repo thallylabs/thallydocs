@@ -34,7 +34,8 @@ The command creates `product-docs`, installs dependencies, runs the checks and a
 - **Navigation.** Sidebars are parsed as data, never executed. Categories, positions, and generated index pages come across. A sidebar that uses function calls falls back to folder-based navigation, which the report says.
 - **Admonitions and tabs.** `:::note`, `:::tip`, and `:::info` become `<Note>`, `:::warning` and `:::caution` become `<Warning>`, `:::danger` becomes `<Error>`, and `<TabItem>` becomes `<Tab>`.
 - **React components.** Resolvable local imports, including `@site/src/components`, are copied. Review the report for unsupported imports and dependencies. See [Extend Thally](/guides/extending).
-- **Scope.** Docs plugin content is imported; blog and standalone custom pages are outside this scope. Supported navbar links, title, logo, and favicon are imported. Review theme-specific settings and complete branding in `src/data/site.ts` and `docs.json`.
+- **Site identity.** The site title, tagline, and navbar title are read from the Docusaurus config, including values stored in a locally imported data module such as `import site from './site.json'`. When the title cannot be read without running the config, the migration falls back to the source `package.json` name, the repository name, or the source host, and reports a warning for each unresolved field. Use a string literal or plain data in an imported module to avoid the fallback.
+- **Scope.** Docs plugin content is imported; blog and standalone custom pages are outside this scope. Supported navbar links, logo, and favicon are imported. Review theme-specific settings and complete branding in `src/data/site.ts` and `docs.json`.
 - **Warnings.** `migration-report.json` lists anything the importer could not carry over.
 
 After edits, run `npx --yes @thallylabs/cli@latest check` and `npm run build`, then commit.
