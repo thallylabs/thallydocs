@@ -3,41 +3,37 @@ title: "ParamField"
 description: "Documenta parámetros de solicitud — body, query, path y header."
 ---
 
-`<ParamField>` renderiza una entrada de parámetro estructurada para la documentación de solicitudes de API. Usa las props `body`, `query`, `path` o `header` para especificar la ubicación del parámetro.
+`<ParamField>` renderiza una entrada de parámetro estructurada para la documentación de solicitudes de API. Coloca el nombre del parámetro directamente en la prop `body`, `query`, `path` o `header`. La forma anterior con la ubicación como booleano y `name` aparte sigue siendo compatible.
 
 ## Ejemplo
 
-<ParamField body name="name" type="string" required>
+<ParamField body="name" type="string" required>
   El nombre de la mascota. Debe tener entre 1 y 100 caracteres.
 </ParamField>
 
-<ParamField query name="limit" type="integer" default="20">
+<ParamField query="limit" type="integer" default="20" placeholder="25">
   Número de resultados a devolver. El máximo es 100.
 </ParamField>
 
-<ParamField path name="petId" type="string" required>
+<ParamField path="petId" type="string" required>
   El identificador único de la mascota.
 </ParamField>
 
-<ParamField header name="Authorization" type="string" required>
+<ParamField header="Authorization" type="string" required>
   Token Bearer para autenticación: `Bearer sk-...`
 </ParamField>
 
 ```mdx
-<ParamField body name="name" type="string" required>
-  El nombre de la mascota. Debe tener entre 1 y 100 caracteres.
+<ParamField body="name" type="string" required>
+  El nombre de la mascota.
 </ParamField>
 
-<ParamField query name="limit" type="integer" default="20">
-  Número de resultados a devolver. El máximo es 100.
+<ParamField query="limit" type="integer" default="20">
+  Resultados máximos a devolver.
 </ParamField>
 
-<ParamField path name="petId" type="string" required>
-  El identificador único de la mascota.
-</ParamField>
-
-<ParamField header name="Authorization" type="string" required>
-  Token Bearer para autenticación: `Bearer sk-...`
+<ParamField path="petId" type="string" required>
+  El identificador único.
 </ParamField>
 ```
 
@@ -45,11 +41,16 @@ description: "Documenta parámetros de solicitud — body, query, path y header.
 
 | Prop | Tipo | Descripción |
 |---|---|---|
-| `name` | `string` | Nombre del parámetro |
 | `type` | `string` | Tipo de dato (p. ej. `string`, `integer`, `boolean`) |
-| `body` | `boolean` | Marca como parámetro del cuerpo de la solicitud |
-| `query` | `boolean` | Marca como parámetro de cadena de consulta |
-| `path` | `boolean` | Marca como parámetro de ruta |
-| `header` | `boolean` | Marca como encabezado de solicitud |
-| `required` | `boolean` | Muestra una etiqueta de texto de "requerido" |
-| `default` | `string` | Valor predeterminado mostrado en línea |
+| `body` | `string` | Nombre del parámetro del cuerpo de la solicitud |
+| `query` | `string` | Nombre del parámetro de cadena de consulta |
+| `path` | `string` | Nombre del parámetro de ruta |
+| `header` | `string` | Nombre del encabezado de solicitud |
+| `required` | `boolean` | Muestra una insignia de "requerido" |
+| `deprecated` | `boolean` | Marca el parámetro como obsoleto |
+| `default` | `any` | Valor predeterminado mostrado en línea |
+| `placeholder` | `string` | Entrada sugerida mostrada por herramientas de API |
+
+## Enlazar a un campo
+
+Cada `<ParamField>` y `<ResponseField>` obtiene un ancla generada a partir de su nombre: `param-` seguido del nombre en kebab case, por lo que `expiresInDays` se convierte en `#param-expires-in-days`. Un nombre usado dos veces en una página se numera desde `-1` (`#param-key-id`, `#param-key-id-1`), y un enlace a un campo dentro de un `<Expandable>` colapsado lo expande.
