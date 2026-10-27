@@ -8,26 +8,26 @@ Thally has a dedicated Mintlify adapter. One command imports your pages, `docs.j
 
 ## Migrate and run locally
 
-Point the CLI at the GitHub repository that holds your Mintlify project:
+Run the migrate command against your repository, replacing `<USERNAME>` and `<REPOSITORY>` with your GitHub username and repository name.
 
 ```bash
-npx --yes @thallylabs/cli@latest migrate https://github.com/example/product --platform mintlify --yes
+npx --yes @thallylabs/cli@latest migrate https://github.com/<USERNAME>/<REPOSITORY> --platform mintlify --yes
 ```
 
 Validation runs imported project code locally, so migrate sources you own or trust.
 
-Start the site:
+Start the site.
 
 ```bash
-cd product-docs
+cd <REPOSITORY>-docs
 npm run dev
 ```
 
-Read `product-docs/migration-report.json` from the original directory, or `migration-report.json` inside the generated project. Resolve installation or validation failures before publishing.
+Read `<REPOSITORY>-docs/migration-report.json` from the original directory, or `migration-report.json` inside the generated project. Resolve installation or validation failures before publishing.
 
 Open [http://localhost:3040](http://localhost:3040). Your Mintlify docs are running on Thally.
 
-The command creates `product-docs`, installs dependencies, runs the checks and a production build, and makes an initial Git commit. If the Mintlify project lives in a subfolder, use a `tree/<branch>/<dir>` URL such as `https://github.com/example/product/tree/main/docs`. If you only have the live site, pass its URL instead of the repository.
+The command creates `<REPOSITORY>-docs`, installs dependencies, runs the checks and a production build, and makes an initial Git commit. If the Mintlify project lives in a subfolder, use a `tree/<branch>/<dir>` URL such as `https://github.com/<USERNAME>/<REPOSITORY>/tree/main/docs`. If you only have the live site, pass its URL instead of the repository.
 
 ## What to check
 

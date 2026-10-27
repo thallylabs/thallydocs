@@ -8,26 +8,26 @@ Thally has a dedicated Docusaurus adapter. One command imports your pages, sideb
 
 ## Migrate and run locally
 
-Point the CLI at the GitHub repository that holds your Docusaurus project:
+Run the migrate command against your repository, replacing `<USERNAME>` and `<REPOSITORY>` with your GitHub username and repository name.
 
 ```bash
-npx --yes @thallylabs/cli@latest migrate https://github.com/example/product --platform docusaurus --yes
+npx --yes @thallylabs/cli@latest migrate https://github.com/<USERNAME>/<REPOSITORY> --platform docusaurus --yes
 ```
 
 Validation runs imported project code locally, so migrate sources you own or trust.
 
-Start the site:
+Start the site.
 
 ```bash
-cd product-docs
+cd <REPOSITORY>-docs
 npm run dev
 ```
 
-Read `product-docs/migration-report.json` from the original directory, or `migration-report.json` inside the generated project. Resolve installation or validation failures before publishing.
+Read `<REPOSITORY>-docs/migration-report.json` from the original directory, or `migration-report.json` inside the generated project. Resolve installation or validation failures before publishing.
 
 Open [http://localhost:3040](http://localhost:3040). Your Docusaurus docs are running on Thally.
 
-The command creates `product-docs`, installs dependencies, runs the checks and a production build, and makes an initial Git commit. For a monorepo, use a `tree/<branch>/<dir>` URL such as `https://github.com/example/product/tree/main/website`. If you only have the live site, pass its URL instead of the repository; the adapter follows the current version and skips legacy and `next` trees.
+The command creates `<REPOSITORY>-docs`, installs dependencies, runs the checks and a production build, and makes an initial Git commit. For a monorepo, use a `tree/<branch>/<dir>` URL such as `https://github.com/<USERNAME>/<REPOSITORY>/tree/main/website`. If you only have the live site, pass its URL instead of the repository; the adapter follows the current version and skips legacy and `next` trees.
 
 ## What to check
 
