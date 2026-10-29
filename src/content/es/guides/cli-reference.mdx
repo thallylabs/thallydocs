@@ -160,12 +160,16 @@ Usa el directorio actual si no se proporciona ninguna ruta.
 | Problema | Severidad |
 |----------|-----------|
 | Página listada en `docs.json` pero no se encontró archivo MDX | Error |
-| ID de página duplicado en `docs.json` | Error |
+| Página reutilizada en más de una sección de `docs.json` | Advertencia |
 | Pestaña sin grupos y sin `href` | Error |
+| Error de sintaxis MDX en una página o en un archivo `snippets/`, como un atributo JSX con comillas escapadas (no se puede analizar, por lo que no se puede renderizar) | Error |
 | Archivo MDX no listado en `docs.json` (huérfano) | Advertencia |
 | `title` faltante en el frontmatter | Advertencia |
 | `description` faltante en el frontmatter | Advertencia |
 | Cuerpo de página vacío o casi vacío | Advertencia |
+| Redirección desde una página de solo enlace que termina en una página inexistente o en un ciclo | Error |
+
+Una página que solo representa un enlace a otro lugar (una página `noindex` cuya propia dirección redirige a otro sitio o a una ruta en este, como ocurre con una entrada `url` migrada de Mintlify) no se verifica por `description` ni por cuerpo, porque ningún visitante la lee. Eso aplica solo mientras la redirección conduzca a algún lugar: si termina en una página que no existe, o vuelve a sí misma, la verificación reporta la redirección rota y mantiene los avisos sobre la página.
 
 ```bash
 # Verificar el proyecto actual
@@ -180,11 +184,16 @@ npx --yes @thallylabs/cli@latest check --fix
 
 La CLI termina con el código `1` si se encuentran errores, `0` si el proyecto está limpio o solo tiene advertencias.
 
+La verificación MDX lee cada archivo con el analizador con el que el sitio renderiza, por lo que solo detecta errores de sintaxis. Una página que se analiza correctamente aún puede fallar al compilar, por ejemplo cuando declara dos exportaciones predeterminadas.
+
 ### Opciones
 
 | Bandera | Descripción |
 |---------|-------------|
 | `--fix` | Agregar automáticamente páginas huérfanas al último grupo de la primera pestaña de contenido |
+| `--ci` | Imprimir anotaciones de GitHub y un resumen compacto |
+| `--drift` | Marcar páginas cuyos `sources` cambiaron desde `verifiedCommit` |
+| `--external` | Verificar también enlaces externos en hosts públicos (limitado; solo advertencias) |
 
 ---
 
