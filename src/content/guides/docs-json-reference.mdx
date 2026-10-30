@@ -101,6 +101,7 @@ Operation keys use `METHOD /path` exactly as written in the specification.
 | `favicon` | Source-controlled favicon fallback: `{ "light": "...", "dark": "..." }`. Used when no managed or admin favicon is configured. Paths must reference files inside `public/`. |
 | `footer` | Social URLs, columns of links, and an optional `copyright` string. |
 | `fonts` | Google Font `family` and optional `weight` arrays for `body` and `heading`. |
+| `contextual` | Page menu entries and display order (see below). |
 | `customScripts` | External script `src` plus optional loading `strategy`. |
 
 ### Appearance
@@ -162,6 +163,22 @@ semantic palette, including borders and active sidebar states.
 | `background.image` | — | Background image for light mode. Path inside `public/` (PNG, JPG, JPEG, WebP), or a credential-free HTTPS URL. HTTPS URLs do not require a file extension. |
 | `background.imageDark` | — | Background image for dark mode. Falls back to `image` when omitted. |
 | `background.decoration` | `"none"` | Overlay decoration: `"none"`, `"grid"`, or `"gradient"`. |
+
+### Page menu
+
+```json
+{
+  "contextual": {
+    "options": ["copy", "view", "chatgpt", "claude", "perplexity"]
+  }
+}
+```
+
+| Field | Default | Purpose |
+| --- | --- | --- |
+| `contextual.options` | All default entries | Page menu entries in display order. Supported values: `copy`, `view`, `chatgpt`, `claude`, `perplexity`, `llms-full`, `mcp`, `cursor`, `vscode`. |
+
+Omitting `contextual` keeps the default menu (copy, view, ChatGPT, Claude, Perplexity). An empty `options` array hides page actions entirely. The MCP entries (`mcp`, `cursor`, `vscode`) appear only when the site's public MCP endpoint is enabled. See [Brand and theme](/guides/branding-and-theming#page-menu) for descriptions of each entry.
 
 Navbar links contain `label`, `href`, and optional `type: "github"`. A primary
 action contains `label` and `href`, or `null` to disable the CTA entirely. `navbar.logo` accepts an object with `light`
