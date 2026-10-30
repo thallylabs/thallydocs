@@ -101,7 +101,40 @@ Operation keys use `METHOD /path` exactly as written in the specification.
 | `favicon` | Source-controlled favicon fallback: `{ "light": "...", "dark": "..." }`. Used when no managed or admin favicon is configured. Paths must reference files inside `public/`. |
 | `footer` | Social URLs, columns of links, and an optional `copyright` string. |
 | `fonts` | Google Font `family` and optional `weight` arrays for `body` and `heading`. |
+| `contextual` | Page-actions menu entries and display order (see below). |
 | `customScripts` | External script `src` plus optional loading `strategy`. |
+
+### Page actions menu
+
+The page-actions dropdown lets readers copy the current page as Markdown, open
+it in an AI chat, view `llms-full.txt`, or install the site's MCP server.
+Configure which actions appear and their order with `contextual.options`:
+
+```json
+{
+  "contextual": {
+    "options": ["copy", "view", "llms-full", "chatgpt", "claude", "perplexity", "mcp", "cursor", "vscode"]
+  }
+}
+```
+
+| Action ID | What it does |
+| --- | --- |
+| `copy` | Copies the page as Markdown to the clipboard. |
+| `view` | Opens the page's Markdown mirror in a new tab. |
+| `llms-full` | Links to the site's `/llms-full.txt` (all docs as Markdown). |
+| `mcp` | Copies an `npx` command that installs the site's MCP server. |
+| `cursor` | Deep-links to install the MCP server in Cursor. |
+| `vscode` | Deep-links to install the MCP server in VS Code. |
+| `chatgpt` | Opens ChatGPT with a prompt that references this page. |
+| `claude` | Opens Claude with a prompt that references this page. |
+| `perplexity` | Opens Perplexity with a prompt that references this page. |
+
+When `contextual` is omitted, the default is `["copy", "view", "chatgpt", "claude", "perplexity"]`.
+
+The MCP actions (`mcp`, `cursor`, `vscode`) appear only when the site's MCP
+server is enabled. If MCP is disabled from the [admin dashboard](/guides/admin-dashboard),
+these entries are hidden regardless of the configuration.
 
 ### Appearance
 
