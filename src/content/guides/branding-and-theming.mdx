@@ -282,6 +282,38 @@ export const siteConfig: SiteConfig = {
 }
 ```
 
+## Page menu
+
+Every documentation page shows a page menu with options such as copying the page as Markdown, viewing the Markdown source, and opening the page in an LLM. Configure which entries appear and their display order with `contextual.options` in `docs.json`:
+
+```json
+"contextual": { "options": ["copy", "view", "chatgpt"] }
+```
+
+Supported entries:
+
+| Entry | What it does |
+| --- | --- |
+| `copy` | Copies the page content as Markdown. Also appears as the primary button. |
+| `view` | Opens the page's `.md` mirror. |
+| `chatgpt` | Opens ChatGPT with a prompt referencing the page. |
+| `claude` | Opens Claude with a prompt referencing the page. |
+| `perplexity` | Opens Perplexity with a prompt referencing the page. |
+| `llms-full` | Opens the site's `/llms-full.txt` file. |
+| `mcp` | Copies an `npx -y add-mcp` install command for the site's MCP endpoint. |
+| `cursor` | Opens the Cursor editor's MCP installer for this site. |
+| `vscode` | Opens the VS Code MCP installer for this site. |
+
+The MCP entries (`mcp`, `cursor`, `vscode`) appear only after the menu confirms that the site's public MCP endpoint is enabled. They stay hidden when MCP is disabled.
+
+Omitting `contextual.options` keeps the default menu: copy, view, ChatGPT, Claude, and Perplexity. An empty array hides page actions entirely.
+
+For a menu focused on documentation and editor integrations:
+
+```json
+"contextual": { "options": ["copy", "llms-full", "mcp", "cursor", "vscode"] }
+```
+
 ## Structural themes
 
 Structural themes control the shape and density of the UI — border radius, sidebar active item style, and navigation tab appearance. They are independent of brand colors, so any color preset works with any structural theme.
