@@ -1,103 +1,123 @@
 ---
-title: Despliegue
-description: Compila y despliega tu sitio de documentación Thally en cualquier plataforma de alojamiento.
+title: Despliega tu sitio de documentación
+navTitle: Despliegue
+description: Publica con el hospedaje gestionado de Thally o despliega el runtime de código abierto en Vercel, Cloudflare o Docker.
 ---
 
-## Compilar para producción
+{/* thally:ai-translation locale=es source-sha=8484aef5512d026b119539573fde4abc4b2679fa7059b6367d9bd81a5aaaeebf */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Usa el hospedaje gestionado de Thally cuando quieras publicar, vistas previas de pull requests, dominios personalizados y reversión desde un solo espacio de trabajo. Autoaloja cuando tu equipo necesite controlar la capa de hospedaje además del repositorio.
+
+## Elige una ruta de despliegue compatible
+
+| Destino | Contrato incluido | Comando o acción de producción |
+| --- | --- | --- |
+| Thally Cloud | Compilación, vistas previas, versiones, enrutamiento y reversión gestionados | Publica el sitio desde [Thally Cloud](https://app.thally.io/) |
+| Vercel | Compilación nativa de Next.js mediante la CLI de Thally | `npx --yes @thallylabs/cli@latest deploy --prod` |
+| Cloudflare Workers | Configuración de OpenNext, configuración de Wrangler y scripts del proyecto | `npm run deploy:cloudflare` |
+| Docker o un host de contenedores | La receta documentada de imagen de servidor | `docker build -t my-docs .` |
+
+<Warning title="Netlify no es un destino de despliegue compatible">
+  Un scaffold sin cambios no tiene `netlify.toml`, adaptador de Netlify ni un contrato probado de directorio de publicación. No ejecutes `netlify deploy --build --prod` contra él. La CLI puede informar de un despliegue activo después de subir la raíz del repositorio, mientras `/` y todas las rutas de documentación devuelven 404. Usa una de las rutas compatibles anteriores o crea y prueba una integración de Next.js específica de Netlify antes de tratar Netlify como destino de producción.
+</Warning>
+
+## Publica con Thally Cloud
+
+El [inicio rápido](/es/quickstart) crea o conecta un repositorio de GitHub y publica el sitio en una dirección de `thally.app`. Después de eso, ocurre lo siguiente.
+
+- los pushes a la rama de producción inician una publicación;
+- los pull requests de documentación reciben vistas previas aisladas;
+- los cambios solo de documentación pueden publicarse más rápido que los cambios de aplicación;
+- una publicación fallida deja la versión anterior en línea; y
+- la reversión restaura una versión exitosa anterior sin reescribir el historial de Git.
+
+Abre **Deployments** para ver la versión publicada, las vistas previas, el historial con búsqueda, las reparaciones, los redespliegues y la reversión. Consulta [Hospedaje gestionado](/es/guides/managed-hosting) para ver las instrucciones de operación.
+
+Para un despliegue autoalojado, completa las comprobaciones siguientes y elige el proveedor que coincida con tus requisitos operativos.
+
+## Antes de desplegar
+
+1. Define el origen de producción.
+
+   ```bash
+   THALLY_SITE_URL=https://docs.example.com
+   ```
+
+2. Valida el contenido y la navegación.
+
+   ```bash
+   npx --yes @thallylabs/cli@latest check --ci .
+   ```
+
+3. Crea una compilación de producción.
+
+   ```bash
+   npm run build
+   ```
+
+`THALLY_SITE_URL` proporciona enlaces canónicos, metadatos de Open Graph, sitemaps y URL orientadas a agentes. Defínela en el proveedor de alojamiento en lugar de hacer commit en el repositorio.
+
+## Elige un destino autoalojado
+
+<CardGroup cols={3}>
+  <Card title="Despliega en Vercel" icon="code-simple" href="/es/guides/deploy-vercel">
+    Importa el repositorio o despliégalo con la CLI de Thally.
+  </Card>
+  <Card title="Despliega en Cloudflare" icon="wrench" href="/es/guides/deploy-cloudflare">
+    Compila y publica el artefacto de Worker de OpenNext.
+  </Card>
+  <Card title="Despliega con Docker" icon="grid-round" href="/es/guides/deploy-docker">
+    Ejecuta el sitio en un host de contenedores con almacenamiento persistente cuando sea necesario.
+  </Card>
+</CardGroup>
+
+## Elige el runtime necesario
+
+Usa un despliegue con capacidad de servidor para estas funciones.
+
+- Solicitudes **Try It** de la API;
+- chat con IA y rutas MCP remotas;
+- el panel de administración y la ingesta de analíticas;
+- documentación protegida con contraseña;
+- comentarios, búsqueda y otras API de servidor en tiempo de ejecución.
+
+Una exportación totalmente estática solo es adecuada cuando necesitas páginas de documentación renderizadas y assets estáticos. Las funciones anteriores dependen de rutas de servidor y no funcionarán en una compilación con `output: 'export'`.
+
+Track lo gestiona Thally Cloud. Un sitio gestionado no necesita alojar un webhook de Track ni almacenar credenciales de la GitHub App.
+
+## Añade configuración de producción
+
+Solo se requiere `THALLY_SITE_URL` para un sitio público básico. Añade credenciales y variables de almacenamiento solo para las funciones que habilites. Consulta la [referencia completa de variables de entorno](/es/guides/environment-variables).
+
+Para hosts sin servidor, configura almacenamiento libSQL remoto cuando las analíticas, los ajustes, el estado de las tareas o los contadores de límite de velocidad deban sobrevivir a los redespliegues. Un host de Docker o un VPS puede, en cambio, persistir el directorio local `.data/` en un volumen.
+
+## Verifica el sitio publicado
+
+No trates el mensaje de éxito de la CLI de un proveedor como prueba de que el sitio funciona. Para un sitio público, ejecuta solicitudes GET contra la página de inicio, una página anidada real y un endpoint de agente.
 
 ```bash
-npm run build
+DEPLOY_URL=https://docs.example.com
+curl --fail --silent --show-error --location "$DEPLOY_URL/" >/dev/null
+curl --fail --silent --show-error --location "$DEPLOY_URL/quickstart" >/dev/null
+curl --fail --silent --show-error --location "$DEPLOY_URL/llms.txt" >/dev/null
 ```
 
-Esto genera una compilación de producción optimizada en el directorio `.next/`. Todas las páginas de documentación se pre-renderizan de forma estática para una carga rápida.
+Los tres comandos terminan con estado `0` si tienen éxito y fallan con respuestas HTTP 4xx o 5xx. Sustituye `/quickstart` por una ruta anidada que tu proyecto publique realmente. Para documentación protegida, haz las mismas solicitudes con la autenticación que usan tus lectores y verifica por separado la respuesta sin autenticación.
 
-## Variables de entorno
+Después, comprueba lo siguiente.
 
-Antes de desplegar, establece la variable de entorno `THALLY_SITE_URL` con tu dominio de producción. Se utiliza para los metadatos de OpenGraph y las URLs canónicas:
+1. Abre la página de inicio y una página anidada en escritorio y móvil.
+2. Sigue los enlaces de la barra lateral, la búsqueda, las migas de pan y los enlaces anterior y siguiente.
+3. Comprueba `/sitemap.xml`, `/robots.txt` y `/llms.txt`.
+4. Prueba cualquier función de servidor habilitada, incluidos Try It, chat, comentarios, administración o protección de acceso.
+5. Confirma que las URL canónicas usan el dominio de producción.
 
-```bash
-THALLY_SITE_URL=https://docs.yourproduct.com
-```
+Si el proveedor informa de éxito pero estas solicitudes devuelven 404, inspecciona el registro de compilación y el artefacto subido antes de cambiar las rutas de la aplicación. Un despliegue que subió la raíz del repositorio o trató `.next/` como un directorio estático normal no publicó un artefacto de servidor Thally ejecutable. Sigue el [diagnóstico de todas las rutas 404](/es/guides/troubleshooting#el-proveedor-reporta-éxito-pero-cada-ruta-devuelve-404).
 
-## Analíticas y almacenamiento durable
+## Próximos pasos
 
-En local, Thally guarda analíticas y estado del admin en archivos SQLite bajo `.data/` — sin configuración. En hosts **serverless** (por ejemplo Vercel), ese sistema de archivos no persiste: necesitas una base de datos libSQL remota (Turso) si quieres métricas de tráfico o ajustes del admin durables.
-
-```bash
-THALLY_ANALYTICS_DB_URL=libsql://tu-db.turso.io
-THALLY_ANALYTICS_DB_TOKEN=…
-THALLY_DATABASE_URL=libsql://tu-db.turso.io
-THALLY_DATABASE_TOKEN=…
-```
-
-Consulta la [configuración para sitios autohospedados](/guides/environment-variables#keep-self-hosted-state-after-a-redeploy) para los detalles. Agent Readiness no usa esta base de datos.
-
-## Cloudflare Workers
-
-Consulta [Desplegar en Cloudflare Workers](/guides/deploy-cloudflare) para el
-flujo completo de compilación, prueba y verificación.
-
-El repositorio incluye el adaptador OpenNext y un `wrangler.jsonc` listo para
-usar. Compila el Worker, ejecuta el mismo artefacto localmente con workerd y
-despliégalo:
-
-```bash
-npm run build:cloudflare
-npm run smoke:cloudflare
-npm run deploy:cloudflare
-```
-
-La compilación crea `.open-next/worker.js` y su directorio de activos estáticos.
-Configura `THALLY_SITE_URL` y los secretos opcionales en el entorno del Worker
-antes del despliegue de producción. Thally Cloud realiza estos pasos
-automáticamente para los sitios administrados.
-
-## Vercel
-
-Consulta [Desplegar en Vercel](/guides/deploy-vercel) para la configuración de
-variables, almacenamiento persistente y verificación.
-
-La forma más rápida de desplegar — sube a GitHub e importa el repositorio:
-
-1. Sube tu repositorio de documentación a GitHub
-2. Ve a [vercel.com/new](https://vercel.com/new) e importa el repositorio
-3. Establece `THALLY_SITE_URL` en las variables de entorno
-4. Si quieres analíticas del admin, también configura las variables de Turso de arriba
-5. Despliega
-
-Vercel detecta automáticamente Next.js y configura todo.
-
-## Docker
-
-Consulta [Desplegar con Docker](/guides/deploy-docker) para crear un contexto de
-compilación que excluya secretos, ejecutar el proceso como usuario sin
-privilegios y conservar `.data/` en un volumen.
-
-## Exportación estática
-
-Si no necesitas funcionalidades del lado del servidor (como el proxy de Prueba), puedes exportar como un sitio completamente estático. Agrega a `next.config.ts`:
-
-```ts
-const nextConfig = {
-  output: 'export',
-}
-```
-
-Luego ejecuta `npm run build` — la salida estará en el directorio `out/`, lista para cualquier servidor de archivos estáticos.
-
-<Note type="warning" title="Limitación de la exportación estática">
-  La exportación estática no incluye rutas del servidor. No funcionan el panel
-  "Pruébalo", el chat de IA, MCP remoto, el panel de administración, las
-  analíticas, la protección por contraseña ni los webhooks de Thally Track.
-</Note>
-
-## SEO y feeds
-
-Una vez desplegado, Thally sirve automáticamente:
-
-- **`/sitemap.xml`** — incluye todas las páginas de documentación, páginas de referencia de la API y el registro de cambios
-- **`/robots.txt`** — permite a los rastreadores en todas las páginas, bloquea `/admin`, `/access` y las rutas internas `/api/chat`, `/api/feedback`, `/api/try-it`, `/api/admin` y `/api/analytics`
-- **`/changelog/rss.xml`** — feed RSS para las actualizaciones del registro de cambios
-- **Imágenes OG dinámicas** — cada página obtiene una imagen de vista previa social personalizada a través de `/api/og`
-
-Todos estos usan `THALLY_SITE_URL` para generar URLs absolutas, así que asegúrate de que esté configurado antes de desplegar.
+- [Opera un despliegue gestionado](/es/guides/managed-hosting)
+- [Protege documentación privada](/es/guides/private-docs)
+- [Valida la documentación en CI](/es/guides/ci-checks)
+- [Soluciona problemas de despliegue](/es/guides/troubleshooting)

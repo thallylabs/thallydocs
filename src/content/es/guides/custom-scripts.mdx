@@ -3,6 +3,9 @@ title: Scripts Personalizados
 description: Carga un script externo en cada página y elige cuándo puede ejecutarse.
 ---
 
+{/* thally:ai-translation locale=es source-sha=c925dbdc511ebc32436845ef44a65a894dbd63fbde36689fa981ac5e81f403f8 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
 Agrega un array `customScripts` a `docs.json` cuando un widget o servicio te
 proporcione una URL de JavaScript externa. Thally lee ese array en el layout
 raíz y renderiza cada entrada con el componente `<Script>` de Next.js. Esta es
@@ -76,3 +79,6 @@ hacer solicitudes de red, afectar el rendimiento y establecer cookies o
 identificadores similares. Si necesitas consentimiento, bloquea el script hasta
 registrarlo; no basta con mostrar un banner después de cargar el script.
 </Warning>
+
+Para la recopilación de tráfico del lado del servidor y sin cookies de Thally, continúa con
+[Análisis y comentarios](/es/guides/analytics-and-feedback).

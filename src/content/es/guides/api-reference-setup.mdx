@@ -1,11 +1,34 @@
 ---
-title: Configuración de la Referencia de API
-description: Cómo conectar tu especificación OpenAPI y personalizar la referencia de API generada automáticamente.
+title: Genera una referencia de API
+navTitle: Referencia de API
+description: Conecta una especificación OpenAPI y personaliza las páginas interactivas de endpoints que genera Thally.
 ---
 
-## Agregar tu especificación
+{/* thally:ai-translation locale=es source-sha=489d252ead39c6eceacc814e31e7a2470480898ff2a762b2256de8694d338b8e */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
 
-Coloca tu archivo de especificación OpenAPI 3.x en la raíz del proyecto como `openapi.yaml` (o `openapi.json`). Luego configúralo en `docs.json`:
+Al terminar esta guía, tu sitio Thally tendrá una página navegable para cada operación de un documento OpenAPI 3.x. Necesitas una especificación YAML o JSON válida y un proyecto Thally local.
+
+<AgentPrompt
+  title="Copia un prompt completo para conectar una especificación OpenAPI"
+  copyOnly
+>
+
+Connect the OpenAPI specification at SPEC_PATH to this Thally documentation project. You are done when Thally validates the specification, generated endpoint navigation reflects the source accurately, representative operations render correctly, and the project passes its documentation check and production build.
+
+Before editing, read AGENTS.md if present, docs.json, package.json, the existing API guides, and the complete specification. Preserve unrelated navigation and any authored pages already paired with operations. Confirm SPEC_PATH resolves from the project root, parses as OpenAPI 3.x, and does not contain unresolved local references.
+
+Add or update the API Reference tab in docs.json. Use the exact source path. Derive tagsOrder from tags that actually exist, keep deliberate existing ordering when it remains valid, and choose defaultGroup only for genuinely untagged operations. Preserve operation IDs, paths, methods, servers, security schemes, schemas, examples, and descriptions exactly as the source defines them. Do not invent authentication, credentials, base URLs, response bodies, or business meaning. Never place a production secret in docs.json or an example.
+
+Run npx --yes @thallylabs/cli@latest check and npm run build. Start the local site and inspect at least one read operation and one write operation when both exist. Verify navigation grouping, path and method, parameters, request body, response schemas, examples, authentication fields, generated cURL, overflow, and dark-mode syntax contrast. Do not send a live request unless the specification points to a safe test server and I explicitly approve it.
+
+Report specification errors separately from Thally configuration errors. Include the exact files changed, commands run, operations inspected, source facts preserved, and anything the API owner must correct. Do not commit, push, deploy, modify the specification itself, or change unrelated framework files unless I ask.
+
+</AgentPrompt>
+
+## Añade tu especificación
+
+Coloca tu archivo de especificación OpenAPI 3.x en la raíz del proyecto como `openapi.yaml` (o `openapi.json`). Luego configúralo en `docs.json`.
 
 ```json
 {
@@ -18,36 +41,30 @@ Coloca tu archivo de especificación OpenAPI 3.x en la raíz del proyecto como `
 }
 ```
 
-La pestaña de Referencia de API generará automáticamente una página para cada operación en tu especificación.
+La pestaña de referencia de API generará automáticamente una página para cada operación de tu especificación.
 
-## Navegar por un endpoint
+## Navega por un endpoint
 
-Cada endpoint muestra su método HTTP, como `GET` o `POST`, antes del nombre en
-la barra lateral y el menú móvil. Thally lo obtiene de los metadatos de la
-operación; no hace falta añadirlo al título. Las páginas MDX vinculadas con
-frontmatter `openapi` o descritas con frontmatter `api` también muestran el método.
+Cada endpoint muestra su método HTTP, como `GET` o `POST`, antes de su nombre en la barra lateral y el menú móvil. Thally lee el método de los metadatos de la operación, así que no necesitas añadirlo al título. Las páginas creadas por ti vinculadas con frontmatter `openapi` o descritas con frontmatter `api` también reciben etiquetas de método.
 
-En pantallas amplias, los parámetros aparecen junto a tarjetas separadas de
-solicitud y respuesta. En pantallas más estrechas, las tarjetas pasan encima de
-los parámetros. La barra del endpoint permite copiar la URL o abrir **Try it**.
+En pantallas amplias, la documentación de parámetros aparece junto a tarjetas separadas de solicitud y respuesta. En pantallas más estrechas, las tarjetas pasan encima de los parámetros. La barra del endpoint permite copiar la URL o abrir **Try it**.
 
-El lenguaje elegido en la tarjeta se comparte con los grupos compatibles y la
-ventana Try it. Las pestañas de respuesta muestran los estados documentados en
-la especificación. Al pasar el cursor o enfocar un parámetro o una línea vinculada,
-se resaltan los nombres de campo correspondientes en la documentación y los ejemplos.
+Elige un lenguaje de solicitud en la cabecera de la tarjeta; los grupos de código compatibles y la ventana Try it comparten esa elección. Las pestañas de respuesta cambian entre los estados documentados en tu especificación. Pasa el cursor o enfoca un parámetro o una línea de código vinculada para resaltar los nombres de campo correspondientes en la documentación y los ejemplos.
 
 ## Opciones de configuración
 
-| Campo | Requerido | Descripción |
+| Campo | Obligatorio | Descripción |
 | --- | --- | --- |
 | `source` | Sí | Ruta a tu archivo de especificación OpenAPI, relativa a la raíz del proyecto. |
+| `navigation` | No | Define `false` cuando las páginas MDX creadas por ti proporcionan la navegación de API. Valor predeterminado: `true`. |
 | `tagsOrder` | No | Controla el orden en que aparecen las etiquetas en la barra lateral. Las etiquetas no listadas aparecen después. |
-| `defaultGroup` | No | Nombre del grupo para operaciones sin etiquetas. Por defecto es `"Endpoints"`. |
+| `defaultGroup` | No | Nombre del grupo para operaciones sin etiquetas. Valor predeterminado: `"Endpoints"`. |
+| `webhookGroup` | No | Nombre del grupo para operaciones de webhook de OpenAPI. Valor predeterminado: `"Webhooks"`. |
 | `overrides` | No | Personalizaciones por operación (ver más abajo). |
 
-## Sobreescritura de operaciones
+## Sobrescritura de operaciones
 
-Puedes personalizar cómo aparecen las operaciones individuales en la barra lateral y la documentación:
+Puedes personalizar cómo aparecen las operaciones individuales en la barra lateral y la documentación.
 
 ```json
 {
@@ -68,18 +85,20 @@ Puedes personalizar cómo aparecen las operaciones individuales en la barra late
 }
 ```
 
-El formato de la clave es `METHOD /path` — que coincide con el `method` y el `path` de tu especificación OpenAPI.
+El formato de la clave es `METHOD /path`, que coincide con el `method` y el `path` de tu especificación OpenAPI.
 
-Campos de sobreescritura disponibles:
+Campos de sobrescritura disponibles.
 
 - **`title`** — título personalizado de la barra lateral y la página
 - **`description`** — descripción personalizada que se muestra debajo del título
 - **`badge`** — una etiqueta que se muestra junto al título de la operación
 - **`group`** — mover la operación a un grupo diferente en la barra lateral
+- **`slug`** — reemplaza los segmentos de URL generados por un array de cadenas
+- **`hidden`** — mantiene la operación fuera de la navegación generada
 
-## Ordenamiento de etiquetas
+## Orden de etiquetas
 
-Por defecto, las operaciones se agrupan por sus `tags` de OpenAPI. El array `tagsOrder` controla el orden en la barra lateral:
+De forma predeterminada, las operaciones se agrupan por sus `tags` de OpenAPI. El array `tagsOrder` controla el orden en la barra lateral.
 
 ```json
 "tagsOrder": ["Authentication", "Users", "Orders"]
@@ -89,28 +108,21 @@ Las etiquetas no listadas en `tagsOrder` aparecen después de las listadas, en e
 
 ## Ventana Try it
 
-Cada página de operación de API incluye un botón **Try it** que abre una ventana modal interactiva. Esta:
+Cada página de operación de API incluye un botón **Try it** que abre una ventana modal interactiva. La ventana hace lo siguiente.
 
 - Rellena previamente los parámetros desde el esquema OpenAPI
-- Marca valores obligatorios ausentes y tipos inválidos antes de enviar, y enfoca el primer campo con error
+- Marca valores obligatorios ausentes y tipos de campo inválidos antes de enviar, y enfoca el primer campo inválido
 - Envía solicitudes a través de un proxy del lado del servidor para evitar problemas de CORS
-- Muestra la respuesta con el código de estado, encabezados y cuerpo
+- Muestra la respuesta con el código de estado, las cabeceras y el cuerpo
 - Genera un comando cURL que puedes copiar
 
-En teléfonos, la ventana ocupa toda la pantalla y mantiene **Send** accesible en
-la parte inferior. Pulsa Escape o el botón de cierre para volver al endpoint.
+En teléfonos, la ventana ocupa toda la pantalla y mantiene **Send** accesible en la parte inferior. Pulsa Escape o usa el botón de cierre para volver al endpoint.
 
-La especificación debe incluir al menos una URL de servidor. Las solicitudes se
-envían al servidor seleccionado y pueden modificar sus datos. Usa credenciales
-adecuadas para ese servidor; la ventana no crea un entorno de pruebas simulado.
+Try it está listo cuando la especificación proporciona al menos una URL de servidor. Añade marcadores de posición de autenticación solo cuando tu API los requiera; los lectores pueden introducir sus propias credenciales antes de enviar una solicitud.
 
 ## Varias especificaciones de API
 
-Un sitio que documenta más de una API puede vincular una especificación OpenAPI
-diferente a cada pestaña. La primera pestaña con API mantiene las rutas
-predeterminadas en `/api/default/...`; cada pestaña adicional enruta sus operaciones
-bajo `/api/<tabId>/...`, donde `tabId` es la versión slug de la etiqueta de la
-pestaña.
+Un sitio que documenta más de una API puede vincular una especificación OpenAPI diferente a cada pestaña. La primera pestaña con API mantiene las rutas predeterminadas en `/api/default/...`; cada pestaña adicional enruta sus operaciones bajo `/api/<tabId>/...`, donde `tabId` es la versión slug de la etiqueta de la pestaña.
 
 ```json
 {
@@ -133,17 +145,28 @@ pestaña.
 }
 ```
 
-En este ejemplo, las operaciones REST aparecen bajo `/api/default/...` y las operaciones
-Admin bajo `/api/admin-api/...`. Cada pestaña genera su propia
-navegación en la barra lateral y cada especificación se analiza de forma
-independiente, por lo que las etiquetas, sobreescrituras y grupos se limitan a la
-pestaña que los posee.
+En este ejemplo, las operaciones REST aparecen bajo `/api/default/...` y las operaciones Admin bajo `/api/admin-api/...`. Cada pestaña genera su propia navegación en la barra lateral y cada especificación se analiza de forma independiente, así que las etiquetas, sobrescrituras y grupos se limitan a la pestaña que los posee.
 
-## Reemplazar la especificación de ejemplo
+## Reemplaza la especificación de ejemplo
 
-La plantilla incluye un ejemplo de JSONPlaceholder. Para usar tu propia API:
+La plantilla incluye una especificación de JSONPlaceholder para que puedas probar las páginas generadas sin credenciales. Para usar tu propia API, sigue estos pasos.
 
 1. Reemplaza `openapi.yaml` con tu especificación
-2. Actualiza el `tagsOrder` en `docs.json` para que coincida con tus etiquetas
-3. Agrega los `overrides` que desees
+2. Actualiza el `tagsOrder` de `docs.json` para que coincida con tus etiquetas
+3. Añade las `overrides` que quieras
 4. Ejecuta `npm run dev` para ver el resultado
+
+## Verifica la referencia generada
+
+Confirma que aparecen las etiquetas y operaciones esperadas, abre al menos un endpoint y compara sus parámetros y esquemas con la especificación de origen. Luego ejecuta estos comandos.
+
+```bash
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+## Próximos pasos
+
+- [Configura el playground de API](/es/guides/api-playground)
+- [Soluciona problemas de una referencia de API](/es/guides/api-troubleshooting)
+- [Referencia de ajustes de API](/es/guides/docs-json-reference#referencia-de-api)

@@ -4,24 +4,31 @@ navTitle: Resumen
 description: Mueve tu documentación existente a Thally con un comando y ejecútala en local.
 ---
 
+{/* thally:ai-translation locale=es source-sha=e1ff6c0d3218db798060fd52c22a686fe01b9bfc5c622be27421dbd5837238d5 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
 Un solo comando importa un sitio de documentación existente en un proyecto Thally nuevo. Elige la guía de la plataforma que usas hoy o empieza con la versión genérica.
 
 Necesitas Node.js 22 o posterior y Git. Prefiere el repositorio fuente cuando esté disponible. La validación ejecuta MDX y componentes importados en tu equipo; usa fuentes propias o de confianza.
 
 ## Migra y ejecuta en local
 
-```bash
-npx --yes @thallylabs/cli@latest migrate https://github.com/example/product --platform auto --yes
-```
+Ejecuta el comando de migración en tu repositorio, reemplazando `<USERNAME>` y `<REPOSITORY>` por tu nombre de usuario de GitHub y el nombre del repositorio.
 
 ```bash
-cd product-docs
+npx --yes @thallylabs/cli@latest migrate https://github.com/<USERNAME>/<REPOSITORY> --platform auto --yes
+```
+
+Inicia el sitio.
+
+```bash
+cd <REPOSITORY>-docs
 npm run dev
 ```
 
-Abre [http://localhost:3040](http://localhost:3040). Revisa la documentación en la URL que indique el servidor.
+Abre la URL que indique el servidor, normalmente [http://localhost:3040](http://localhost:3040), para revisar tu documentación.
 
-El comando clona el repositorio, detecta la plataforma, convierte las páginas, instala las dependencias, ejecuta las comprobaciones y una compilación de producción, y crea un commit inicial de Git. Añade un directorio de salida después de la URL para cambiar el nombre predeterminado `<repo>-docs`.
+El comando clona el repositorio, detecta la plataforma, convierte las páginas, instala las dependencias, ejecuta las comprobaciones y una compilación de producción, y crea un commit inicial de Git. Añade un directorio de salida después de la URL para cambiar el nombre predeterminado `<REPOSITORY>-docs`.
 
 Lee `migration-report.json` antes de publicar. Los fallos de instalación o validación conservan los archivos importados: corrige los errores y ejecuta `npx --yes @thallylabs/cli@latest check` y `npm run build`. Con `--skip-validation`, instala las dependencias y ejecuta ambas comprobaciones.
 
@@ -78,7 +85,7 @@ Haz commit de tus cambios, sube el proyecto a un repositorio nuevo de GitHub y c
 git add -A
 git commit -m "docs: review migrated content"
 git branch -M main
-gh repo create product-docs --private --source=. --remote=origin --push
+gh repo create <REPOSITORY>-docs --private --source=. --remote=origin --push
 ```
 
 Elige el repositorio generado y su rama de producción, normalmente `main`. Deja **Docs directory** vacío si el proyecto está en la raíz, o introduce su ruta relativa en un monorepo. Revisa el resumen y selecciona **Publish site**.

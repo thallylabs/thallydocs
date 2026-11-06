@@ -1,106 +1,113 @@
 ---
-title: Comenzando con Thally
-description: Configura Thally y crea tu primera página de documentación en menos de cinco minutos.
+title: Crea un proyecto de Thally con la CLI
+navTitle: Configuración de la CLI
+description: Usa la ruta de configuración para desarrolladores para evaluación local, automatización, migración o un sitio de documentación autoalojado.
 ---
 
-## Requisitos previos
+{/* thally:ai-translation locale=es source-sha=8379a066a4dc816aa33faedad15150714b27de186f69270bffa4c8217205963e */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
 
-- **Node.js 22+** y npm (o pnpm/yarn)
-- Una terminal y un editor de código
-- Una especificación OpenAPI (opcional — se incluye un ejemplo de JSONPlaceholder)
+La ruta recomendada es crear y publicar un sitio gestionado con el [inicio rápido de Thally Cloud](/es/quickstart). Usa esta guía para desarrolladores cuando necesites una evaluación local aislada, automatización de CI, un espacio de trabajo para migraciones o un despliegue autoalojado.
 
-<Frame caption="Desde la configuración hasta el despliegue en minutos" zoom={false}>
+<CardGroup cols={3}>
+  <Card title="Crea un proyecto local" icon="code-simple" href="#crea-un-proyecto-local">
+    Responde algunas preguntas y crea un proyecto de documentación listo para editar.
+  </Card>
+  <Card title="Usa los valores predeterminados de automatización" icon="wrench" href="#usa-los-valores-predeterminados-de-automatización">
+    Crea el mismo proyecto sin interacción para scripts o una evaluación rápida.
+  </Card>
+  <Card title="Migra documentación existente" icon="book-open" href="#migra-documentación-existente">
+    Importa un repositorio o un sitio de documentación público en lugar de empezar de cero.
+  </Card>
+</CardGroup>
 
-![Horizonte de la ciudad de noche](/images/image3.jpg)
+## Crea un proyecto local
 
-</Frame>
+Usa Node.js 22 (22.14 o posterior) o Node.js 24 o posterior. También se admite Node.js 20.19 o posterior. El proyecto predeterminado incluye las dependencias de compilación de la documentación. Las pruebas internas del framework y las herramientas de despliegue en Cloudflare quedan fuera de la instalación predeterminada.
 
-<Steps>
-
-<Step title="Crea tu proyecto">
-
-Usa la CLI (recomendado):
-
-```bash
-npx create-thally-docs my-docs
-```
-
-La CLI te guía a través de una configuración interactiva:
-
-- **Nombre del proyecto** — se muestra en el encabezado y los metadatos
-- **Descripción** — se usa para SEO y etiquetas OpenGraph
-- **Preset de marca** — `primary` (verde) o `secondary` (morado)
-- **URL del repositorio de GitHub** — conecta automáticamente los enlaces de Soporte y GitHub
-- **Instalar dependencias** — ejecuta `npm install` por ti
-
-También puedes omitir las preguntas y aceptar todos los valores predeterminados:
+Ejecuta la configuración interactiva.
 
 ```bash
-npx create-thally-docs my-docs --yes
+npx create-thally-docs my-docs --install
 ```
 
-La CLI descarga la versión inicial inmutable que también utiliza Thally Cloud.
-No clones `thallylabs/thally` como plantilla: ese repositorio contiene el
-runtime público, no el proyecto completo destinado al cliente.
+La configuración solo pregunta por los valores que definen el proyecto inicial.
 
-</Step>
+| Pregunta | Qué cambia |
+| --- | --- |
+| Nombre del proyecto | Encabezado, metadatos y contenido inicial |
+| Descripción | Metadatos de búsqueda y redes sociales |
+| Preset de marca | Tokens de color iniciales para modo claro y oscuro |
+| Repositorio de GitHub | Enlaces de la barra de navegación y de soporte |
+| Instalar dependencias | Si el sitio está listo para ejecutarse de inmediato |
 
-<Step title="Inicia el servidor de desarrollo">
+Inicia el servidor local cuando termine el comando.
 
 ```bash
 cd my-docs
 npm run dev
 ```
 
-Abre [http://localhost:3040](http://localhost:3040) para ver el sitio de documentación predeterminado.
+Abre la URL que se imprime en la terminal. Empieza en [http://localhost:3040](http://localhost:3040).
 
-</Step>
+## Usa los valores predeterminados de automatización
 
-<Step title="Crea tu primera página">
-
-Crea un nuevo archivo en `src/content/my-first-page.mdx`:
-
-```mdx
----
-title: My First Page
-description: A quick test page to verify everything works.
----
-
-Welcome to my documentation! This page was created with Thally.
-
-## Next steps
-
-- Edit `docs.json` to add this page to the sidebar.
-- Replace the example content with your own.
-```
-
-</Step>
-
-<Step title="Agrégala a la navegación">
-
-Abre `docs.json` y añade tu página a un grupo:
-
-```json
-{
-  "group": "Getting Started",
-  "pages": ["introduction", "quickstart", "my-first-page"]
-}
-```
-
-Guarda el archivo y la barra lateral se actualiza automáticamente — no se requiere reinicio.
-
-</Step>
-
-<Step title="Despliega">
+Usa `--yes` para aceptar los valores predeterminados y `--install` para instalar las dependencias en el mismo comando.
 
 ```bash
-npm run build:cloudflare
-npm run smoke:cloudflare
+npx create-thally-docs my-docs --yes --install
 ```
 
-Despliega el Worker verificado con `npm run deploy:cloudflare`. Para un
-despliegue Node tradicional, usa `npm run build && npm start`.
+Usa esta forma en un script, una evaluación temporal o un flujo de trabajo de agente. Puedes cambiar la identidad del producto más adelante en `src/data/site.ts` y `docs.json`.
 
-</Step>
+## Migra documentación existente
 
-</Steps>
+Prefiere el repositorio fuente cuando tengas acceso a él. Una migración de repositorio puede conservar Markdown o MDX original, navegación, assets locales, snippets, locales, redirecciones y archivos OpenAPI que un sitio web público puede no exponer.
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/acme/docs acme-docs
+```
+
+También puedes migrar la URL de un sitio de documentación público.
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://docs.acme.com acme-docs
+```
+
+El flujo interactivo pregunta si la fuente usa Mintlify, Docusaurus, Fern o detección automática. Para ejecuciones sin interacción, selecciona el adaptador de forma explícita.
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/acme/docs acme-docs --platform mintlify --yes
+```
+
+<Note type="info" title="Revisa una migración antes de publicar">
+Lee `migration-report.json` y resuelve los errores de validación. La validación de la migración ejecuta código importado en local, así que usa fuentes propias o de confianza. Ejecuta el proyecto migrado en local, revisa su navegación y sus assets, y luego ejecuta `npx --yes @thallylabs/cli@latest check`. El contenido importado sigue siendo tuyo para editarlo y reorganizarlo.
+</Note>
+
+## Qué crea el scaffold
+
+| Ruta | Propósito |
+| --- | --- |
+| `src/content/` | Páginas MDX que tú controlas |
+| `docs.json` | Configuración de navegación y funciones |
+| `src/data/site.ts` | Identidad del producto, enlaces y valores de marca |
+| `.github/workflows/` | Flujo de trabajo de validación para pull requests de documentación |
+
+El runtime del framework ya está conectado. Puedes centrarte en el contenido y la configuración en lugar de editar las partes internas de Next.js.
+
+## Continúa con una tarea
+
+<CardGroup cols="2">
+  <Card title="Crea y edita páginas" icon="book-open" href="/es/guides/writing-content">
+    Aprende la estructura de una página y los componentes disponibles en MDX.
+  </Card>
+  <Card title="Organiza la navegación" icon="grid-round" href="/es/guides/configuring-navigation">
+    Diseña pestañas y grupos de barra lateral en torno a las tareas que tus lectores necesitan completar.
+  </Card>
+  <Card title="Personaliza el sitio" icon="wrench" href="/es/guides/branding-and-theming">
+    Aplica la identidad de tu producto y elige controles de marca versionados o en vivo.
+  </Card>
+  <Card title="Despliega el sitio" icon="code-simple" href="/es/guides/deploying">
+    Valida una compilación de producción y configura la URL pública en tu proveedor de alojamiento.
+  </Card>
+</CardGroup>

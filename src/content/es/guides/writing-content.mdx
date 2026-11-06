@@ -1,44 +1,75 @@
 ---
-title: Escritura de Contenido
-description: Cómo escribir páginas de documentación usando MDX, frontmatter y componentes integrados.
+title: Crea y edita páginas
+navTitle: Páginas
+description: Crea páginas MDX centradas en tareas con frontmatter, ejemplos de código y componentes de documentación integrados.
 ---
+
+{/* thally:ai-translation locale=es source-sha=2194c22bebc494e9dc8ccd6c231253e88fa2a87cf278b0a0ec441fc506b6f042 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Usa esta guía para crear una página MDX completa y elegir los componentes integrados que hacen que su tarea sea más fácil de seguir. Para la estrategia de contenido, empieza por [Elige el tipo de contenido adecuado](/es/guides/content-types).
+
+<AgentPrompt
+  title="Copia un prompt completo para escribir una página"
+  copyOnly
+>
+
+Create or improve a task-focused page in this Thally project about TASK. You are done when a reader can complete the task without guessing, the page is placed where they will look for it, every product claim is supported by the current implementation, and the project passes its documentation checks and production build.
+
+Start by reading AGENTS.md if present, docs.json, package.json, src/data/site.ts, and the pages returned by a repository search for the task, feature names, commands, settings, and related user language. Inspect the source code, CLI help, configuration types, and tests behind any behavior you plan to document. Treat code and tests as evidence; do not turn assumptions, roadmap notes, generic Next.js behavior, or another product's conventions into Thally claims.
+
+Prefer improving the existing page that owns the task. Create one new MDX file under src/content only when the task needs its own durable URL. Add a new page to the most relevant docs.json group, keep its navTitle short enough for one sidebar line when practical, and link to prerequisites instead of duplicating them.
+
+Write directly to the reader in friendly, concrete language. Include the outcome, prerequisites, ordered steps, exact UI labels or tested commands, realistic examples, expected results, and troubleshooting for the two or three most likely failures. Use code fences with the correct language. Use Note, Warning, Steps, Tabs, Cards, or another built-in component only when it makes the task easier to scan. Never add a second H1 inside the body.
+
+Run every safe command you document when the environment permits. Then run npx --yes @thallylabs/cli@latest check and npm run build. Start a local preview, inspect the page in light and dark mode at desktop and narrow widths, and check links, navigation, code contrast, overflow, and headings. Fix regressions caused by your changes.
+
+Report the user outcome, files changed, evidence used for product claims, commands run, visual checks completed, and any facts that still require a product owner. Do not commit, push, deploy, delete content, or modify unrelated framework internals unless I explicitly ask.
+
+</AgentPrompt>
+
+## Crea una página
+
+Añade un archivo bajo `src/content/`. Su ruta se convierte en la URL, así que `src/content/guides/invite-a-member.mdx` está disponible en `/guides/invite-a-member`.
 
 ## Conceptos básicos de MDX
 
-Cada página en Thally es un archivo `.mdx` — Markdown con soporte para JSX. Puedes usar la sintaxis estándar de Markdown además de componentes React en línea.
+Cada página de Thally es un archivo `.mdx`, Markdown con compatibilidad con JSX. Puedes usar la sintaxis estándar de Markdown y componentes de React en línea.
 
 ```mdx
-# Encabezado
+# Heading
 
-Párrafo normal con **negrita**, *cursiva* y `código en línea`.
+Regular paragraph with **bold**, *italic*, and `inline code`.
 
-- Listas con viñetas
-- Funcionan como se espera
+- Bullet lists
+- Work as expected
 
-1. Las listas numeradas también
+1. Numbered lists too
 ```
 
 ## Frontmatter
 
-Cada página necesita un bloque de frontmatter al inicio:
+Cada página necesita un bloque de frontmatter al principio.
 
 ```yaml
 ---
-title: Título de la Página
-description: Un breve resumen para los resultados de búsqueda y las metaetiquetas.
+title: Page Title
+description: A short summary for search results and meta tags.
 ---
 ```
 
-| Campo | Requerido | Propósito |
+| Campo | Obligatorio | Propósito |
 | --- | --- | --- |
-| `title` | Sí | Encabezado de la página y etiqueta en la barra lateral |
+| `title` | Sí | Encabezado de la página y etiqueta de la barra lateral |
 | `description` | Sí | Meta descripción y fragmento de búsqueda |
 
-El título del frontmatter se renderiza automáticamente como el encabezado de la página — no es necesario agregar un `# H1` en el cuerpo.
+El título del frontmatter se renderiza automáticamente como encabezado de la página, así que no necesitas añadir un `# H1` en el cuerpo.
+
+Consulta la [referencia de frontmatter](/es/guides/frontmatter-reference) para ver los campos de búsqueda, procedencia, visibilidad, operación de API y diseño de página.
 
 ## Bloques de código
 
-Los bloques de código delimitados obtienen resaltado de sintaxis automáticamente:
+Los bloques de código delimitados reciben resaltado de sintaxis automáticamente.
 
 ````mdx
 ```javascript
@@ -47,11 +78,11 @@ console.log(greeting)
 ```
 ````
 
-Usa `bash`, `typescript`, `python`, `json`, u cualquier otro identificador de lenguaje compatible con Shiki.
+Usa `bash`, `typescript`, `python`, `json` o cualquier otro identificador de lenguaje compatible con Shiki.
 
 ## Avisos y notas
 
-Usa el componente `<Note>` para destacar información importante:
+Usa el componente `<Note>` para destacar información importante.
 
 ```mdx
 <Note type="info" title="Good to know">
@@ -63,11 +94,11 @@ Usa el componente `<Note>` para destacar información importante:
 </Note>
 ```
 
-Tipos disponibles: `info`, `warning`, `danger`, `tip`.
+Tipos disponibles. `info`, `warning`, `danger`, `tip`.
 
 ## Enlaces
 
-Los enlaces estándar de Markdown funcionan tanto para páginas internas como externas:
+Los enlaces estándar de Markdown funcionan tanto para páginas internas como externas.
 
 ```mdx
 Check the [Quickstart](/quickstart) guide or visit [GitHub](https://github.com).
@@ -75,7 +106,7 @@ Check the [Quickstart](/quickstart) guide or visit [GitHub](https://github.com).
 
 ## Pestañas
 
-Usa `<Tabs>` y `<Tab>` para mostrar contenido específico por plataforma o variantes sin bloques de código:
+Usa `<Tabs>` y `<Tab>` para mostrar contenido específico de plataforma o variantes sin bloques de código.
 
 ```mdx
 <Tabs>
@@ -97,11 +128,11 @@ sudo apt install your-cli
 </Tabs>
 ```
 
-Cada `<Tab>` admite contenido MDX completo en su interior — bloques de código, listas, avisos y más.
+Cada `<Tab>` admite contenido MDX completo dentro, como bloques de código, listas, avisos y más.
 
 ## Pasos
 
-Usa `<Steps>` y `<Step>` para instrucciones secuenciales con círculos numerados y líneas conectoras:
+Usa `<Steps>` y `<Step>` para instrucciones secuenciales con círculos numerados y líneas conectoras.
 
 ```mdx
 <Steps>
@@ -122,7 +153,7 @@ Create a config file and add your API key.
 
 ## Tarjetas
 
-Usa `<CardGroup>` y `<Card>` para crear cuadrículas de tarjetas clicables para páginas de inicio o secciones de "próximos pasos":
+Usa `<CardGroup>` y `<Card>` para crear cuadrículas de tarjetas enlazables para páginas de inicio o secciones de "próximos pasos".
 
 ```mdx
 <CardGroup cols="2">
@@ -138,17 +169,17 @@ Explore the full API.
 </CardGroup>
 ```
 
-Iconos disponibles: `book-open`, `code-simple`, `grid-round`, `link-simple`, `wrench`, `party-horn`, `telegram`, `envelope`, `x-twitter`, `message`.
+Iconos disponibles. `book-open`, `code-simple`, `grid-round`, `link-simple`, `wrench`, `party-horn`, `telegram`, `envelope`, `x-twitter`, `message`.
 
 ## Imágenes y marcos
 
-Coloca las imágenes en la carpeta `public/` y referéncialas con una barra diagonal al inicio:
+Coloca las imágenes en la carpeta `public/` y referéncialas con una barra inicial.
 
 ```mdx
 ![Screenshot](/images/image1.jpg)
 ```
 
-Envuelve las imágenes en un `<Frame>` para obtener un borde estilizado con un pie de foto opcional. Los marcos tienen zoom al hacer clic por defecto:
+Envuelve las imágenes en un `<Frame>` para obtener un borde con estilo y un pie de foto opcional. Los marcos se amplían al hacer clic de forma predeterminada.
 
 ```mdx
 <Frame caption="System architecture overview">
@@ -158,35 +189,27 @@ Envuelve las imágenes en un `<Frame>` para obtener un borde estilizado con un p
 
 Desactiva el zoom con `<Frame zoom={false}>`.
 
+Para organizar assets, escribir texto alternativo, añadir descargas y revisar imágenes, consulta [Añade imágenes y archivos descargables](/es/guides/images-and-files).
+
 ## Enlaces ancla en encabezados
 
-Cada encabezado desde `h2` hasta `h6` es un enlace permanente. Al seleccionar
-el encabezado se copia la URL de la sección sin agregar un marcador visible, lo
-que permite compartir una respuesta específica manteniendo la página limpia
-visualmente.
+Cada encabezado de `h2` a `h6` es un enlace permanente. Al seleccionar el encabezado se copia la URL de la sección sin añadir un marcador visible al lado, así que puedes compartir una respuesta concreta y mantener la página visualmente limpia.
 
-Los IDs de los anclas se generan a partir del texto del encabezado. Los
-caracteres no latinos, como CJK, cirílico o letras latinas acentuadas, se
-conservan en el ID, por ejemplo "Überblick" genera `#überblick` y "日本語 API"
-genera `#日本語-api`. Los encabezados duplicados en la misma página reciben un
-sufijo numérico (`-2`, `-3`, etc.).
+Los IDs de ancla se generan a partir del texto del encabezado. Los caracteres no latinos, como CJK, cirílico o letras latinas con acentos, se conservan en el ID, así que un encabezado como "Überblick" se convierte en `#überblick` y "日本語 API" en `#日本語-api`. Los encabezados duplicados en la misma página reciben un sufijo numérico (`-2`, `-3`, etcétera).
 
-Cuando un encabezado contiene un enlace, Thally renderiza el enlace permanente
-como un elemento separado visible solo para lectores de pantalla, en lugar de
-anidar anclas, manteniendo el HTML válido y preservando el acceso por teclado y
-tecnologías de asistencia a la URL de la sección.
+Cuando un encabezado contiene un enlace creado por ti, Thally renderiza el enlace permanente como un elemento separado solo para lectores de pantalla en lugar de anidar anclas, lo que mantiene el HTML válido y conserva el acceso por teclado y tecnología de asistencia a la URL de la sección.
 
-Para definir un ancla personalizada, escribe el encabezado como JSX con un atributo `id`:
+Para definir un ancla personalizada, escribe el encabezado como un elemento JSX con una prop `id`.
 
 ```mdx
-<h2 id="custom-anchor">Mi encabezado</h2>
+<h2 id="custom-anchor">My heading</h2>
 ```
 
-El ID definido se conserva; si se omite, Thally lo genera a partir del texto.
+El ID creado por ti se usa tal cual. Cuando no se proporciona un `id`, Thally genera uno a partir del texto del encabezado.
 
 ## Tablas
 
-Las tablas estándar de Markdown se renderizan con el estilo adecuado:
+Las tablas estándar de Markdown se renderizan con el estilo adecuado.
 
 ```mdx
 | Method | Endpoint | Description |
@@ -197,7 +220,7 @@ Las tablas estándar de Markdown se renderizan con el estilo adecuado:
 
 ## Organización de archivos
 
-Todo el contenido se encuentra en `src/content/`. Puedes usar subdirectorios para organizar páginas relacionadas:
+Todo el contenido vive en `src/content/`. Puedes usar subdirectorios para organizar páginas relacionadas.
 
 ```
 src/content/
@@ -208,4 +231,23 @@ src/content/
     writing-content.mdx      → /guides/writing-content
 ```
 
-La ruta URL coincide con la ruta del archivo relativa a `src/content/`, sin la extensión `.mdx`.
+La ruta de la URL coincide con la ruta del archivo relativa a `src/content/`, sin la extensión `.mdx`.
+
+## Añade la página a la navegación
+
+En `docs.json`, añade el ID de la página al array `pages` del grupo correspondiente. Para el ejemplo anterior, usa `"guides/invite-a-member"`. Consulta [Organiza tu navegación](/es/guides/configuring-navigation).
+
+## Verifica la página
+
+Abre la página en la [vista previa local](/es/guides/preview-locally), sigue sus instrucciones, prueba los enlaces y los componentes interactivos, y luego ejecuta estos comandos.
+
+```bash
+npx --yes @thallylabs/cli@latest check
+npm run build
+```
+
+## Próximos pasos
+
+- [Reutiliza contenido con snippets](/es/guides/reusable-snippets)
+- [Elige un diseño de página](/es/guides/page-modes)
+- [Explora la referencia de componentes](/es/components/badge)
