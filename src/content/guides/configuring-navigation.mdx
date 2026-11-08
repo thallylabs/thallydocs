@@ -200,6 +200,19 @@ jq empty docs.json
 npx --yes @thallylabs/cli@latest check
 ```
 
+## Addresses with no page
+
+An address with no page shows the 404 page, which you can replace with `src/content/404.mdx`. To send it to the home page instead, set `errors.404.redirect` at the top level of `docs.json`:
+
+```json
+{
+  "errors": { "404": { "redirect": true } },
+  "tabs": [...]
+}
+```
+
+A page the reader may not see, or one that is not published, is answered the same way, so the redirect does not reveal which addresses exist. The home page itself, the home page of a language, and an address that ends in a file extension still return 404. The setting does not affect data endpoints such as `/api/search`, `llms.txt`, or `sitemap.xml`.
+
 ## Next steps
 
 - [docs.json reference](/guides/docs-json-reference)
