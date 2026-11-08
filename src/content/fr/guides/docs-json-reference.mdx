@@ -117,6 +117,20 @@ Les liens de barre de navigation contiennent `label`, `href` et optionnellement 
 
 `seo.indexing` accepte `navigable` ou `all`. La valeur par défaut exclut les pages masquées des surfaces d'indexation. Le frontmatter `noindex` au niveau de la page exclut toujours cette page.
 
+## Gestion des erreurs
+
+```json
+{
+  "errors": { "404": { "redirect": true } }
+}
+```
+
+| Champ | Par défaut | Objectif |
+| --- | --- | --- |
+| `errors.404.redirect` | `false` | Quand `true`, une adresse sans page redirige vers la page d'accueil au lieu d'afficher la page 404. |
+
+La redirection s'applique aussi aux pages que le lecteur ne peut pas voir et aux pages non publiées. La page d'accueil, les pages d'accueil de langue et les adresses avec extension de fichier renvoient toujours 404. Voir [Adresses sans page](/fr/guides/configuring-navigation#adresses-sans-page) pour plus de détails.
+
 ## IA, analyses, retours d'expérience et administration
 
 ```json

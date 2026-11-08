@@ -125,6 +125,20 @@ matriz `items` de objetos `{ "label", "href" }`.
 de superficies de indexación. El frontmatter `noindex` a nivel de página siempre excluye esa
 página.
 
+## Manejo de errores
+
+```json
+{
+  "errors": { "404": { "redirect": true } }
+}
+```
+
+| Campo | Predeterminado | Propósito |
+| --- | --- | --- |
+| `errors.404.redirect` | `false` | Cuando es `true`, una dirección sin página redirige a la página de inicio en lugar de mostrar la página 404. |
+
+La redirección se aplica igualmente a las páginas que el lector no puede ver y a las páginas no publicadas. La página de inicio, las páginas de inicio de idioma y las direcciones con extensión de archivo siguen devolviendo 404. Consulta [Direcciones sin página](/es/guides/configuring-navigation#direcciones-sin-página) para más detalles.
+
 ## IA, análisis, comentarios y administración
 
 ```json

@@ -76,6 +76,16 @@ Campos de sobreescritura disponibles:
 - **`description`** — descripción personalizada que se muestra debajo del título
 - **`badge`** — una etiqueta que se muestra junto al título de la operación
 - **`group`** — mover la operación a un grupo diferente en la barra lateral
+- **`slug`**: reemplazar los segmentos de URL generados con un array de cadenas
+- **`hidden`**: mantener la operación fuera de la navegación generada y de los archivos `/openapi.json` y `/openapi.yaml` publicados
+
+Una página cuyo frontmatter `openapi:` nombra una operación oculta aún la renderiza: `x-hidden` y la opción `hidden` solo mantienen una operación fuera de la navegación generada y las páginas generadas. La página no tiene botón Try it para esa operación, porque el playground solo reenvía solicitudes a operaciones listadas.
+
+Una página cuyo frontmatter `openapi:` nombra una operación excluida (`x-excluded: true`) no se publica. Su dirección devuelve 404 y se omite de la navegación, la búsqueda, el sitemap, `llms.txt`, las páginas Markdown y los listados de agentes y MCP. `thally check` y la compilación advierten sobre cada una de estas páginas.
+
+## Enlazar a un campo
+
+Cada parámetro, campo del cuerpo de la solicitud y campo de respuesta en una página de API tiene un id al que se puede enlazar: `#parameter-<name>`, `#body-<path>` y `#response-<path>`. Cada nombre está en kebab case y unido por `-`, así que `explicitDeposit` se convierte en `#body-explicit-deposit`. Los campos de elementos de un array van bajo `items` (`#response-requests-items-data`). Un campo que puede ser null o que es uno de varios tipos agrega `-one-of-` y el índice basado en cero del tipo, omitiendo null (`#body-invoice-id-one-of-0`). Un nombre que se usa dos veces en una página se numera desde `-2`. `thally check` acepta estos ids en una página que documenta una operación.
 
 ## Ordenamiento de etiquetas
 

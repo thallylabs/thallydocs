@@ -198,6 +198,20 @@ See [Navbar and footer](/guides/navbar-and-footer) for examples.
 from indexing surfaces. Page-level `noindex` frontmatter always excludes that
 page.
 
+## Error handling
+
+```json
+{
+  "errors": { "404": { "redirect": true } }
+}
+```
+
+| Field | Default | Purpose |
+| --- | --- | --- |
+| `errors.404.redirect` | `false` | When `true`, an address with no page redirects to the home page instead of showing the 404 page. |
+
+The redirect applies equally to pages the reader may not see and to unpublished pages. The home page itself, language home pages, and file-extension addresses still return 404. See [Addresses with no page](/guides/configuring-navigation#addresses-with-no-page) for details.
+
 ## AI, analytics, feedback, and admin
 
 ```json

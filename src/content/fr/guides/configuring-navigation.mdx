@@ -186,6 +186,19 @@ jq empty docs.json
 npx --yes @thallylabs/cli@latest check
 ```
 
+## Adresses sans page
+
+Une adresse sans page affiche la page 404, que vous pouvez remplacer par `src/content/404.mdx`. Pour rediriger vers la page d'accueil, configurez `errors.404.redirect` au niveau racine de `docs.json` :
+
+```json
+{
+  "errors": { "404": { "redirect": true } },
+  "tabs": [...]
+}
+```
+
+Une page que le lecteur ne peut pas voir, ou une page non publiée, reçoit la même réponse, de sorte que la redirection ne révèle pas quelles adresses existent. La page d'accueil elle-même, la page d'accueil d'une langue et les adresses se terminant par une extension de fichier renvoient toujours 404. Le paramètre ne concerne pas les endpoints de données tels que `/api/search`, `llms.txt` ou `sitemap.xml`.
+
 ## Étapes suivantes
 
 - [Référence docs.json](/guides/docs-json-reference)

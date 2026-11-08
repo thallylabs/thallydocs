@@ -101,7 +101,15 @@ Available override fields:
 - **`badge`** — a label displayed next to the operation title
 - **`group`** — move the operation to a different sidebar group
 - **`slug`** — replace the generated URL segments with a string array
-- **`hidden`** — keep the operation out of generated navigation
+- **`hidden`**: keep the operation out of generated navigation and out of the published `/openapi.json` and `/openapi.yaml`
+
+A page whose `openapi:` frontmatter names a hidden operation still renders it: `x-hidden` and the `hidden` override only keep an operation out of generated navigation and generated pages. The page has no Try it button for such an operation, because the playground only forwards requests to listed operations.
+
+A page whose `openapi:` frontmatter names an excluded operation (`x-excluded: true`) is not published. Its address returns 404, and it is left out of navigation, search, the sitemap, `llms.txt`, the Markdown pages, and the agent and MCP listings. `thally check` and the build warn about each such page.
+
+## Linking to a field
+
+Every parameter, request body field, and response field on an API page has an id you can link to: `#parameter-<name>`, `#body-<path>`, and `#response-<path>`. Each name is in kebab case and joined by `-`, so `explicitDeposit` becomes `#body-explicit-deposit`. Array item fields go under `items` (`#response-requests-items-data`). A field that can be null or that is one of several types adds `-one-of-` and the zero-based index of the type, leaving null out (`#body-invoice-id-one-of-0`). A name used twice on a page is numbered from `-2`. `thally check` accepts these ids on a page that documents an operation.
 
 ## Tag ordering
 

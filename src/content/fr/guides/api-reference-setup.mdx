@@ -88,7 +88,15 @@ Champs de remplacement disponibles :
 - **`badge`** — un libellé affiché à côté du titre de l'opération
 - **`group`** — déplacer l'opération vers un groupe de barre latérale différent
 - **`slug`** — remplacer les segments d'URL générés par un tableau de chaînes
-- **`hidden`** — garder l'opération hors de la navigation générée
+- **`hidden`**: garder l'opération hors de la navigation générée et des fichiers `/openapi.json` et `/openapi.yaml` publiés
+
+Une page dont le frontmatter `openapi:` nomme une opération masquée la rend quand même : `x-hidden` et l'option `hidden` ne gardent une opération que hors de la navigation et des pages générées. La page n'a pas de bouton Essayer pour cette opération, car le playground ne transmet les requêtes qu'aux opérations listées.
+
+Une page dont le frontmatter `openapi:` nomme une opération exclue (`x-excluded: true`) n'est pas publiée. Son adresse renvoie 404, et elle est omise de la navigation, de la recherche, du plan du site, de `llms.txt`, des pages Markdown et des listings d'agents et MCP. `thally check` et la compilation signalent chaque page concernée.
+
+## Lier vers un champ
+
+Chaque paramètre, champ du corps de la requête et champ de réponse sur une page d'API possède un id vers lequel vous pouvez créer un lien : `#parameter-<name>`, `#body-<path>` et `#response-<path>`. Chaque nom est en kebab case et joint par `-`, donc `explicitDeposit` devient `#body-explicit-deposit`. Les champs des éléments d'un tableau vont sous `items` (`#response-requests-items-data`). Un champ qui peut être null ou qui est l'un de plusieurs types ajoute `-one-of-` et l'index à base zéro du type, en omettant null (`#body-invoice-id-one-of-0`). Un nom utilisé deux fois sur une page est numéroté à partir de `-2`. `thally check` accepte ces ids sur une page qui documente une opération.
 
 ## Ordre des balises
 
