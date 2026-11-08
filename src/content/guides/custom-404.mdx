@@ -51,3 +51,20 @@ mode: center
 <Note type="info">
 The 404 page does not appear in the sidebar or sitemap. It is automatically given a `noindex` robots tag.
 </Note>
+
+## Redirect instead of showing a 404
+
+If you prefer to send readers to the home page rather than display a 404 page,
+set `errors.404.redirect` in `docs.json`:
+
+```json
+{
+  "errors": {
+    "404": { "redirect": true }
+  }
+}
+```
+
+Addresses that end with a file extension (such as `.png`) are not redirected, so
+missing assets still return a 404 response. When a custom `404.mdx` exists
+alongside this setting, the redirect takes priority.

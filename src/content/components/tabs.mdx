@@ -81,6 +81,15 @@ Tabs can contain any MDX content including callouts, code groups, and images:
 </Tabs>
 ````
 
+## Link to a specific tab
+
+Each tab receives a fragment id derived from its title. Link to `#title-slug` to
+open the page with that tab selected. For example, a tab titled "npm" gets the
+id `npm`, so a link to `/quickstart#npm` selects it on load.
+
+When two tabs on the same page share a title, the second receives a `-2` suffix,
+the third `-3`, and so on.
+
 ## Props
 
 ### `<Tab>`

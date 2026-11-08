@@ -198,6 +198,21 @@ See [Navbar and footer](/guides/navbar-and-footer) for examples.
 from indexing surfaces. Page-level `noindex` frontmatter always excludes that
 page.
 
+### 404 redirect
+
+```json
+{
+  "errors": {
+    "404": { "redirect": true }
+  }
+}
+```
+
+When `errors.404.redirect` is `true`, an address that has no matching page
+redirects the reader to the home page instead of showing the 404 page. Addresses
+that end with a file extension (such as `.png` or `.pdf`) are not redirected.
+The default is `false`.
+
 ## AI, analytics, feedback, and admin
 
 ```json
