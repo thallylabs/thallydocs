@@ -1,0 +1,48 @@
+---
+title: Migrar desde Docusaurus
+navTitle: Docusaurus
+description: Mueve un sitio de documentación Docusaurus a Thally con un comando y ejecútalo en local.
+---
+
+{/* thally:ai-translation locale=es source-sha=81c1955b06c5c53f0b2ce17e0c596fb98ba28d41ce4ac42aa718e5d2e7d5b324 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally tiene un adaptador dedicado para Docusaurus. Un solo comando importa tus páginas, barras laterales, categorías, avisos, pestañas y assets de `static/` en un proyecto Thally nuevo, desde un repositorio o un sitio publicado.
+
+## Migra y ejecuta en local
+
+Ejecuta el comando de migración en tu repositorio, reemplazando `<USERNAME>` y `<REPOSITORY>` por tu nombre de usuario de GitHub y el nombre del repositorio.
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/<USERNAME>/<REPOSITORY> --platform docusaurus --yes
+```
+
+La validación ejecuta código del proyecto importado en tu equipo, así que migra solo fuentes propias o de confianza.
+
+Inicia el sitio.
+
+```bash
+cd <REPOSITORY>-docs
+npm run dev
+```
+
+Lee `<REPOSITORY>-docs/migration-report.json` desde el directorio original, o `migration-report.json` dentro del proyecto generado. Resuelve los errores de instalación o validación antes de publicar.
+
+Abre [http://localhost:3040](http://localhost:3040). Tu documentación de Docusaurus ya se ejecuta en Thally.
+
+El comando crea `<REPOSITORY>-docs`, instala las dependencias, ejecuta las comprobaciones y una compilación de producción, y crea un commit inicial de Git. Para un monorepo, usa una URL `tree/<rama>/<dir>` como `https://github.com/<USERNAME>/<REPOSITORY>/tree/main/website`. Si solo tienes el sitio publicado, pasa su URL en lugar del repositorio; el adaptador sigue la versión actual y omite los árboles heredados y `next`.
+
+## Qué revisar
+
+- **Navegación.** Las barras laterales se analizan como datos, nunca se ejecutan. Se importan las categorías, las posiciones y las páginas de índice generadas. Una barra lateral que usa llamadas a funciones recurre a la navegación por carpetas, y el informe lo indica.
+- **Avisos y pestañas.** `:::note`, `:::tip` y `:::info` se convierten en `<Note>`; `:::warning` y `:::caution` en `<Warning>`; `:::danger` en `<Error>`; y `<TabItem>` en `<Tab>`.
+- **Componentes de React.** Se copian las importaciones locales que se pueden resolver, incluida `@site/src/components`. Revisa el informe para ver importaciones y dependencias no compatibles. Consulta [Extender Thally](/es/guides/extending).
+- **Alcance.** Se importa el contenido del plugin de documentación; el blog y las páginas personalizadas independientes quedan fuera de este alcance. Se importan los enlaces de navegación, el título, el logotipo y el favicon compatibles. Revisa los ajustes específicos del tema y completa la marca en `src/data/site.ts` y `docs.json`.
+- **Advertencias.** `migration-report.json` enumera todo lo que el importador no pudo conservar.
+
+Después de editar, ejecuta `npx --yes @thallylabs/cli@latest check` y `npm run build`, y luego haz commit.
+
+## Próximos pasos
+
+- [Publicar el sitio](/es/guides/migrating#publicar)
+- [Solución de problemas](/es/guides/migrating#solución-de-problemas)

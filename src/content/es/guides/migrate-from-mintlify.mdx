@@ -1,0 +1,48 @@
+---
+title: Migrar desde Mintlify
+navTitle: Mintlify
+description: Mueve un sitio de documentación Mintlify a Thally con un comando y ejecútalo en local.
+---
+
+{/* thally:ai-translation locale=es source-sha=405e44c8f269ca76b277b09c4828d1c9704486a126949bd71a7752c2b6f56357 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Thally tiene un adaptador dedicado para Mintlify. Un solo comando importa tus páginas, la navegación de `docs.json` o `mint.json`, snippets, redirecciones, componentes locales y la referencia OpenAPI en un proyecto Thally nuevo.
+
+## Migra y ejecuta en local
+
+Ejecuta el comando de migración en tu repositorio, reemplazando `<USERNAME>` y `<REPOSITORY>` por tu nombre de usuario de GitHub y el nombre del repositorio.
+
+```bash
+npx --yes @thallylabs/cli@latest migrate https://github.com/<USERNAME>/<REPOSITORY> --platform mintlify --yes
+```
+
+La validación ejecuta código del proyecto importado en tu equipo, así que migra solo fuentes propias o de confianza.
+
+Inicia el sitio.
+
+```bash
+cd <REPOSITORY>-docs
+npm run dev
+```
+
+Lee `<REPOSITORY>-docs/migration-report.json` desde el directorio original, o `migration-report.json` dentro del proyecto generado. Resuelve los errores de instalación o validación antes de publicar.
+
+Abre [http://localhost:3040](http://localhost:3040). Tu documentación de Mintlify ya se ejecuta en Thally.
+
+El comando crea `<REPOSITORY>-docs`, instala las dependencias, ejecuta las comprobaciones y una compilación de producción, y crea un commit inicial de Git. Si el proyecto Mintlify está en una subcarpeta, usa una URL `tree/<rama>/<dir>` como `https://github.com/<USERNAME>/<REPOSITORY>/tree/main/docs`. Si solo tienes el sitio publicado, pasa su URL en lugar del repositorio.
+
+## Qué revisar
+
+- **Navegación.** Las pestañas, los grupos, los menús desplegables, las versiones y los idiomas se importan con su anidamiento y orden originales. Abre cada uno.
+- **Componentes.** Thally renderiza la mayoría de los componentes de Mintlify con los mismos nombres. Solo se renombran los que tienen otro nombre, como `<Check>` a `<Note>` y `<Tile>` a `<Card>`. Consulta el [mapeo de componentes](/es/guides/cli-reference#mapeo-de-componentes).
+- **Componentes personalizados.** Los componentes JSX y TSX locales se copian a `src/mdx/migrated/`. Los que importan paquetes que el proyecto no incluye fallan en la compilación hasta que instales el paquete o reemplaces el componente.
+- **Marca.** Revisa los colores, el logotipo y el favicon importados. Completa la marca que falte o no sea compatible en `src/data/site.ts` y `docs.json`. Consulta [Marca y temas](/es/guides/branding-and-theming).
+- **Advertencias.** `migration-report.json` enumera todo lo que el importador no pudo conservar, como un snippet que no pudo resolver.
+
+Después de editar, ejecuta `npx --yes @thallylabs/cli@latest check` y `npm run build`, y luego haz commit.
+
+## Próximos pasos
+
+- [Publicar el sitio](/es/guides/migrating#publicar)
+- [Solución de problemas](/es/guides/migrating#solución-de-problemas)
