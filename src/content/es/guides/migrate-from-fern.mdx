@@ -4,17 +4,27 @@ navTitle: Fern
 description: Importa un repositorio de documentación Fern a Thally y revísalo en local.
 ---
 
+{/* thally:ai-translation locale=es source-sha=b63123237196cb8be84e21c9c85db1bb7d3aa426a67f15ea837c49e697a0c6cb */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
 Thally detecta Fern cuando `docs.yml` y `fern.config.json` están en el mismo directorio, normalmente `fern/`. Prefiere el repositorio fuente para conservar la navegación y los componentes originales.
 
 ## Migra y ejecuta en local
 
+Ejecuta el comando de migración en tu repositorio, reemplazando `<USERNAME>` y `<REPOSITORY>` por tu nombre de usuario de GitHub y el nombre del repositorio.
+
 ```bash
-npx --yes @thallylabs/cli@latest migrate https://github.com/example/product --platform fern --yes
-cd product-docs
-npm run dev
+npx --yes @thallylabs/cli@latest migrate https://github.com/<USERNAME>/<REPOSITORY> --platform fern --yes
 ```
 
-El comando crea un proyecto nuevo, instala dependencias, ejecuta las comprobaciones y una compilación de producción, y crea un commit inicial de Git. La validación ejecuta MDX y componentes importados en tu equipo: usa fuentes propias o de confianza. Lee `migration-report.json` y resuelve los errores antes de publicar; los archivos importados se conservan si falla la validación.
+El comando crea un proyecto nuevo, instala dependencias, ejecuta las comprobaciones y una compilación de producción, y crea un commit inicial de Git. La validación ejecuta MDX y componentes importados en tu equipo, así que usa fuentes propias o de confianza. Lee `migration-report.json` y resuelve los errores antes de publicar; los archivos importados se conservan si falla la validación.
+
+Inicia el sitio.
+
+```bash
+cd <REPOSITORY>-docs
+npm run dev
+```
 
 Abre la URL que indique el servidor, normalmente [http://localhost:3040](http://localhost:3040).
 
@@ -22,7 +32,7 @@ Abre la URL que indique el servidor, normalmente [http://localhost:3040](http://
 
 - **Navegación.** Se importan las páginas referenciadas, secciones anidadas, pestañas, productos y la versión predeterminada. Revisa `slug`, `skip-slug` y los slugs del frontmatter. Las páginas sin referencias quedan fuera de la importación.
 - **Referencia de API.** Las secciones de API resuelven fuentes OpenAPI mediante `generators.yml`, incluido `api-name`. Las especificaciones locales se copian a `openapi/`; las referencias OpenAPI remotas se descargan y validan cuando es posible. El informe incluye las descargas fallidas y las fuentes Fern Definition, AsyncAPI u OpenRPC no compatibles.
-- **Componentes.** Se copian los componentes React locales que se pueden resolver. Los componentes propios de Fern se convierten a equivalentes de Thally; consulta el [mapeo de componentes](/guides/cli-reference#component-mapping). Revisa imports y dependencias pendientes.
+- **Componentes.** Se copian los componentes React locales que se pueden resolver. Los componentes propios de Fern se convierten a equivalentes de Thally; consulta el [mapeo de componentes](/es/guides/cli-reference#mapeo-de-componentes). Revisa imports y dependencias pendientes.
 - **Marca y enlaces.** Revisa colores, logotipos, favicon, enlaces de navegación y redirecciones importados; completa los ajustes de tema no compatibles.
 
 Después de editar, ejecuta `npx --yes @thallylabs/cli@latest check` y `npm run build`.
@@ -32,4 +42,4 @@ Con el [servidor MCP de Thally](/guides/mcp-server), omite `platform` para detec
 ## Próximos pasos
 
 - [Publicar el sitio](/es/guides/migrating#publicar)
-- [Solución de problemas](/guides/migrating#troubleshooting)
+- [Solución de problemas](/es/guides/migrating#solución-de-problemas)

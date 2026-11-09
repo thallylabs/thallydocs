@@ -1,116 +1,334 @@
 ---
-title: Funciones de IA
-description: Capacidades de IA integradas — widget de chat, endpoints listos para LLM y herramientas MCP para consultar tus docs.
+title: Conecta herramientas de IA y agentes
+navTitle: IA y agentes
+description: Pon tu documentación a disposición de agentes mediante endpoints estructurados, archivos de descubrimiento, chat fundamentado y MCP.
 ---
 
-Thally incluye un conjunto de funciones nativas de IA que hacen que tu documentación sea consumible por sistemas de IA y ofrecen a tus usuarios una experiencia de preguntas y respuestas potenciada por IA.
+{/* thally:ai-translation locale=es source-sha=38bf3906742a32a4f3752351f142202434ed6ee046af157c8c48b34841600476 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
 
----
+Thally sirve la misma documentación en formatos que funcionan para personas y agentes. Los lectores reciben el sitio renderizado; los agentes pueden usar páginas estructuradas, archivos de descubrimiento, búsqueda y MCP.
 
-## Widget de chat con IA
+## Funciones gratuitas y de Cloud
 
-Añade un botón de chat flotante a tu sitio de documentación que permite a los usuarios hacer preguntas y obtener respuestas basadas en tu documentación real — impulsado por Claude.
+La plantilla autoalojada incluye los formatos que un agente necesita para descubrir, buscar y leer tu documentación. Thally Cloud proporciona los servicios que generan respuestas, rastrean cambios de producto y conservan analíticas.
 
-### Actívalo
+| Función | Disponibilidad |
+| --- | --- |
+| `/llms.txt` y `/llms-full.txt` | Autoalojado |
+| JSON y Markdown estructurados por página | Autoalojado |
+| `/ai.txt` y JSON-LD | Autoalojado |
+| Puntuación de preparación para agentes | Autoalojado |
+| Herramientas MCP locales y remotas | Autoalojado |
+| Búsqueda de texto completo en la documentación | Autoalojado |
+| Respuestas de chat con IA fundamentadas | Thally Cloud |
+| Historial de preguntas de lectores y analíticas de tráfico | Thally Cloud |
+| Conocimiento de producto y revisión de impacto respaldada por evidencia | Thally Cloud |
+| Thally Track gestionado | Thally Cloud |
 
-Añade `"ai": { "chat": true }` a tu `docs.json`:
+## Habilita el chat con IA en Thally Cloud
+
+Thally Cloud puede añadir un botón de chat flotante que responde a partir de tu documentación publicada y enlaza a los lectores con las páginas de origen.
+
+Habilita la interfaz en `docs.json`.
 
 ```json
 {
-  "ai": { "chat": true },
-  "tabs": [...]
+  "ai": {
+    "chat": true,
+    "label": "Ask Acme"
+  }
 }
 ```
 
-Luego configura tu clave de API de Anthropic en `.env.local`:
+El widget aparece solo cuando el sitio desplegado tiene acceso al servicio de IA de Cloud. Una compilación autoalojada sin ese servicio mantiene el widget oculto y devuelve `404` desde `/api/chat`.
 
-```bash
-ANTHROPIC_API_KEY=sk-ant-...
-```
-
-Eso es todo. Aparece un botón de chat en la esquina inferior derecha de tu sitio de documentación. Los usuarios hacen clic, hacen una pregunta y obtienen una respuesta en streaming obtenida de tu documentación.
-
-### Cómo funciona
-
-Cuando un usuario envía un mensaje, la ruta `/api/chat`:
-
-1. Carga el contenido completo de todas tus páginas de documentación (igual que `/llms-full.txt`)
-2. Lo envía como contexto a `claude-haiku-4-5` junto con el mensaje del usuario
-3. Transmite la respuesta de vuelta al widget
-
-Las respuestas están basadas en tu documentación. Si la respuesta no está ahí, Claude lo indica en lugar de adivinar.
-
-<Note type="info" title="Costo">
-El widget de chat usa `claude-haiku-4-5` — el modelo más rápido y asequible de Anthropic. Cada respuesta cuesta una fracción de centavo.
-</Note>
-
-<Note type="warning" title="Límite de velocidad">
-La ruta de chat aplica un límite de velocidad simple de 10 solicitudes por minuto por IP. No se requiere Redis ni ningún servicio externo.
-</Note>
+Cuando está disponible, el servicio de respuestas recupera contenido relevante, transmite una respuesta fundamentada e incluye enlaces a las secciones que la respaldan. Si la documentación no contiene una respuesta, el asistente debe decirlo en lugar de rellenar el hueco con una suposición.
 
 ---
 
-## Endpoints listos para LLM
+## Endpoints de texto listos para LLM
 
-Thally expone automáticamente tu documentación en formatos optimizados para el consumo por IA. Estos endpoints son accesibles públicamente y pueden ser referenciados por cualquier herramienta de IA que admita la carga de contexto basada en URL.
+Thally expone tu documentación en formatos de texto plano para herramientas de IA que prefieren contexto sin procesar a datos estructurados.
 
 ### `/llms.txt`
 
-Un resumen conciso y estructurado de toda tu documentación — enlaces a cada página, organizados por pestaña y grupo. Sigue el estándar [llmstxt.org](https://llmstxt.org).
+Un resumen conciso y estructurado de toda tu documentación, con enlaces a cada página organizados por pestaña y grupo. Sigue el estándar [llmstxt.org](https://llmstxt.org).
 
 ```
 GET /llms.txt
 ```
 
-Úsalo cuando quieras que las herramientas de IA descubran e indexen lo que cubre tu documentación.
-
 ### `/llms-full.txt`
 
-El contenido completo de cada página de documentación en un único archivo de texto plano — sin JSX, listo para las ventanas de contexto de LLM.
+El contenido completo de cada página de documentación en un único archivo de texto plano, sin JSX y listo para ventanas de contexto de LLM.
 
 ```
 GET /llms-full.txt
 ```
 
-Úsalo como prompt de sistema o documento de contexto al construir funciones de IA sobre tu documentación.
-
-### `/api/docs/[slug]`
-
-Sirve una única página de documentación como Markdown limpio con frontmatter YAML. Útil para el acceso programático a páginas individuales.
-
-```
-GET /api/docs/guides/private-docs
-```
-
-Respuesta:
-
-```markdown
----
-title: Authentication
-description: How to authenticate requests to the API.
-url: https://docs.example.com/guides/private-docs
 ---
 
-# Authentication
+## API JSON estructurada
 
-...page content...
+La forma más completa para que un agente de IA consuma tu documentación. Cada página está disponible como una carga JSON estructurada en la misma URL que visita una persona, sin necesidad de scraping.
+
+### Negociación de contenido
+
+El endpoint `/api/docs/{slug}` sirve distintos formatos según la solicitud. Para contenido traducido, añade el código de idioma como prefijo del slug en `/api/docs/{locale}/{slug}`.
+
+```bash
+# Structured JSON — for agent pipelines
+curl https://docs.example.com/api/docs/guides/private-docs \
+  -H "Accept: application/json"
+
+# Explicit format override — same result, no Accept header needed
+curl "https://docs.example.com/api/docs/guides/private-docs?format=json"
+
+# Markdown with YAML frontmatter — token-efficient for simple lookups (default)
+curl https://docs.example.com/api/docs/guides/private-docs \
+  -H "Accept: text/markdown"
+
+# Translated page content
+curl https://docs.example.com/api/docs/es/guides/private-docs \
+  -H "Accept: application/json"
 ```
+
+Los agentes que visitan una URL para personas, por ejemplo `/guides/private-docs`, con `Accept: application/json` se reescriben de forma transparente a la API, y la URL de la respuesta no cambia.
+
+### Esquema de respuesta
+
+```json
+{
+  "schema_version": "1",
+
+  "id": "guides/private-docs",
+  "url": "https://docs.example.com/guides/private-docs",
+  "canonical_url": "https://docs.example.com/guides/private-docs",
+
+  "title": "Authentication",
+  "description": "How to authenticate requests to the API.",
+
+  "content": {
+    "mdx": "## Overview\n\nAll requests require...",
+    "text": "Overview\n\nAll requests require...",
+    "code_blocks": [
+      { "language": "bash", "source": "curl -H 'Authorization: Bearer TOKEN'", "index": 0 }
+    ]
+  },
+
+  "headings": [
+    { "depth": 2, "text": "Overview", "id": "overview" },
+    { "depth": 2, "text": "Token types", "id": "token-types" }
+  ],
+  "toc": [
+    {
+      "depth": 2, "text": "Overview", "id": "overview",
+      "children": [{ "depth": 3, "text": "Token types", "id": "token-types" }]
+    }
+  ],
+
+  "nav": {
+    "tab": "Guides",
+    "group": "Security",
+    "prev": { "title": "Getting Started", "url": "/guides/getting-started" },
+    "next": { "title": "Rate Limiting", "url": "/guides/rate-limiting" },
+    "breadcrumb": [
+      { "label": "Guides", "href": "/guides/getting-started" },
+      { "label": "Security" },
+      { "label": "Authentication" }
+    ]
+  },
+
+  "meta": {
+    "locale": "en",
+    "keywords": ["auth", "token", "bearer"],
+    "timeEstimate": "5 min"
+  },
+
+  "freshness": {
+    "as_of": "2026-02-25T10:00:00.000Z",
+    "cache_ttl_seconds": 3600
+  }
+}
+```
+
+### Cabeceras de respuesta
+
+Cada respuesta de `/api/docs` incluye cabeceras de caché y descubrimiento.
+
+```
+Content-Type: application/json
+Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400
+Vary: Accept
+Link: </guides/private-docs>; rel="canonical"
+Link: </guides/private-docs?format=json>; rel="alternate"; type="application/json"
+```
+
+### Detección automática de agentes
+
+El middleware detecta solicitudes de agentes y las reescribe de forma transparente a la API JSON, incluso cuando el agente visita una URL para personas sin el parámetro `?format=json`. La detección comprueba estas señales, en orden de prioridad.
+
+| Señal | Ejemplo |
+|--------|---------|
+| Parámetro de consulta `?format=json` | `?format=json` |
+| Cabecera `Accept: application/json` | Negociación de contenido HTTP estándar |
+| Cabecera `X-Thally-Client: agent` | Activación explícita para herramientas internas |
+| User-Agent de bot conocido | `GPTBot`, `ClaudeBot`, `python-requests`, `node-fetch`, `Go-http-client` |
+
+Las personas que visitan el sitio con una cabecera `Accept` normal de navegador siempre reciben la página HTML pregenerada. Los agentes siempre reciben datos estructurados. La URL es la misma para ambos.
+
+---
+
+## Índice de páginas
+
+Un índice JSON plano de cada página de tu sitio. Úsalo primero para descubrir qué páginas existen antes de obtenerlas individualmente.
+
+```bash
+GET /api/docs-index
+GET /api/docs-index?locale=es
+```
+
+Añadir `?locale=` filtra el índice a las páginas que tienen una traducción publicada en ese idioma y devuelve títulos, descripciones y keywords traducidos. Las páginas sin traducción en el idioma solicitado se omiten. Las operaciones de API se incluyen solo para el idioma predeterminado.
+
+```json
+{
+  "schema_version": "1",
+  "locale": "en",
+  "as_of": "2026-02-25T10:00:00.000Z",
+  "total": 52,
+  "pages": [
+    {
+      "id": "guides/private-docs",
+      "title": "Authentication",
+      "description": "How to authenticate requests to the API.",
+      "url": "https://docs.example.com/guides/private-docs",
+      "api_url": "https://docs.example.com/api/docs/guides/private-docs",
+      "tab": "Guides",
+      "group": "Security"
+    }
+  ]
+}
+```
+
+Obtener el índice una vez permite a un agente construir el grafo de navegación completo y decidir qué páginas leer sin obtenerlas todas individualmente.
+
+---
+
+## Archivo de descubrimiento
+
+Thally publica `/ai.txt` en una ruta conocida que los agentes comprueban antes de hacer cualquier otra cosa. Indica a los agentes cómo interactuar con este sitio, con opciones de formato, patrones de API y lo que está permitido.
+
+```
+Docs-Format: application/json, text/markdown
+Docs-API: /api/docs/{slug}
+Docs-Index: /api/docs-index
+
+Allow: /
+Allow: /api/docs/
+Allow: /api/docs-index
+Disallow: /api/chat
+```
+
+Cuando hay dos o más idiomas configurados, el archivo también anuncia endpoints específicos por idioma.
+
+```
+Docs-Locale-Index: /api/docs-index?locale={locale}
+Docs-Locale-Search: /api/search?q={query}&locale={locale}
+Docs-Locale-Page: /api/docs/{locale}/{slug}
+```
+
+Se genera dinámicamente en `/ai.txt` a partir de tu navegación publicada, así que siempre refleja el conjunto actual de páginas y endpoints.
+
+---
+
+## Datos estructurados JSON-LD
+
+Cada página de documentación incluye un bloque `<script type="application/ld+json">` incrustado en el HTML. No es JavaScript ejecutable, y los navegadores lo ignoran. Los motores de búsqueda y los agentes de IA que reciben HTML pueden extraer metadatos estructurados sin analizar el diseño de la página.
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "Authentication",
+  "description": "How to authenticate requests to the API.",
+  "url": "https://docs.example.com/guides/private-docs",
+  "identifier": "guides/private-docs",
+  "dateModified": "2026-02-01",
+  "isPartOf": { "@type": "WebSite", "url": "https://docs.example.com" }
+}
+```
+
+El `<head>` de cada página también incluye un `<link rel="alternate">` que apunta al endpoint JSON.
+
+```html
+<link rel="alternate" type="application/json"
+  href="/guides/private-docs?format=json" />
+```
+
+---
+
+## Cómo experimenta un agente tu documentación
+
+Un agente bien comportado que visita tu sitio Thally hará lo siguiente.
+
+<Steps>
+
+<Step title="Comprueba /ai.txt">
+Aprende el patrón de la API de inmediato, sin adivinar ni hacer scraping.
+</Step>
+
+<Step title="Obtiene /api/docs-index">
+Consigue el grafo completo de páginas de forma económica y elige las páginas que necesita leer.
+</Step>
+
+<Step title="Obtiene /api/docs/{slug} con Accept: application/json">
+Recibe JSON estructurado con título, bloques de código, encabezados, contexto de navegación y migas de pan.
+</Step>
+
+<Step title="O visita una URL para personas">
+El middleware detecta el User-Agent o la cabecera Accept del agente y reescribe de forma transparente a la API JSON. El agente nunca sabe que hubo una reescritura.
+</Step>
+
+<Step title="O extrae el HTML como último recurso">
+Encuentra el bloque de datos estructurados JSON-LD incrustado en la página y el `<link rel="alternate">` que apunta al endpoint JSON.
+</Step>
+
+</Steps>
+
+Una persona que visita las mismas URL nunca nota nada de esto. El HTML es idéntico y la capa de IA es invisible para los navegadores.
+
+---
+
+## Puntuación de preparación para agentes
+
+Thally califica lo bien que tu documentación sirve a los agentes de IA con una puntuación determinista de 0 a 100. Se calcula a partir del grafo de contenido, con datos estructurados, metadatos, archivos de descubrimiento, legibilidad por máquina, cobertura de OpenAPI y calidad del contenido, y con una señal opcional derivada de analíticas cuando hay datos de tráfico de agentes.
+
+```bash
+# JSON report
+GET /api/agent-readiness
+
+# In your terminal (fails the run below a threshold — handy in CI)
+thally check --agents --min 80
+```
+
+El informe incluye subpuntuaciones ponderadas y las páginas concretas que arrastran cada una, así que la solución siempre es concreta. Los clientes MCP pueden obtener el mismo informe para cualquier sitio desplegado con la herramienta `agent_readiness`.
 
 ---
 
 ## Herramientas MCP para consultar documentación
 
-El servidor `@thallylabs/mcp` incluye tres herramientas que permiten a los agentes de IA buscar y leer tu documentación como contexto.
+El servidor `@thallylabs/mcp` incluye herramientas que permiten a los agentes de IA buscar y leer tu documentación como contexto. Tres funcionan contra un proyecto local en disco (`search_docs`, `read_page`, `get_context`); otras dos, `semantic_search` y `agent_readiness`, funcionan contra cualquier sitio Thally **desplegado** por HTTP.
 
 ### `search_docs`
 
-Busca en todas las páginas por palabra clave y devuelve resultados clasificados.
+Busca en todas las páginas por palabra clave y devuelve resultados ordenados.
 
 ```
 Search the acme-docs project for anything about rate limiting
 ```
 
-Los resultados se puntúan por calidad de coincidencia en el título (3 pts), descripción (2 pts), palabras clave (2 pts) y contenido del cuerpo.
+Los resultados se puntúan por calidad de coincidencia en el título (3 puntos), la descripción (2 puntos), las keywords (2 puntos) y el contenido del cuerpo.
 
 ### `read_page`
 
@@ -122,10 +340,10 @@ Read the "guides/api-reference-setup" page from the acme-docs project
 
 ### `get_context`
 
-Devuelve la documentación más relevante para un tema dado, ajustándose a un presupuesto de tokens. Esta es la herramienta adecuada cuando quieres responder una pregunta usando tu documentación como base de conocimiento.
+Devuelve la documentación más relevante para un tema dado, dentro de un presupuesto de tokens. Es la herramienta adecuada cuando quieres responder una pregunta usando tu documentación como base de conocimiento.
 
 ```
 Get context from acme-docs about the webhook authentication flow, up to 4000 tokens
 ```
 
-Consulta [Servidor MCP](/guides/mcp-server) para instrucciones de configuración y la referencia completa de herramientas.
+Consulta [Servidor MCP](/es/guides/mcp-server) para ver las instrucciones de configuración y la referencia completa de herramientas.

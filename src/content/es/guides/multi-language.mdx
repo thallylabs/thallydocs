@@ -1,32 +1,81 @@
 ---
-title: Soporte Multi-Idioma
-description: Agrega soporte multi-idioma de primera clase a tu sitio de documentación Thally con traducciones en tiempo de compilación y un selector de idioma.
-keywords: [i18n, internacionalización, traducción, multi-idioma, localización]
+title: Publica documentación en varios idiomas
+navTitle: Idiomas
+description: Añade páginas traducidas con generación en tiempo de compilación, reservas automáticas y un selector de idioma integrado.
+keywords:
+  [
+    i18n,
+    internationalization,
+    translation,
+    multi-language,
+    localization,
+    locale,
+  ]
 ---
 
-Thally soporta documentación multi-idioma en tiempo de compilación. Los archivos MDX traducidos se confirman en tu repositorio, lo que te brinda SSG completo, costo cero en tiempo de ejecución y URLs realmente indexables para cada locale.
+{/* thally:ai-translation locale=es source-sha=4476e06557b15153d49d574f023020e222824c0691404628a4a5745b40cb5ac6 */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
 
-En Thally Cloud, selecciona los idiomas en **Configuración del sitio → Idiomas**. Las traducciones administradas usan los Créditos de IA compartidos del espacio de trabajo; no se configura ninguna clave de API para este flujo. Los comandos CLI y las opciones de clave de API que aparecen a continuación se ejecutan en tu propio entorno y no forman parte de la configuración de Thally Cloud.
+Thally admite documentación multilingüe generada en tiempo de compilación. Los archivos MDX traducidos viven en tu repositorio junto al contenido principal, con control de versiones completo, generación estática e indexación por motores de búsqueda con URL reales por idioma.
 
-**Por qué traducciones en tiempo de compilación:**
+<CardGroup cols="2">
 
-- Los archivos MDX traducidos están bajo control de versiones — revisables y editables como cualquier otro contenido
-- Cada traducción publicada obtiene una URL propia (p. ej. `/es/introduction`). Los fallbacks sin traducción no son indexables.
-- Funciona con cualquier hosting sin infraestructura edge
-- Sin almacén KV, sin llamadas API en tiempo de ejecución, sin costo por solicitud
+<Card title="URL reales por idioma" icon="link-simple">
+  `/es/introduction`, `/fr/guides/getting-started`. Cada traducción publicada
+  tiene su propia URL rastreable.
+</Card>
+
+<Card title="Traducción con IA" icon="wrench">
+  Thally Cloud genera traducciones con los Créditos de IA de tu espacio de trabajo.
+  Los sitios autoalojados pueden traducir con un comando. El código y la estructura
+  MDX se validan.
+</Card>
+
+<Card title="Reserva automática" icon="book-open">
+  Las traducciones faltantes muestran el original con un aviso. Las traducciones
+  desactualizadas siguen visibles con un aviso de actualización.
+</Card>
+
+<Card title="Selector de idioma integrado" icon="grid-round">
+  Un icono de globo aparece automáticamente en la barra superior en cuanto
+  configuras dos o más idiomas.
+</Card>
+
+</CardGroup>
 
 ---
 
 ## Estructura de URL
 
-- **Locale predeterminado** — `/introduction`, `/guides/getting-started` ← sin prefijo, totalmente compatible con versiones anteriores
-- **Locales secundarios** — `/es/introduction`, `/es/guides/getting-started`
+El idioma predeterminado se sirve sin prefijo de URL, totalmente compatible con cualquier enlace existente. Los idiomas secundarios llevan el prefijo de su código de idioma.
+
+| URL                          | Contenido           |
+| ---------------------------- | ------------------- |
+| `/introduction`              | Inglés (predeterminado) |
+| `/es/introduction`           | Español             |
+| `/fr/introduction`           | Francés             |
+| `/guides/getting-started`    | Inglés (predeterminado) |
+| `/es/guides/getting-started` | Español             |
+
+Añadir un idioma nuevo nunca rompe las URL existentes.
 
 ---
 
-## Paso 1 — Configurar i18n en docs.json
+## Configuración
 
-Agrega un bloque `i18n` a tu `docs.json`:
+<Steps>
+
+<Step title="Elige idiomas en Thally Cloud">
+
+Para un sitio gestionado, abre **Site settings → Languages**, elige todos los idiomas que los lectores deben ver y guarda. Confirma que Thally puede usar los Créditos de IA compartidos de tu espacio de trabajo para generar traducciones. Puedes salir de la página mientras Thally genera las traducciones faltantes o desactualizadas, valida el lote completo, hace commit de los archivos MDX en tu repositorio conectado y publica el sitio. Thally nunca sobrescribe traducciones escritas por el equipo.
+
+El inglés sigue siendo el idioma de origen en las URL sin prefijo. Los idiomas seleccionados se publican solo cuando el lote completo tiene éxito. Si la generación o la validación fallan, no se publica ningún archivo de traducción. Corrige el problema indicado y selecciona **Refresh translations**. La sección Languages muestra la cobertura actual, desactualizada, faltante y escrita por personas de tu repositorio conectado.
+
+</Step>
+
+<Step title="Configura un sitio autoalojado">
+
+Los sitios autoalojados pueden configurar el mismo comportamiento en `docs.json`.
 
 ```json
 {
@@ -42,103 +91,126 @@ Agrega un bloque `i18n` a tu `docs.json`:
 }
 ```
 
-Una vez agregado esto, un **selector de idioma** (ícono de globo) aparecerá automáticamente en la barra superior.
+`defaultLocale` debe coincidir con el idioma del contenido de origen del repositorio. El array de idiomas controla el orden del selector de idioma.
 
----
+Cuando guardas esto, un icono de globo aparece automáticamente en la barra superior.
 
-## Paso 2 — Traducir páginas con la CLI
+</Step>
 
-Ejecuta el comando de traducción para generar archivos MDX traducidos para un locale:
+<Step title="Traduce tus páginas en local con la CLI">
+
+Este flujo local opcional es independiente de la traducción gestionada de Thally Cloud. Ejecuta el comando de traducción en tu repositorio de documentación para generar archivos MDX traducidos para un idioma.
 
 ```bash
 npx create-thally-docs translate --locale es
 ```
 
-Esto traduce **todas las páginas** y las escribe en `src/content/es/`.
+Esto llama a Claude para traducir cada página de contenido definida en tu `docs.json` y escribe los resultados en `src/content/es/`. Verás una lista de progreso en vivo a medida que se completa cada página y un resumen al final.
 
-### Traducir páginas específicas
+**Traduce solo páginas específicas.**
 
 ```bash
 npx create-thally-docs translate --locale es --pages introduction,guides/getting-started
 ```
 
-### Sobrescribir traducciones existentes
+**Sobrescribe traducciones existentes.**
 
 ```bash
 npx create-thally-docs translate --locale es --force
 ```
 
-### Todas las opciones
+**Todas las opciones.**
 
-| Bandera | Descripción |
-|---------|-------------|
-| `--locale <code>` | Locale de destino — requerido (debe coincidir con un código en la configuración i18n de `docs.json`) |
-| `--pages <ids>` | IDs de página separados por comas para traducir (omitir para todas las páginas) |
-| `--force` | Sobrescribir archivos de traducción existentes |
-| `--api-key <key>` | Clave API de Anthropic (usa `ANTHROPIC_API_KEY` como variable de entorno si no se especifica) |
-| `--model <id>` | Modelo Claude a usar (predeterminado: `claude-sonnet-4-6`) |
-| `--yes`, `-y` | Omitir la confirmación |
+| Indicador         | Descripción                                                                  |
+| ----------------- | ---------------------------------------------------------------------------- |
+| `--locale <code>` | Idioma de destino — obligatorio. Debe coincidir con un código de la configuración i18n de `docs.json`. |
+| `--pages <ids>`   | IDs de página separados por comas que se van a traducir. Omítelo para traducir todas las páginas. |
+| `--force`         | Sobrescribe los archivos de traducción existentes.                           |
+| `--api-key <key>` | Clave API de Anthropic. Usa la variable de entorno `ANTHROPIC_API_KEY` como alternativa. |
+| `--model <id>`    | Modelo de Claude que se va a usar. Valor predeterminado: `claude-sonnet-4-6`. |
+| `--yes`, `-y`     | Omite la pregunta de confirmación.                                           |
 
----
+<Note type="info" title="La clave de la CLI local solo se aplica al comando local">
+  El comando de la CLI se ejecuta en tu propio entorno y llama a Claude a través de
+  la API de Anthropic. Define `ANTHROPIC_API_KEY` en local o pasa `--api-key` a ese
+  comando. Estas opciones no se aplican a Thally Cloud, que usa los Créditos de IA
+  del espacio de trabajo para la traducción gestionada.
+</Note>
 
-## Paso 3 — Estructura de archivos de contenido
+</Step>
 
-Después de ejecutar `translate`, tu directorio de contenido se verá así:
+<Step title="Revisa y haz commit de las traducciones locales">
+
+Después de una traducción local con la CLI, tu directorio de contenido se verá así.
 
 ```
 src/content/
-├── introduction.mdx          ← principal (inglés, sin cambios)
+├── introduction.mdx            ← primary (English, unchanged)
 ├── guides/
 │   └── getting-started.mdx
-├── es/                        ← traducciones al español
+├── es/                         ← Spanish translations
 │   ├── introduction.mdx
 │   └── guides/
 │       └── getting-started.mdx
-└── fr/
+└── fr/                         ← French translations
     └── introduction.mdx
 ```
 
-Puedes editar los archivos traducidos igual que cualquier otro contenido MDX.
+Los archivos traducidos son MDX simple. Edítalos con el resto de tu contenido, haz commit en el repositorio y despliega con normalidad.
+
+</Step>
+
+</Steps>
 
 ---
 
 ## Calidad de la traducción
 
-El comando de traducción usa Claude para traducir tu documentación con estas reglas estrictas:
+Claude traduce con estas reglas aplicadas automáticamente.
 
-- Traduce todo el texto en prosa, encabezados y párrafos
-- Traduce `title`, `description` y `keywords` del frontmatter
-- Preserva todas las etiquetas de componentes MDX textualmente (`<Note>`, `<Steps>`, `<CodeGroup>`, etc.)
-- Preserva todos los bloques de código e código en línea tal como están
-- Preserva todas las URLs y rutas de archivos
+- **Traduce** todo el texto de prosa, encabezados, `title`, `description` y `keywords` del frontmatter
+- **Conserva** las etiquetas de componentes MDX tal cual (`<Note>`, `<Steps>`, `<CodeGroup>`, etcétera)
+- **Conserva** todos los bloques de código y el código en línea exactamente como están escritos
+- **Conserva** todas las URL, rutas de archivo y declaraciones de importación
+- **Conserva** toda la estructura del frontmatter y los campos que no son texto
+
+Si una traducción necesita ajustes, edita el archivo en `src/content/{locale}/` directamente. También puedes volver a ejecutar el comando para páginas específicas.
+
+```bash
+npx create-thally-docs translate --locale es --pages guides/getting-started --force
+```
 
 ---
 
 ## Comportamiento de reserva
 
-Cuando existe una página fuente pero falta su traducción, Thally muestra el contenido en el idioma fuente con un banner informativo. Una traducción huérfana cuya página fuente fue eliminada devuelve 404.
+Cuando existe una página de origen pero falta su traducción, Thally muestra el contenido en el idioma de origen con un aviso informativo. Una traducción que queda después de eliminar su página de origen devuelve 404.
 
-> ⚠️ Esta página aún no ha sido traducida a **es**. Mostrando la versión original en **EN**.
+**Traducción faltante.** La página aún no se ha traducido para ese idioma.
 
-Si el hash de origen registrado en una traducción gestionada por IA difiere del contenido actual, Thally muestra un banner de antigüedad:
+> ⚠️ Esta página aún no se ha traducido a **Español**. Se muestra la versión original en **English**.
+
+**Traducción desactualizada.** El hash de origen registrado de una traducción gestionada con IA difiere del origen actual.
 
 > Esta traducción puede estar desactualizada. [Ver original →]
 
-Ambos banners solo aparecen en rutas de locales secundarios, la ruta principal nunca se ve afectada. Las traducciones humanas o sin marcador de origen no se consideran antiguas a partir de las fechas del despliegue; revisa su vigencia manualmente.
+Ambos avisos aparecen solo en rutas de idiomas secundarios. La ruta principal nunca se ve afectada. Las traducciones escritas por personas o sin marcar no se etiquetan como desactualizadas a partir de las fechas de despliegue; revisa su frescura manualmente.
 
 ### Anclas de encabezado en páginas traducidas
 
-Los IDs de las anclas de encabezado conservan los caracteres no latinos. Un
-encabezado traducido como "Überblick" produce el ancla `#überblick`, y
-"日本語 API" se convierte en `#日本語-api`. Esto significa que los enlaces a
-secciones dentro de las páginas traducidas usan el texto traducido, no ASCII
-transliterado.
+Los IDs de ancla de encabezado conservan los caracteres no latinos. Un encabezado traducido como "Überblick" produce el ancla `#überblick`, y "日本語 API" se convierte en `#日本語-api`. Esto significa que los enlaces de sección dentro de las páginas traducidas usan el texto traducido, no una transliteración ASCII.
+
+Para un sitio gestionado, selecciona **Refresh translations** en **Site settings → Languages**. Para un flujo local con la CLI, ejecuta el comando de traducción para esa página.
+
+```bash
+npx create-thally-docs translate --locale es --pages guides/getting-started
+```
 
 ---
 
 ## Navegación específica por idioma
 
-Por defecto, todos los idiomas comparten la navegación del `tabs` raíz. Para proporcionar etiquetas traducidas o una estructura de páginas diferente, agrega un mapa `navigation` bajo `i18n`:
+De forma predeterminada, todos los idiomas comparten la navegación `tabs` raíz. Para ofrecer etiquetas de barra lateral traducidas o una estructura de páginas diferente para un idioma, añade un mapa `navigation` bajo `i18n`.
 
 ```json
 {
@@ -162,35 +234,76 @@ Por defecto, todos los idiomas comparten la navegación del `tabs` raíz. Para p
 }
 ```
 
-Cada entrada usa la misma estructura de array `tabs` que la raíz. Usa IDs de páginas sin prefijo de idioma: Thally agrega el locale a las rutas. Cuando un idioma no tiene entrada en `navigation`, Thally recurre al `tabs` raíz. Esta navegación se refleja en la barra lateral, las migas de pan y los enlaces anterior/siguiente.
+Usa IDs de página sin prefijo de idioma; Thally añade el idioma a las URL de navegación.
+
+Cada entrada usa la misma estructura de array `tabs` que la raíz. Cuando un idioma no tiene entrada en `navigation`, Thally usa los `tabs` raíz como reserva. La navegación específica por idioma se refleja en la barra lateral, las migas de pan y los enlaces anterior y siguiente.
 
 ---
 
 ## Selector de idioma
 
-Una vez que tienes 2 o más locales configurados, aparece un **ícono de globo** en la barra superior. Al hacer clic, se abre un menú desplegable con todos los locales configurados. Seleccionar un locale navega a la misma página en ese locale.
+Cuando tienes dos o más idiomas configurados, un **icono de globo** aparece automáticamente en la barra superior. Al hacer clic se abre un menú desplegable con todos los idiomas configurados.
+
+Seleccionar un idioma navega a la misma página en ese idioma. Por ejemplo, cambiar de `/es/guides/getting-started` a francés te lleva directamente a `/fr/guides/getting-started`. El selector siempre te mantiene en la página actual en lugar de enviarte a una página de inicio.
+
+---
+
+## Referencia de API
+
+La pestaña de referencia de API se genera automáticamente a partir de tu especificación OpenAPI. Su contenido siempre está en el idioma principal, ya que las especificaciones OpenAPI definen contratos legibles por máquina, no contenido de prosa.
+
+Cuando navegas a la pestaña de referencia de API desde una página de un idioma, se conserva el prefijo de la URL para que sigas en el contexto del idioma (`/es/api/...`). La barra lateral y la barra de pestañas siguen adaptadas al idioma; solo el contenido de la operación proviene de la especificación sin cambios.
+
+<Note type="info" title="Traducir contenido de API">
+  Para cambiar el idioma de las descripciones y los resúmenes de la referencia de API,
+  actualízalos directamente en tu archivo de especificación OpenAPI.
+</Note>
 
 ---
 
 ## SEO
 
-Thally agrega etiquetas `hreflang` y `canonical` solo cuando la página tiene un archivo MDX traducido y ni la fuente ni la traducción están ocultas o marcadas como `noindex`:
+Thally genera metadatos para rastreadores a partir de la misma selección de idiomas que usa el sitio. Un idioma se añade a `hreflang` y al sitemap solo cuando esa página tiene un archivo MDX traducido y ni el origen ni la traducción están ocultos o marcados como `noindex`.
 
 ```html
 <link rel="canonical" href="https://docs.example.com/es/introduction" />
-<link rel="alternate" hreflang="en" href="https://docs.example.com/introduction" />
-<link rel="alternate" hreflang="es" href="https://docs.example.com/es/introduction" />
-<link rel="alternate" hreflang="fr" href="https://docs.example.com/fr/introduction" />
-<link rel="alternate" hreflang="x-default" href="https://docs.example.com/introduction" />
+<link
+  rel="alternate"
+  hreflang="en"
+  href="https://docs.example.com/introduction"
+/>
+<link
+  rel="alternate"
+  hreflang="es"
+  href="https://docs.example.com/es/introduction"
+/>
+<link
+  rel="alternate"
+  hreflang="fr"
+  href="https://docs.example.com/fr/introduction"
+/>
+<link
+  rel="alternate"
+  hreflang="x-default"
+  href="https://docs.example.com/introduction"
+/>
 ```
 
-Las traducciones reales usan su propia URL de locale como canónica. Un fallback sin traducción se marca como `noindex` y se canonicaliza a la URL fuente, para que los rastreadores no indexen contenido en inglés como si fuera otro idioma.
+Las traducciones reales usan su propia URL de idioma como canónica. La reserva por traducción faltante se marca como `noindex` y se canonicaliza a la URL de origen, así que los rastreadores nunca indexan prosa en inglés como si fuera español o francés. El contenido traducido también lleva su propio `lang` y dirección de texto en el contenedor de contenido renderizado en el servidor.
+
+El diálogo de búsqueda de la documentación busca en el idioma actual y devuelve URL de páginas traducidas. Los agentes pueden solicitar `/api/docs-index?locale=fr`, `/api/search?q=installation&locale=fr` o `/api/docs/fr/guides/getting-started` para contenido traducido. Estas API omiten las páginas sin una traducción publicada en el idioma solicitado.
+
+Define `THALLY_SITE_URL` para que el dominio correcto aparezca en estas etiquetas.
+
+```bash
+THALLY_SITE_URL=https://docs.example.com
+```
 
 ---
 
 ## Usar la herramienta MCP
 
-Si usas el servidor MCP de Thally, puedes traducir documentación directamente desde tu asistente de IA:
+Si usas el servidor MCP de Thally, puedes traducir la documentación directamente desde tu asistente de IA.
 
 ```json
 {
@@ -198,21 +311,35 @@ Si usas el servidor MCP de Thally, puedes traducir documentación directamente d
   "arguments": {
     "projectDir": "/path/to/my-docs",
     "locale": "es",
-    "apiKey": "sk-ant-..."
+    "force": false
   }
 }
 ```
 
-Consulta [Servidor MCP](/guides/mcp-server) para instrucciones de configuración.
+La herramienta MCP acepta las mismas opciones que la CLI. Consulta [Servidor MCP](/es/guides/mcp-server) para ver las instrucciones de configuración.
 
 ---
 
-## Inicializar con i18n
+## Crea un proyecto con i18n
 
-Al inicializar un nuevo proyecto, puedes habilitar el soporte multi-idioma desde el principio:
+Al crear un proyecto nuevo, puedes habilitar la compatibilidad multilingüe desde el principio.
 
 ```bash
 npx create-thally-docs my-docs
 ```
 
-Cuando se te pregunte **"¿Habilitar soporte multi-idioma?"**, ingresa `y` y proporciona tus códigos de locale (p. ej. `es,fr,de`). El bloque `i18n` se escribirá en `docs.json` automáticamente.
+Cuando se te pregunte **"Add another documentation language? (y/N):"**, introduce `y` y proporciona tus códigos de idioma (por ejemplo, `es,fr,de`). El bloque `i18n` se escribe en `docs.json` automáticamente.
+
+---
+
+<CardGroup cols="2">
+
+<Card title="Referencia de la CLI" href="/es/guides/cli-reference" icon="wrench">
+  Referencia completa de `translate` y todos los demás comandos de create-thally-docs.
+</Card>
+
+<Card title="Servidor MCP" href="/es/guides/mcp-server" icon="grid-round">
+  Configura el servidor MCP de Thally para traducir la documentación desde tu asistente de IA.
+</Card>
+
+</CardGroup>

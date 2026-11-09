@@ -1,7 +1,13 @@
 ---
-title: Configurar la navegación
-description: Cómo estructurar pestañas, grupos de barra lateral y orden de páginas usando docs.json.
+title: Organiza tu navegación
+navTitle: Navegación
+description: Estructura pestañas y grupos de barra lateral en torno a las tareas que tus lectores necesitan completar.
 ---
+
+{/* thally:ai-translation locale=es source-sha=07efdb352166763a5d6e99494cd3ddd534602d3d9b42e7eef896cdf7bcc3840b */}
+{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
+
+Usa la navegación para reflejar los objetivos de tus lectores y el orden en que los completan. Empieza con un conjunto pequeño de grupos basados en tareas; añade una pestaña solo cuando una sección tenga una audiencia o un propósito distintos.
 
 ## El archivo docs.json
 
@@ -27,11 +33,11 @@ Toda la navegación está controlada por un único archivo en la raíz del proye
 
 ## Pestañas
 
-Cada entrada en el array `tabs` crea una pestaña de navegación de nivel superior. Hay tres tipos:
+Cada entrada del array `tabs` crea una pestaña de navegación de nivel superior. Hay tres tipos.
 
 ### Pestaña de contenido
 
-Una pestaña con grupos de barra lateral y páginas:
+Una pestaña con grupos de barra lateral y páginas.
 
 ```json
 {
@@ -45,7 +51,7 @@ Una pestaña con grupos de barra lateral y páginas:
 
 ### Pestaña de referencia de API
 
-Una pestaña que genera páginas automáticamente a partir de una especificación OpenAPI:
+Una pestaña que genera páginas automáticamente a partir de una especificación OpenAPI.
 
 ```json
 {
@@ -58,15 +64,11 @@ Una pestaña que genera páginas automáticamente a partir de una especificació
 }
 ```
 
-Varias pestañas pueden vincular su propia especificación. La primera pestaña de
-API enruta en `/api/default/...`; las pestañas de API adicionales enrutan en
-`/api/<tabId>/...`. Consulta
-[Varias especificaciones de API](/es/guides/api-reference-setup#varias-especificaciones-de-api)
-para un ejemplo completo.
+Varias pestañas pueden vincular su propia especificación. La primera pestaña de API enruta en `/api/default/...`; las pestañas de API adicionales enrutan en `/api/<tabId>/...`. Consulta [Varias especificaciones de API](/es/guides/api-reference-setup#varias-especificaciones-de-api) para un ejemplo completo.
 
 ### Pestaña de enlace
 
-Una pestaña que enlaza a una ruta interna o URL externa:
+Una pestaña que enlaza a una ruta interna o URL externa.
 
 ```json
 {
@@ -77,12 +79,12 @@ Una pestaña que enlaza a una ruta interna o URL externa:
 
 ## Grupos
 
-Los grupos crean secciones etiquetadas en la barra lateral. Cada grupo tiene:
+Los grupos crean secciones etiquetadas en la barra lateral. Cada grupo tiene estos campos.
 
 - **`group`** — el encabezado de sección que se muestra en la barra lateral
 - **`pages`** — un array ordenado de IDs de página
 
-Los IDs de página se corresponden con rutas de archivo bajo `src/content/`. Por ejemplo:
+Los IDs de página se corresponden con rutas de archivo bajo `src/content/`. Por ejemplo.
 
 | ID de página | Ruta del archivo |
 | --- | --- |
@@ -90,9 +92,9 @@ Los IDs de página se corresponden con rutas de archivo bajo `src/content/`. Por
 | `"guides/getting-started"` | `src/content/guides/getting-started.mdx` |
 | `"api/reference"` | `src/content/api/reference.mdx` |
 
-## Agregar una nueva sección
+## Añadir una nueva sección
 
-Para agregar una nueva sección en la barra lateral, añade un objeto de grupo a la pestaña correspondiente:
+Para añadir una nueva sección en la barra lateral, añade un objeto de grupo a la pestaña correspondiente.
 
 ```json
 {
@@ -108,3 +110,88 @@ Para agregar una nueva sección en la barra lateral, añade un objeto de grupo a
 ## Reordenar
 
 Las páginas aparecen en la barra lateral en el orden exacto indicado en el array `pages`. Los grupos aparecen en el orden en que están definidos en el array `groups`. Las pestañas aparecen de izquierda a derecha en el orden definido en el array `tabs`.
+
+## Iconos de grupo
+
+Añade un campo `icon` a cualquier grupo para mostrar un icono junto al encabezado del grupo en la barra lateral.
+
+```json
+{
+  "group": "Getting Started",
+  "icon": "book-open",
+  "pages": ["introduction", "quickstart"]
+}
+```
+
+Nombres de icono disponibles.
+
+| Nombre | Icono |
+| --- | --- |
+| `book-open` | Libro / documentación |
+| `code-simple` | Llaves de código |
+| `grid-round` | Cuadrícula / resumen |
+| `link-simple` | Enlace / URL |
+| `wrench` | Herramientas / ajustes |
+| `party-horn` | Funciones / celebración |
+| `telegram` | Enviar / mensajería |
+| `envelope` | Correo electrónico |
+| `x-twitter` | X / Twitter |
+| `message` | Chat / mensaje |
+
+## Ocultar páginas, grupos y pestañas
+
+Las páginas con `hidden: true` en su frontmatter se eliminan automáticamente de la barra lateral, los enlaces anterior y siguiente, y los sitemaps. Siguen siendo accesibles por URL directa. Si todas las páginas de un grupo están ocultas, el grupo se suprime de la barra lateral.
+
+Define `hidden: true` en un grupo o una pestaña de `docs.json` para excluir una sección completa y mantener sus páginas accesibles por URL.
+
+```json
+{
+  "group": "Internal",
+  "hidden": true,
+  "pages": ["internal/roadmap", "internal/notes"]
+}
+```
+
+```json
+{
+  "tab": "Staff Only",
+  "hidden": true,
+  "groups": [...]
+}
+```
+
+Consulta [Controla la búsqueda y la visibilidad de las páginas](/es/guides/seo-and-visibility) para ver más controles de indexación.
+
+## Grupos anidados
+
+Coloca un objeto de grupo dentro del array `pages` de otro grupo cuando una sección necesite un nivel adicional.
+
+```json
+{
+  "group": "Deploy",
+  "pages": [
+    "guides/deploying",
+    {
+      "group": "Platforms",
+      "pages": ["guides/deploy-vercel", "guides/deploy-cloudflare"]
+    }
+  ]
+}
+```
+
+Evita estructuras más profundas. Si los lectores tienen que expandir varios niveles para encontrar una página, divide el material en pestañas más claras o reduce el número de categorías.
+
+## Verificar la navegación
+
+Ejecuta la vista previa local y sigue cada entrada nueva. Confirma que las migas de pan y los enlaces anterior y siguiente coincidan con la progresión prevista, y luego ejecuta estos comandos.
+
+```bash
+jq empty docs.json
+npx --yes @thallylabs/cli@latest check
+```
+
+## Próximos pasos
+
+- [Referencia de docs.json](/es/guides/docs-json-reference)
+- [Configura SEO y visibilidad](/es/guides/seo-and-visibility)
+- [Añade redirecciones](/es/guides/redirects)
