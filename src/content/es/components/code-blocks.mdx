@@ -3,6 +3,8 @@ title: "Bloques de código"
 description: "Bloques de código con números de línea, marcadores diff, enfoque y soporte para copiar."
 ---
 
+{/* thally:ai-translation locale=es source-sha=06160b066b2b49a0b2f42e1b3df90b1691010fec1567999401c69f1a8f15eec6 */}
+
 Los bloques de código se renderizan automáticamente a partir de la sintaxis Markdown con cercas. Usa `<CodeGroup>` para ofrecer ejemplos relacionados en un menú de lenguajes.
 
 Las tarjetas mantienen el título y los controles legibles en pantallas pequeñas.
@@ -102,7 +104,7 @@ curl -X GET https://api.example.com/pets \
 
 ## Líneas resaltadas
 
-Usa `{líneas}` o `highlight={líneas}` para llamar la atención sobre líneas específicas:
+Usa `{lines}` o `highlight={lines}` para llamar la atención sobre líneas específicas:
 
 ```typescript {2,3}
 const client = new ApiClient()
@@ -131,7 +133,7 @@ Se admiten rangos: `{1,3-5}` resalta las líneas 1, 3, 4 y 5.
 
 ## Líneas enfocadas
 
-Usa `focus={líneas}` para atenuar todo excepto las líneas indicadas:
+Usa `focus={lines}` para atenuar todo excepto las líneas indicadas:
 
 ```typescript focus={2,3}
 const client = new ApiClient()
@@ -275,7 +277,7 @@ echo "This block has no copy button"
 ```
 ````
 
-Dentro de un `<CodeGroup>`, `nocopy` se aplica por ejemplo. Establécelo en cada ejemplo donde quieras ocultar la copia; omítelo en los ejemplos que deben permitir copiar.
+Dentro de un `<CodeGroup>`, `nocopy` se aplica a cada ejemplo. Establécelo en cada ejemplo donde quieras ocultar la copia; omítelo en los ejemplos que deben permitir copiar.
 
 ## Iconos
 

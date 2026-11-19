@@ -147,6 +147,38 @@
           ]
         },
         {
+          "group": "Migrate to Thally",
+          "icon": "book-open",
+          "pages": [
+            "guides/migrating",
+            "guides/migrate-from-mintlify",
+            "guides/migrate-from-docusaurus",
+            "guides/migrate-from-fern"
+          ]
+        },
+        {
+          "group": "Core concepts",
+          "icon": "book-open",
+          "pages": [
+            "architecture",
+            "guides/extending"
+          ]
+        },
+        {
+          "group": "Developer tools",
+          "icon": "code-simple",
+          "pages": [
+            "guides/ai-coding-agents",
+            "guides/cli-overview",
+            "guides/mcp-overview"
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "Guides",
+      "groups": [
+        {
           "group": "Create content",
           "icon": "book-open",
           "pages": [
@@ -157,15 +189,6 @@
             "guides/reusable-snippets",
             "guides/page-modes",
             "guides/multi-language"
-          ]
-        },
-        {
-          "group": "Developer tools",
-          "icon": "code-simple",
-          "pages": [
-            "guides/ai-coding-agents",
-            "guides/cli-overview",
-            "guides/mcp-overview"
           ]
         },
         {
@@ -195,21 +218,6 @@
           "icon": "wrench",
           "pages": [
             "guides/ci-checks"
-          ]
-        }
-      ]
-    },
-    {
-      "tab": "Guides",
-      "groups": [
-        {
-          "group": "Migrate to Thally",
-          "icon": "book-open",
-          "pages": [
-            "guides/migrating",
-            "guides/migrate-from-mintlify",
-            "guides/migrate-from-docusaurus",
-            "guides/migrate-from-fern"
           ]
         },
         {
@@ -271,17 +279,6 @@
             "guides/remote-mcp",
             "guides/agent-manifests"
           ]
-        },
-        {
-          "group": "Reference",
-          "icon": "link-simple",
-          "pages": [
-            "guides/docs-json-reference",
-            "guides/cli-reference",
-            "guides/mcp-server",
-            "architecture",
-            "guides/extending"
-          ]
         }
       ]
     },
@@ -334,6 +331,20 @@
             "components/file-tree",
             "components/tooltip",
             "components/prompt"
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "Reference",
+      "groups": [
+        {
+          "group": "Reference",
+          "icon": "link-simple",
+          "pages": [
+            "guides/docs-json-reference",
+            "guides/cli-reference",
+            "guides/mcp-server"
           ]
         }
       ]

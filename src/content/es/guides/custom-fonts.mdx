@@ -1,9 +1,12 @@
 ---
-title: Fuentes Personalizadas
-description: Cambia a cualquier fuente de Google para el texto del cuerpo y los encabezados, configurado completamente desde docs.json.
+title: Añade fuentes personalizadas
+navTitle: Fuentes
+description: Elige fuentes de Google para el texto del cuerpo y los encabezados sin editar el runtime de la aplicación.
 ---
 
-Thally viene con **Inter** para el texto del cuerpo y **JetBrains Mono** para el código por defecto. Puedes reemplazar cualquiera de ellas con cualquier fuente de Google añadiendo un bloque `fonts` en `docs.json` — sin necesidad de cambios en el código.
+{/* thally:ai-translation locale=es source-sha=b82311eb9b9658476f6e5560d9d07d3835b7d26e5edda8e1d71e6b728cd9cba6 */}
+
+Thally incluye **Inter** para el texto del cuerpo y **JetBrains Mono** para el código. Puedes definir las familias del cuerpo y los encabezados con un bloque `fonts` en `docs.json` sin editar el runtime de la aplicación.
 
 ## Configuración
 
@@ -60,19 +63,10 @@ La fuente Inter predeterminada (cargada mediante `next/font`) permanece como alt
 
 ## Fuente de código
 
-La fuente monoespaciada utilizada para el código en línea y los bloques de código se configura por separado en `src/app/layout.tsx` mediante `next/font/google`. Para cambiarla, reemplaza la importación de `JetBrains_Mono`:
-
-```ts
-import { FiraCode } from 'next/font/google'
-
-const fontMono = FiraCode({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  display: 'swap',
-})
-```
-
-El soporte para configurar la fuente monoespaciada desde `docs.json` (sin cambios en el código) está planificado.
+La configuración de fuentes orientada al usuario cubre actualmente el texto del cuerpo y los encabezados.
+El código usa la fuente JetBrains Mono predeterminada del runtime. No edites
+`src/app/layout.tsx`; es propiedad del framework y se reemplaza con las actualizaciones
+de runtime compatibles.
 
 <Note type="info" title="Este sitio usa fuentes personalizadas">
 Esta documentación utiliza **Plus Jakarta Sans** para el texto del cuerpo y **Outfit** para los encabezados, configurado en `docs.json` — exactamente como se describe arriba.
