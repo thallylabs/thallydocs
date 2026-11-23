@@ -95,24 +95,30 @@ jobs:
           );
           NODE
 
-      - name: Checkout pinned Thally runtime
+      # Begin with protected source. Prove the manifest's exact commit is on
+      # that history before checking out or executing any of its files.
+      - name: Checkout protected Thally runtime
         if: needs.plan.outputs.full == 'true'
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: thallylabs/thally
-          ref: ${{ steps.runtime.outputs.sha }}
+          ref: main
           path: runtime-source
           fetch-depth: 0
           persist-credentials: false
 
       - name: Prove runtime revision is on protected main
         if: needs.plan.outputs.full == 'true'
+        shell: bash
         env:
           RUNTIME_SHA: ${{ steps.runtime.outputs.sha }}
         run: |
+          [[ "$RUNTIME_SHA" =~ ^[0-9a-f]{40}$ ]]
           git -C runtime-source fetch --no-tags origin main
-          test "$(git -C runtime-source rev-parse HEAD)" = "$RUNTIME_SHA"
+          git -C runtime-source cat-file -e "$RUNTIME_SHA^{commit}"
           git -C runtime-source merge-base --is-ancestor "$RUNTIME_SHA" origin/main
+          git -C runtime-source checkout --detach "$RUNTIME_SHA"
+          test "$(git -C runtime-source rev-parse HEAD)" = "$RUNTIME_SHA"
 
       - name: Verify generated runtime snapshot
         if: needs.plan.outputs.full == 'true'
