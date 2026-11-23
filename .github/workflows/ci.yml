@@ -155,6 +155,12 @@ jobs:
         if: needs.plan.outputs.full == 'true'
         run: npm ci --ignore-scripts
 
+      # Lifecycle scripts are intentionally skipped during install. Type checking
+      # still needs the generated modules normally created by postinstall.
+      - name: Generate runtime sources
+        if: needs.plan.outputs.full == 'true'
+        run: npm run runtime-sources:build
+
       - name: Test
         if: needs.plan.outputs.full == 'true'
         run: npm test
