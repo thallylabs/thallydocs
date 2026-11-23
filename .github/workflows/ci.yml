@@ -134,7 +134,9 @@ jobs:
         with:
           # Wrangler 4.111+ requires Node 22 for the exact dry-run package gate.
           node-version: 22
-          cache: npm
+          # Repository scripts are untrusted, including on manual runs. Never
+          # persist their npm cache into a shared default-branch cache.
+          package-manager-cache: false
 
       - name: Install pinned content tooling
         run: npm ci --ignore-scripts --prefix .github/thally-tooling
@@ -164,6 +166,11 @@ jobs:
       - name: Test
         if: needs.plan.outputs.full == 'true'
         run: npm test
+
+      # Cloudflare is an explicit CI profile, not a portable site dependency.
+      - name: Install optional Cloudflare tooling
+        if: needs.plan.outputs.full == 'true'
+        run: npm run setup:cloudflare
 
       - name: Build managed runtime and content assets
         if: needs.plan.outputs.full == 'true'
