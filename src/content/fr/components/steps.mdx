@@ -3,9 +3,6 @@ title: "Étapes"
 description: "Guides numérotés étape par étape pour le contenu de configuration et de tutoriel."
 ---
 
-{/* thally:ai-translation locale=fr source-sha=214b90b2084a7dcef1375fedd1492cef6fb184011fc69c961f29e78f9cb6215f */}
-{/* Remove the marker above before manual edits to opt out of automatic refresh. */}
-
 Utilisez `<Steps>` et `<Step>` pour structurer des instructions séquentielles. Chaque étape s'affiche sous forme d'élément numéroté avec une ligne de connecteur entre les étapes.
 
 ## Exemple
@@ -34,16 +31,57 @@ Utilisez `<Steps>` et `<Step>` pour structurer des instructions séquentielles. 
   </Step>
 </Steps>
 
+````mdx
+<Steps>
+  <Step title="Installer le package">
+    ```bash
+    npm install @company/sdk
+    ```
+  </Step>
+  <Step title="Ajouter votre clé API">
+    Créez un fichier `.env` à la racine de votre projet :
+
+    ```bash
+    API_KEY=sk-your-key-here
+    ```
+  </Step>
+  <Step title="Effectuer votre première requête">
+    ```typescript
+    import { ApiClient } from '@company/sdk'
+
+    const client = new ApiClient({ apiKey: process.env.API_KEY })
+    const result = await client.pets.list()
+    console.log(result)
+    ```
+  </Step>
+</Steps>
+````
+
+## Liens dans les titres
+
+Écrivez un lien Markdown dans le `title` d'une étape pour rendre une partie du titre cliquable. Les accents graves continuent de s'afficher comme du code en ligne, à l'intérieur ou à l'extérieur du lien.
+
+<Steps>
+  <Step title="Read [Writing content](/guides/writing-content)">
+    Le lien ouvre la page vers laquelle il pointe. Le reste du titre reste du texte simple.
+  </Step>
+  <Step title="Add a [`<Tabs>`](/components/tabs) block">
+    Le libellé d'un lien peut contenir du code en ligne.
+  </Step>
+</Steps>
+
 ```mdx
 <Steps>
-  <Step title="Step one">
-    Content for step one.
+  <Step title="Read [Writing content](/guides/writing-content)">
+    Le lien ouvre la page vers laquelle il pointe.
   </Step>
-  <Step title="Step two">
-    Content for step two.
+  <Step title="Add a [`<Tabs>`](/components/tabs) block">
+    Le libellé d'un lien peut contenir du code en ligne.
   </Step>
 </Steps>
 ```
+
+Un lien peut pointer vers une page (`/guides/writing-content`), une ancre (`#props`), ou une adresse `http`, `https`, `mailto` ou `tel`. La table des matières, l'ancre de l'étape, la recherche et les vues en texte simple lisent le libellé du lien, et la vue Markdown de la page conserve le lien.
 
 ## Props
 
@@ -51,4 +89,5 @@ Utilisez `<Steps>` et `<Step>` pour structurer des instructions séquentielles. 
 
 | Prop | Type | Description |
 |---|---|---|
-| `title` | `string` | En-tête de l'étape affiché à côté du numéro |
+| `title` | `string` | En-tête de l'étape affiché à côté du numéro. Les accents graves affichent du code en ligne et `[label](url)` affiche un lien |
+| `id` | `string` | Ancre pour lier à l'étape. Un titre de type en-tête l'utilise comme id de l'en-tête ; un titre en texte simple (`titleSize="p"`) le place sur l'étape elle-même |
