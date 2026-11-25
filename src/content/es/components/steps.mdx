@@ -57,10 +57,37 @@ Usa `<Steps>` y `<Step>` para estructurar instrucciones secuenciales. Cada paso 
 </Steps>
 ````
 
+## Enlaces en títulos
+
+Escribe un enlace Markdown en el `title` de un paso para hacer parte del título clicable. Las comillas invertidas siguen renderizándose como código en línea, dentro o fuera del enlace.
+
+<Steps>
+  <Step title="Read [Writing content](/guides/writing-content)">
+    El enlace abre la página a la que apunta. El resto del título permanece como texto simple.
+  </Step>
+  <Step title="Add a [`<Tabs>`](/components/tabs) block">
+    La etiqueta de un enlace puede contener código en línea.
+  </Step>
+</Steps>
+
+```mdx
+<Steps>
+  <Step title="Read [Writing content](/guides/writing-content)">
+    El enlace abre la página a la que apunta.
+  </Step>
+  <Step title="Add a [`<Tabs>`](/components/tabs) block">
+    La etiqueta de un enlace puede contener código en línea.
+  </Step>
+</Steps>
+```
+
+Un enlace puede apuntar a una página (`/guides/writing-content`), un ancla (`#props`), o una dirección `http`, `https`, `mailto` o `tel`. La tabla de contenidos, el ancla del paso, la búsqueda y las vistas de texto simple leen la etiqueta del enlace, y la vista Markdown de la página mantiene el enlace.
+
 ## Props
 
 ### `<Step>`
 
 | Prop | Tipo | Descripción |
 |---|---|---|
-| `title` | `string` | Encabezado del paso que se muestra junto al número |
+| `title` | `string` | Encabezado del paso que se muestra junto al número. Las comillas invertidas renderizan código en línea y `[label](url)` renderiza un enlace |
+| `id` | `string` | Ancla para vincular al paso. Un título de encabezado lo usa como id del encabezado; un título de texto simple (`titleSize="p"`) lo coloca en el paso mismo |
