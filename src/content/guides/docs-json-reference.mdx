@@ -177,6 +177,22 @@ the default logo and suffix are shown. Footer columns contain a `heading` and an
 text link. Use `footer.links` when you want a custom label such as "Website".
 See [Navbar and footer](/guides/navbar-and-footer) for examples.
 
+## Content display
+
+```json
+{
+  "content": {
+    "showLastUpdated": true
+  }
+}
+```
+
+| Field | Default | Purpose |
+| --- | --- | --- |
+| `content.showLastUpdated` | `true` | Show or hide the "Updated" / "Published" date label on page headers. The date is auto-detected from git history when not set in frontmatter. Set to `false` to hide the label site-wide while keeping dates in structured data and machine projections. |
+
+Sites connected to Thally Cloud can also toggle this setting from the Cloud dashboard without a rebuild.
+
 ## Redirects and indexing
 
 ```json

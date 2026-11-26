@@ -19,16 +19,20 @@ Il y a deux couches, avec deux audiences différentes.
 
 ## Public : dates de fraîcheur
 
-Ajoutez l'une ou l'autre date à la première partie d'une page et elle apparaîtra dans chaque projection publique — les métadonnées de la page, `?format=json`, le miroir `.md`, et `/api/docs-index` :
+Thally détecte automatiquement les dates de mise à jour des pages depuis l'historique git et les changements de contenu. Chaque page affiche une étiquette de date "Updated" ou "Published" dans son en-tête sans avoir besoin de frontmatter. La date apparaît également dans chaque projection publique : `?format=json`, le miroir `.md`, et `/api/docs-index`.
+
+Pour remplacer la date automatique, définissez `lastUpdated` (ou `last_updated`) dans le frontmatter. Une valeur frontmatter a toujours priorité :
 
 ```yaml
 ---
 title: Swap tokens
-lastUpdated: 2026-06-30      # the bytes last changed
+lastUpdated: 2026-06-30      # remplace la date automatique
 lastVerified: 2026-07-01     # a human last confirmed it's still accurate
 verifiedVersion: "2.3.0"     # optional: the product version it was verified against
 ---
 ```
+
+Pour masquer les étiquettes de date sur tout le site, définissez `content.showLastUpdated` à `false` dans `docs.json`. Les dates sont toujours incluses dans les données structurées et les projections machine.
 
 <Note>
 `lastUpdated` et `lastVerified` signifient des choses différentes. **Updated** est le moment où

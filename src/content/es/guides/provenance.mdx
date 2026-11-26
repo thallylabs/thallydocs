@@ -19,16 +19,20 @@ Hay dos capas, con dos audiencias diferentes.
 
 ## Público: fechas de vigencia
 
-Añade cualquiera de estas fechas al frontmatter de una página y aparecerá en cada proyección pública — los metadatos de la página, `?format=json`, el espejo `.md`, y `/api/docs-index`:
+Thally detecta automáticamente las fechas de actualización de páginas del historial de git y los cambios de contenido. Cada página muestra una etiqueta de fecha "Updated" o "Published" en su encabezado sin necesidad de frontmatter. La fecha también aparece en cada proyección pública: `?format=json`, el espejo `.md`, y `/api/docs-index`.
+
+Para sobreescribir la fecha automática, establece `lastUpdated` (o `last_updated`) en el frontmatter. Un valor de frontmatter siempre tiene prioridad:
 
 ```yaml
 ---
 title: Swap tokens
-lastUpdated: 2026-06-30      # the bytes last changed
+lastUpdated: 2026-06-30      # sobreescribe la fecha automática
 lastVerified: 2026-07-01     # a human last confirmed it's still accurate
 verifiedVersion: "2.3.0"     # optional: the product version it was verified against
 ---
 ```
+
+Para ocultar las etiquetas de fecha en todo el sitio, establece `content.showLastUpdated` a `false` en `docs.json`. Las fechas aún se incluyen en datos estructurados y proyecciones de máquina.
 
 <Note>
 `lastUpdated` y `lastVerified` significan cosas diferentes. **Updated** es cuando
