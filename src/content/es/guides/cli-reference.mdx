@@ -44,6 +44,8 @@ npx --yes @thallylabs/cli@latest starter update --apply
 
 El primer comando previsualiza la actualización sin cambiar archivos. Revisa el plan y tu árbol de trabajo, y luego pasa `--apply`. Tu contenido y tu configuración originales no cambian.
 
+Cuando un archivo de framework sincronizable ha sido editado tanto por ti como por el starter upstream, el actualizador intenta una fusión automática de tres vías. Los archivos fusionados con éxito aparecen en el plan bajo "Merged source." Si la fusión no puede producir un resultado inequívoco, el archivo se reporta como conflicto para revisión manual.
+
 ### Previsualiza y compila
 
 ```bash
@@ -255,6 +257,8 @@ Usa el directorio actual si no se indica una ruta.
 | Falta `title` en el frontmatter | Advertencia |
 | Falta `description` en el frontmatter | Advertencia |
 | Cuerpo de página vacío o casi vacío | Advertencia |
+| `starter-release.json` malformado | Error |
+| Salida generada de runtime reservada rastreada en Git | Error |
 
 ```bash
 # Check the current project

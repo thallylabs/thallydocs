@@ -143,7 +143,13 @@ Los agentes que visitan una URL para personas, por ejemplo `/guides/private-docs
   "meta": {
     "locale": "en",
     "keywords": ["auth", "token", "bearer"],
-    "timeEstimate": "5 min"
+    "timeEstimate": "5 min",
+    "lastUpdated": "2026-02-01",
+    "last_updated": "2026-02-01",
+    "page_update": {
+      "date": "2026-02-01",
+      "source": "git"
+    }
   },
 
   "freshness": {
@@ -205,7 +211,12 @@ Añadir `?locale=` filtra el índice a las páginas que tienen una traducción p
       "url": "https://docs.example.com/guides/private-docs",
       "api_url": "https://docs.example.com/api/docs/guides/private-docs",
       "tab": "Guides",
-      "group": "Security"
+      "group": "Security",
+      "last_updated": "2026-02-01",
+      "page_update": {
+        "date": "2026-02-01",
+        "source": "git"
+      }
     }
   ]
 }
@@ -245,6 +256,8 @@ Se genera dinámicamente en `/ai.txt` a partir de tu navegación publicada, así
 ## Datos estructurados JSON-LD
 
 Cada página de documentación incluye un bloque `<script type="application/ld+json">` incrustado en el HTML. No es JavaScript ejecutable, y los navegadores lo ignoran. Los motores de búsqueda y los agentes de IA que reciben HTML pueden extraer metadatos estructurados sin analizar el diseño de la página.
+
+Las páginas que han sido actualizadas después de su publicación inicial usan `dateModified`. Las páginas con solo su primera publicación usan `datePublished` en su lugar:
 
 ```json
 {

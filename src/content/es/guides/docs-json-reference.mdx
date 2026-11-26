@@ -148,6 +148,23 @@ Los iconos de IA aceptan un icono nombrado o una URL/ruta de imagen. Habilitar u
 no crea una conexión de servicio pagado; las capacidades de Cloud no disponibles permanecen
 bloqueadas o sin operación.
 
+## Visualización de contenido
+
+```json
+{
+  "content": {
+    "showLastUpdated": true
+  }
+}
+```
+
+| Campo | Predeterminado | Propósito |
+| --- | --- | --- |
+| `content.showLastUpdated` | `true` | Muestra u oculta la etiqueta de fecha automática de la página en las páginas orientadas al lector. Cuando es `false`, la fecha se oculta del encabezado de la página pero sigue incluida en las respuestas de API, MCP, sitemap y JSON-LD. |
+
+Los sitios vinculados a Cloud también pueden controlar esta configuración desde el
+panel de Cloud. La configuración de Cloud tiene prioridad cuando está presente.
+
 ## Credenciales del playground de API
 
 ```json

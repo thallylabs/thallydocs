@@ -51,6 +51,11 @@ The first command previews the update without changing files. Review the plan
 and your working tree, then pass `--apply`. Your authored content and
 configuration are not changed.
 
+When a syncable framework file has been edited by both you and the upstream
+starter, the updater attempts an automatic three-way merge. Successfully merged
+files appear in the plan under "Merged source." If the merge cannot produce an
+unambiguous result, the file is reported as a conflict for manual review.
+
 ### Preview and build
 
 ```bash
@@ -275,6 +280,8 @@ Defaults to the current directory if no path is given.
 | Missing `title` in frontmatter | Warning |
 | Missing `description` in frontmatter | Warning |
 | Empty or near-empty page body | Warning |
+| Malformed `starter-release.json` | Error |
+| Reserved generated runtime output tracked in Git | Error |
 
 ```bash
 # Check the current project

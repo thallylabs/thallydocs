@@ -17,24 +17,48 @@ Los agentes (y las personas) confían más en la documentación cuando pueden de
 
 Hay dos capas, con dos audiencias diferentes.
 
-## Público: fechas de vigencia
+## Público: fechas de página
 
-Añade cualquiera de estas fechas al frontmatter de una página y aparecerá en cada proyección pública — los metadatos de la página, `?format=json`, el espejo `.md`, y `/api/docs-index`:
+Thally deriva automáticamente una fecha de página a partir del historial de Git o la detección de cambios de contenido. El encabezado de la página muestra "Updated" con la fecha, o "Published" cuando la página solo tiene su publicación inicial y no ha tenido cambios posteriores.
+
+Las fechas automáticas aparecen en cada proyección pública: la página renderizada, `?format=json`, el espejo `.md`, `/api/docs-index`, el sitemap, las respuestas de herramientas MCP y los datos estructurados JSON-LD.
+
+### Anular con frontmatter
+
+Establece `lastUpdated` (o la forma snake_case `last_updated`) en el frontmatter para anular la fecha automática:
 
 ```yaml
 ---
 title: Swap tokens
-lastUpdated: 2026-06-30      # the bytes last changed
+lastUpdated: 2026-06-30      # overrides the automatic date
 lastVerified: 2026-07-01     # a human last confirmed it's still accurate
 verifiedVersion: "2.3.0"     # optional: the product version it was verified against
 ---
 ```
+
+Cuando existen tanto una fecha de frontmatter como una fecha automática, la fecha de frontmatter tiene prioridad.
 
 <Note>
 `lastUpdated` y `lastVerified` significan cosas diferentes. **Updated** es cuando
 la página cambió; **verified** es cuando alguien confirmó por última vez que aún
 coincide con el producto. Una página puede ser verificada sin ser editada.
 </Note>
+
+### Ocultar la etiqueta de fecha
+
+Para ocultar la fecha de las páginas orientadas al lector, establece `content.showLastUpdated` en `false` en `docs.json`:
+
+```json
+{
+  "content": {
+    "showLastUpdated": false
+  }
+}
+```
+
+Esto oculta solo la etiqueta del lector. Las superficies para máquinas (respuestas de API, MCP, sitemap y JSON-LD) siguen incluyendo los metadatos de fecha.
+
+Los sitios vinculados a Cloud también pueden controlar esta configuración desde el panel de Cloud. La configuración de Cloud tiene prioridad sobre `docs.json` cuando está presente.
 
 ## Metadatos de verificación privada
 

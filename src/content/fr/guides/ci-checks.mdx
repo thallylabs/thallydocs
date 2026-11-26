@@ -20,6 +20,7 @@ keywords:
 - **Contenu** — pages orphelines (non présentes dans `docs.json`), `title`/`description` manquants, pages trop courtes, pages dans la navigation sans fichier.
 - **Liens internes et ancres** — chaque lien `/page` résout vers une vraie page, et chaque ancre `#heading` existe. Les liens à l'intérieur des blocs de code sont ignorés (ce sont des exemples).
 - **OpenAPI** — votre spécification API s'analyse et a la structure requise (version `openapi`, `info`, chemins `paths` valides).
+- **Intégrité du starter** : `starter-release.json` doit être bien formé s'il est présent, et les sorties générées de runtime réservées (sous `public/_thally/content` et `src/generated/`) ne doivent pas être suivies dans Git.
 
 <Note type="info">
 Les liens externes sont ignorés par défaut pour une CI déterministe et sans réseau. Passez `--external` pour aussi les vérifier.

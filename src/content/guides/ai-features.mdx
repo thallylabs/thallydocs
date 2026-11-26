@@ -150,7 +150,13 @@ Agents that visit a human-facing URL (for example, `/guides/private-docs`) with 
   "meta": {
     "locale": "en",
     "keywords": ["auth", "token", "bearer"],
-    "timeEstimate": "5 min"
+    "timeEstimate": "5 min",
+    "lastUpdated": "2026-02-01",
+    "last_updated": "2026-02-01",
+    "page_update": {
+      "date": "2026-02-01",
+      "source": "git"
+    }
   },
 
   "freshness": {
@@ -212,7 +218,12 @@ Adding `?locale=` filters the index to pages that have a published translation i
       "url": "https://docs.example.com/guides/private-docs",
       "api_url": "https://docs.example.com/api/docs/guides/private-docs",
       "tab": "Guides",
-      "group": "Security"
+      "group": "Security",
+      "last_updated": "2026-02-01",
+      "page_update": {
+        "date": "2026-02-01",
+        "source": "git"
+      }
     }
   ]
 }
@@ -252,6 +263,8 @@ Generated dynamically at `/ai.txt` from your live navigation, so it always refle
 ## JSON-LD structured data
 
 Every documentation page includes a `<script type="application/ld+json">` block embedded in the HTML. This is not executable JavaScript — browsers ignore it. Search engines and AI agents that receive HTML can extract structured metadata from it without scraping the page layout.
+
+Pages that have been updated after their initial publication use `dateModified`. Pages with only their first publication use `datePublished` instead:
 
 ```json
 {

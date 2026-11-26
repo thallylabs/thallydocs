@@ -48,6 +48,12 @@ La première commande prévisualise la mise à jour sans modifier les fichiers. 
 et votre arborescence de travail, puis passez `--apply`. Votre contenu créé et
 la configuration ne sont pas modifiés.
 
+Lorsqu'un fichier de framework synchronisable a été modifié à la fois par vous et par le
+starter upstream, le metteur à jour tente une fusion automatique à trois voies. Les fichiers
+fusionnés avec succès apparaissent dans le plan sous "Merged source." Si la fusion ne peut
+pas produire un résultat sans ambiguïté, le fichier est signalé comme conflit pour
+examen manuel.
+
 ### Prévisualiser et générer
 
 ```bash
@@ -248,6 +254,8 @@ Par défaut, le répertoire actuel si aucun chemin n'est donné.
 | `title` manquant dans les métadonnées | Avertissement |
 | `description` manquante dans les métadonnées | Avertissement |
 | Corps de page vide ou quasi-vide | Avertissement |
+| `starter-release.json` malformé | Erreur |
+| Sortie générée de runtime réservée suivie dans Git | Erreur |
 
 ```bash
 # Check the current project

@@ -138,6 +138,23 @@ Les liens de barre de navigation contiennent `label`, `href` et optionnellement 
 
 Les icônes IA acceptent une icône nommée ou une URL/un chemin d'image. L'activation d'un contrôle portable ne crée pas de connexion de service payant ; les capacités Cloud indisponibles restent verrouillées ou sans opération.
 
+## Affichage du contenu
+
+```json
+{
+  "content": {
+    "showLastUpdated": true
+  }
+}
+```
+
+| Champ | Par défaut | Objectif |
+| --- | --- | --- |
+| `content.showLastUpdated` | `true` | Affiche ou masque le label de date automatique de la page sur les pages orientées lecteur. Lorsqu'il est `false`, la date est masquée de l'en-tête de page mais reste incluse dans les réponses API, MCP, sitemap et JSON-LD. |
+
+Les sites liés à Cloud peuvent également contrôler ce paramètre depuis le
+tableau de bord Cloud. Le paramètre Cloud a la priorité lorsqu'il est présent.
+
 ## Identifiants du terrain de jeu API
 
 ```json

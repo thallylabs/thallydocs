@@ -221,6 +221,23 @@ AI icons accept a named icon or an image URL/path. Enabling a portable control
 does not create a paid service connection; unavailable Cloud capabilities stay
 locked or no-op.
 
+## Content display
+
+```json
+{
+  "content": {
+    "showLastUpdated": true
+  }
+}
+```
+
+| Field | Default | Purpose |
+| --- | --- | --- |
+| `content.showLastUpdated` | `true` | Show or hide the automatic page date label on reader-facing pages. When `false`, the date is hidden from the page header but still included in API responses, MCP, sitemap, and JSON-LD. |
+
+Cloud-linked sites can also control this setting from the Cloud dashboard. The
+Cloud setting takes precedence when present.
+
 ## API playground credentials
 
 ```json

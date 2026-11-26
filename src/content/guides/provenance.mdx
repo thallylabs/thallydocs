@@ -14,24 +14,48 @@ Agents (and people) trust docs more when they can tell *how current* a page is. 
 
 There are two layers, with two different audiences.
 
-## Public: freshness dates
+## Public: page dates
 
-Add either date to a page's frontmatter and it appears in every public projection — the page metadata, `?format=json`, the `.md` mirror, and `/api/docs-index`:
+Thally automatically derives a page date from Git history or content-change detection. The page header shows "Updated" with the date, or "Published" when the page has only its initial publication and no subsequent changes.
+
+Automatic dates appear in every public projection: the rendered page, `?format=json`, the `.md` mirror, `/api/docs-index`, the sitemap, MCP tool responses, and JSON-LD structured data.
+
+### Override with frontmatter
+
+Set `lastUpdated` (or the snake_case form `last_updated`) in frontmatter to override the automatic date:
 
 ```yaml
 ---
 title: Swap tokens
-lastUpdated: 2026-06-30      # the bytes last changed
+lastUpdated: 2026-06-30      # overrides the automatic date
 lastVerified: 2026-07-01     # a human last confirmed it's still accurate
 verifiedVersion: "2.3.0"     # optional: the product version it was verified against
 ---
 ```
+
+When both a frontmatter date and an automatic date exist, the frontmatter date wins.
 
 <Note>
 `lastUpdated` and `lastVerified` mean different things. **Updated** is when the
 page changed; **verified** is when someone last confirmed it still matches the
 product. A page can be verified without being edited.
 </Note>
+
+### Hide the date label
+
+To hide the date from reader-facing pages, set `content.showLastUpdated` to `false` in `docs.json`:
+
+```json
+{
+  "content": {
+    "showLastUpdated": false
+  }
+}
+```
+
+This hides only the reader label. Machine surfaces (API responses, MCP, sitemap, and JSON-LD) still include the date metadata.
+
+Cloud-linked sites can also toggle this setting from the Cloud dashboard. The Cloud setting takes precedence over `docs.json` when present.
 
 ## Private verification metadata
 

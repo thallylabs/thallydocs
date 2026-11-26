@@ -33,7 +33,7 @@ verifiedVersion: 2.4.0
 | `badge` | cadena | Ninguno | Etiqueta de estado corta que se muestra con la página en la navegación. |
 | `keywords` | matriz de cadenas | Derivada de la página | Términos adicionales utilizados por la búsqueda de documentación. |
 | `timeEstimate` | cadena | `5 min` | Estimación de lectura o tarea que se muestra con los metadatos de la página. |
-| `lastUpdated` | cadena de fecha | Ninguno | Fecha de última actualización de contenido que se muestra en metadatos y salida estructurada. |
+| `lastUpdated` | cadena de fecha | Automático | Fecha de última actualización de contenido que se muestra en metadatos y salida estructurada. Thally la deriva automáticamente del historial de Git o de cambios de contenido. Establécela manualmente para anular la fecha automática. También se acepta la forma snake_case `last_updated`. |
 | `lastVerified` | cadena de fecha | Ninguno | Fecha en la que una persona confirmó por última vez las instrucciones en el producto. |
 | `verifiedVersion` | cadena | Ninguno | Versión del producto utilizada durante esa verificación. |
 | `openapi` | cadena | Ninguno | Clave de operación OpenAPI, como `GET /users/{id}`. |
