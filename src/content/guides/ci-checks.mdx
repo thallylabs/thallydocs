@@ -18,6 +18,7 @@ is broken, so CI can stop the change before it reaches production.
 - **Content** — orphan pages (not in `docs.json`), missing `title`/`description`, thin pages, pages in nav with no file.
 - **Internal links & anchors** — every `/page` link resolves to a real page, and every `#heading` anchor exists. Links inside code blocks are ignored (they're examples).
 - **OpenAPI** — your API spec parses and has the required structure (`openapi` version, `info`, valid `paths`).
+- **Starter integrity**: `starter-release.json` must be well-formed if present, and reserved generated runtime outputs (under `public/_thally/content` and `src/generated/`) must not be tracked in Git.
 
 <Note type="info">
 External links are skipped by default for deterministic, network-free CI. Pass

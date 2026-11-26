@@ -81,8 +81,10 @@ in a private browser session.
 When a compatible update is available, **Settings → Updates** shows **Update
 site**. Review and apply the change from there. Thally leaves your pages,
 navigation, branding, and other authored files unchanged. If a framework file
-also has local edits, Thally identifies it for local review instead of
-overwriting it.
+also has local edits, Thally attempts an automatic three-way merge. When the
+merge succeeds, the file is updated without losing your changes. If the merge
+cannot produce an unambiguous result, Thally identifies the file for manual
+review instead of overwriting it.
 
 For a self-hosted project, preview the same update locally:
 

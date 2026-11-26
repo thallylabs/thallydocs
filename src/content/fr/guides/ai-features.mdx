@@ -152,7 +152,13 @@ Les agents qui visitent une URL orientée humain (par exemple, `/guides/private-
   "meta": {
     "locale": "en",
     "keywords": ["auth", "token", "bearer"],
-    "timeEstimate": "5 min"
+    "timeEstimate": "5 min",
+    "lastUpdated": "2026-02-01",
+    "last_updated": "2026-02-01",
+    "page_update": {
+      "date": "2026-02-01",
+      "source": "git"
+    }
   },
 
   "freshness": {
@@ -214,7 +220,12 @@ L'ajout de `?locale=` filtre l'index aux pages qui ont une traduction publiée d
       "url": "https://docs.example.com/guides/private-docs",
       "api_url": "https://docs.example.com/api/docs/guides/private-docs",
       "tab": "Guides",
-      "group": "Security"
+      "group": "Security",
+      "last_updated": "2026-02-01",
+      "page_update": {
+        "date": "2026-02-01",
+        "source": "git"
+      }
     }
   ]
 }
@@ -254,6 +265,8 @@ Généré dynamiquement à `/ai.txt` à partir de votre navigation actuelle, il 
 ## Données structurées JSON-LD
 
 Chaque page de documentation inclut un bloc `<script type="application/ld+json">` intégré dans le HTML. Ce n'est pas du JavaScript exécutable — les navigateurs l'ignorent. Les moteurs de recherche et les agents d'IA qui reçoivent du HTML peuvent extraire les métadonnées structurées sans scraper la mise en page de la page.
+
+Les pages mises à jour après leur publication initiale utilisent `dateModified`. Les pages avec uniquement leur première publication utilisent `datePublished` à la place :
 
 ```json
 {

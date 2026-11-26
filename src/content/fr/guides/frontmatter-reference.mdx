@@ -34,7 +34,7 @@ verifiedVersion: 2.4.0
 | `badge` | string | Aucun | Étiquette de statut courte affichée avec la page dans la navigation. |
 | `keywords` | string array | Dérivée de la page | Termes supplémentaires utilisés par la recherche de documentation. |
 | `timeEstimate` | string | `5 min` | Estimation de lecture ou de tâche affichée avec les métadonnées de la page. |
-| `lastUpdated` | date string | Aucun | Date de la dernière mise à jour du contenu affichée dans les métadonnées et la sortie structurée. |
+| `lastUpdated` | date string | Automatique | Date de la dernière mise à jour du contenu affichée dans les métadonnées et la sortie structurée. Thally la dérive automatiquement de l'historique Git ou des changements de contenu. Définissez-la manuellement pour remplacer la date automatique. La forme snake_case `last_updated` est également acceptée. |
 | `lastVerified` | date string | Aucun | Date à laquelle une personne a confirmé pour la dernière fois les instructions par rapport au produit. |
 | `verifiedVersion` | string | Aucun | Version du produit utilisée lors de cette vérification. |
 | `openapi` | string | Aucun | Clé d'opération OpenAPI, telle que `GET /users/{id}`. |

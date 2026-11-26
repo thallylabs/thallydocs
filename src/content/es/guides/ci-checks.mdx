@@ -20,6 +20,7 @@ keywords:
 - **Contenido** — páginas huérfanas (no en `docs.json`), `title`/`description` faltantes, páginas delgadas, páginas en la navegación sin archivo.
 - **Enlaces internos y anclajes** — cada enlace `/page` se resuelve a una página real, y cada anclaje `#heading` existe. Los enlaces dentro de bloques de código se ignoran (son ejemplos).
 - **OpenAPI** — tu especificación de API se analiza correctamente y tiene la estructura requerida (versión `openapi`, `info`, `paths` válidos).
+- **Integridad del starter**: `starter-release.json` debe estar bien formado si existe, y las salidas generadas de runtime reservadas (bajo `public/_thally/content` y `src/generated/`) no deben estar rastreadas en Git.
 
 <Note type="info">
 Los enlaces externos se omiten por defecto para que CI sea determinista y no requiera red. Pasa

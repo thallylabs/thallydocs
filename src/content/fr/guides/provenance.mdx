@@ -17,24 +17,48 @@ Les agents (et les personnes) font plus confiance aux docs quand ils peuvent dé
 
 Il y a deux couches, avec deux audiences différentes.
 
-## Public : dates de fraîcheur
+## Public : dates de page
 
-Ajoutez l'une ou l'autre date à la première partie d'une page et elle apparaîtra dans chaque projection publique — les métadonnées de la page, `?format=json`, le miroir `.md`, et `/api/docs-index` :
+Thally dérive automatiquement une date de page à partir de l'historique Git ou de la détection de changements de contenu. L'en-tête de page affiche "Updated" avec la date, ou "Published" lorsque la page n'a que sa publication initiale sans modification ultérieure.
+
+Les dates automatiques apparaissent dans chaque projection publique : la page rendue, `?format=json`, le miroir `.md`, `/api/docs-index`, le sitemap, les réponses MCP et les données structurées JSON-LD.
+
+### Remplacer avec le frontmatter
+
+Définissez `lastUpdated` (ou la forme snake_case `last_updated`) dans le frontmatter pour remplacer la date automatique :
 
 ```yaml
 ---
 title: Swap tokens
-lastUpdated: 2026-06-30      # the bytes last changed
+lastUpdated: 2026-06-30      # overrides the automatic date
 lastVerified: 2026-07-01     # a human last confirmed it's still accurate
 verifiedVersion: "2.3.0"     # optional: the product version it was verified against
 ---
 ```
+
+Lorsqu'une date de frontmatter et une date automatique coexistent, la date de frontmatter a la priorité.
 
 <Note>
 `lastUpdated` et `lastVerified` signifient des choses différentes. **Updated** est le moment où
 la page a changé ; **verified** est le moment où quelqu'un a confirmé pour la dernière fois
 qu'elle correspondait toujours au produit. Une page peut être vérifiée sans être modifiée.
 </Note>
+
+### Masquer le label de date
+
+Pour masquer la date des pages orientées lecteur, définissez `content.showLastUpdated` à `false` dans `docs.json` :
+
+```json
+{
+  "content": {
+    "showLastUpdated": false
+  }
+}
+```
+
+Cela masque uniquement le label du lecteur. Les surfaces machine (réponses API, MCP, sitemap et JSON-LD) incluent toujours les métadonnées de date.
+
+Les sites liés à Cloud peuvent également contrôler ce paramètre depuis le tableau de bord Cloud. Le paramètre Cloud a la priorité sur `docs.json` lorsqu'il est présent.
 
 ## Métadonnées de vérification privée
 
