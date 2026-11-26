@@ -31,7 +31,7 @@ verifiedVersion: 2.4.0
 | `badge` | string | None | Short status label shown with the page in navigation. |
 | `keywords` | string array | Derived from the page | Additional terms used by documentation search. |
 | `timeEstimate` | string | `5 min` | Reading or task estimate displayed with page metadata. |
-| `lastUpdated` | date string | None | Last content update date shown in metadata and structured output. |
+| `lastUpdated` | date string | Auto-detected from git history | Last content update date shown in the page header and structured output. Also accepted as `last_updated`. A frontmatter value takes priority over the automatic date. |
 | `lastVerified` | date string | None | Date a person last confirmed the instructions against the product. |
 | `verifiedVersion` | string | None | Product version used during that verification. |
 | `openapi` | string | None | OpenAPI operation key, such as `GET /users/{id}`. |

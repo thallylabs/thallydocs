@@ -16,16 +16,20 @@ There are two layers, with two different audiences.
 
 ## Public: freshness dates
 
-Add either date to a page's frontmatter and it appears in every public projection — the page metadata, `?format=json`, the `.md` mirror, and `/api/docs-index`:
+Thally automatically detects page update dates from git history and content changes. Every page shows an "Updated" or "Published" date label in its header without any frontmatter needed. The date also appears in every public projection: `?format=json`, the `.md` mirror, and `/api/docs-index`.
+
+To override the automatic date, set `lastUpdated` (or `last_updated`) in frontmatter. A frontmatter value always takes priority:
 
 ```yaml
 ---
 title: Swap tokens
-lastUpdated: 2026-06-30      # the bytes last changed
+lastUpdated: 2026-06-30      # overrides the automatic date
 lastVerified: 2026-07-01     # a human last confirmed it's still accurate
 verifiedVersion: "2.3.0"     # optional: the product version it was verified against
 ---
 ```
+
+To hide date labels site-wide, set `content.showLastUpdated` to `false` in `docs.json`. Dates are still included in structured data and machine projections.
 
 <Note>
 `lastUpdated` and `lastVerified` mean different things. **Updated** is when the

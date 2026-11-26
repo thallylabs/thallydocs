@@ -33,7 +33,7 @@ verifiedVersion: 2.4.0
 | `badge` | cadena | Ninguno | Etiqueta de estado corta que se muestra con la página en la navegación. |
 | `keywords` | matriz de cadenas | Derivada de la página | Términos adicionales utilizados por la búsqueda de documentación. |
 | `timeEstimate` | cadena | `5 min` | Estimación de lectura o tarea que se muestra con los metadatos de la página. |
-| `lastUpdated` | cadena de fecha | Ninguno | Fecha de última actualización de contenido que se muestra en metadatos y salida estructurada. |
+| `lastUpdated` | cadena de fecha | Autodetectado del historial de git | Fecha de última actualización de contenido que se muestra en el encabezado de la página y la salida estructurada. También se acepta como `last_updated`. Un valor de frontmatter tiene prioridad sobre la fecha automática. |
 | `lastVerified` | cadena de fecha | Ninguno | Fecha en la que una persona confirmó por última vez las instrucciones en el producto. |
 | `verifiedVersion` | cadena | Ninguno | Versión del producto utilizada durante esa verificación. |
 | `openapi` | cadena | Ninguno | Clave de operación OpenAPI, como `GET /users/{id}`. |

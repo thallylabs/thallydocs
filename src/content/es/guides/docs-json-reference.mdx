@@ -104,6 +104,22 @@ Los enlaces de barra de navegación contienen `label`, `href` y tipo opcional `t
 contiene `label` y `href`. Las columnas de pie de página contienen un `heading` y una
 matriz `items` de objetos `{ "label", "href" }`.
 
+## Visualización de contenido
+
+```json
+{
+  "content": {
+    "showLastUpdated": true
+  }
+}
+```
+
+| Campo | Predeterminado | Propósito |
+| --- | --- | --- |
+| `content.showLastUpdated` | `true` | Muestra u oculta la etiqueta de fecha "Updated" / "Published" en los encabezados de página. La fecha se autodetecta del historial de git cuando no se establece en el frontmatter. Establece a `false` para ocultar la etiqueta en todo el sitio manteniendo las fechas en datos estructurados y proyecciones de máquina. |
+
+Los sitios conectados a Thally Cloud también pueden alternar esta configuración desde el panel de Cloud sin reconstruir.
+
 ## Redirecciones e indexación
 
 ```json

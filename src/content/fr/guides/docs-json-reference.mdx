@@ -98,6 +98,22 @@ Les clés d'opération utilisent `METHOD /path` exactement comme écrit dans la 
 
 Les liens de barre de navigation contiennent `label`, `href` et optionnellement `type: "github"`. Une action principale contient `label` et `href`. Les colonnes de pied de page contiennent un `heading` et un tableau `items` d'objets `{ "label", "href" }`.
 
+## Affichage du contenu
+
+```json
+{
+  "content": {
+    "showLastUpdated": true
+  }
+}
+```
+
+| Champ | Par défaut | Objectif |
+| --- | --- | --- |
+| `content.showLastUpdated` | `true` | Affiche ou masque l'étiquette de date "Updated" / "Published" dans les en-têtes de page. La date est auto-détectée depuis l'historique git si elle n'est pas définie dans le frontmatter. Définissez à `false` pour masquer l'étiquette sur tout le site tout en conservant les dates dans les données structurées et les projections machine. |
+
+Les sites connectés à Thally Cloud peuvent également basculer ce paramètre depuis le tableau de bord Cloud sans reconstruction.
+
 ## Redirections et indexation
 
 ```json
